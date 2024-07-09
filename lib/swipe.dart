@@ -14,27 +14,32 @@ class Swipe extends StatefulWidget {
 class _SwipeState extends State<Swipe> {
   late TmdbApi api;
   List<Movie> movies = [];
+  int count = 0;
+  int page = 1;
 
-  void loadMovies() async {
+  void loadMovies(int page) async {
     await dotenv.load();
     api = TmdbApi(
       dotenv.env['API_KEY']!,
     );
+
+    movies.clear();
     MovieFilters filters = MovieFilters();
-    filters.page = 1;
+    filters.page = page;
     filters.language = 'en';
     filters.primaryReleaseDateGte = DateTime(1986, 01, 01);
     filters.primaryReleaseDateLte = DateTime(1991, 01, 01);
     var result = await api.discover.getMovies(filters);
     setState(() {
       movies = result;
+      count = movies.length;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    loadMovies();
+    loadMovies(page);
   }
 
   @override
@@ -51,12 +56,19 @@ class _SwipeState extends State<Swipe> {
             return Dismissible(
                 key: Key(item.id.toString()),
                 onDismissed: (direction) {
+                  count--;
+                  if (count == 0) {
+                    page++;
+                    loadMovies(page);
+                  }
                   switch (direction) {
                     case DismissDirection.endToStart:
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${item.title} removed')));
+                      // ScaffoldMessenger.of(context)
+                      //     .showSnackBar(SnackBar(content: Text('${item.title} removed and count is now $count ')));
                       break;
                     case DismissDirection.startToEnd:
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${item.title} liked')));
+                      // ScaffoldMessenger.of(context)
+                      //     .showSnackBar(SnackBar(content: Text('${item.title} liked and count is now $count')));
                       break;
                     default:
                       break;
