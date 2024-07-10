@@ -4,8 +4,6 @@ import 'package:movie_date/swipe.dart';
 
 Future main() async {
   await dotenv.load(fileName: ".env");
-
-  String foo = dotenv.get('API_KEY');
   runApp(const MyApp());
 }
 
