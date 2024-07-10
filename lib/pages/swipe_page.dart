@@ -4,14 +4,17 @@ import 'package:jp_moviedb/filters/movie.dart';
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class Swipe extends StatefulWidget {
-  const Swipe({super.key});
+class SwipePage extends StatefulWidget {
+  const SwipePage({super.key});
+  static Route route() {
+    return MaterialPageRoute<void>(builder: (_) => const SwipePage());
+  }
 
   @override
-  State<Swipe> createState() => _SwipeState();
+  State<SwipePage> createState() => _SwipePageState();
 }
 
-class _SwipeState extends State<Swipe> {
+class _SwipePageState extends State<SwipePage> {
   late TmdbApi api;
   List<Movie> movies = [];
   int count = 0;
