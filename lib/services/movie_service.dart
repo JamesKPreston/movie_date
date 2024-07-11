@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:jp_moviedb/api.dart';
 import 'package:jp_moviedb/filters/movie.dart';
@@ -12,8 +11,7 @@ class MovieService {
   late TmdbApi api;
   List<Movie> movies = [];
   int count = 0;
-  int page = 1;
-  Future<List<Movie>> getMovies() async {
+  Future<List<Movie>> getMovies(int page) async {
     // Fetch movies from the network
     await dotenv.load();
     api = TmdbApi(
@@ -46,7 +44,7 @@ class MovieService {
   }
 
   //Get Movie Choices
-  Future<List<int>> getMovieChoices() async {
+  Future<List<int>> _getMovieChoices() async {
     Room room = await RoomService().getRoom();
 
     var result2 = await supabase.rpc('getmoviechoices', params: {'room_id': room.id});
@@ -54,7 +52,7 @@ class MovieService {
     return movieIds;
   }
 
-  Future<List<int>> getUsersMovieChoices() async {
+  Future<List<int>> _getUsersMovieChoices() async {
     Room room = await RoomService().getRoom();
 
     var result2 = await supabase.rpc('getusersmoviechoices', params: {'room_id': room.id});
@@ -65,5 +63,13 @@ class MovieService {
   Future<Movie> getMovie(int movieId) async {
     // Fetch movie from the network
     throw UnimplementedError();
+  }
+
+  Future<bool> isMovieSaved(int movieId) async {
+    // Check if movie is saved in the database
+    List<int> otherUsersChoices = await MovieService()._getMovieChoices();
+    List<int> myChoices = await MovieService()._getUsersMovieChoices();
+
+    return (otherUsersChoices.contains(movieId) && myChoices.contains(movieId));
   }
 }
