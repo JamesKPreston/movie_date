@@ -22,37 +22,24 @@ class _SwipePageState extends State<SwipePage> {
   int page = 1;
 
   void loadMovies(int page) async {
-    var result = await MovieService().getMovies();
+    var result = await MovieService().getMovies(page);
     setState(() {
       movies = result;
       count = movies.length;
     });
   }
 
-  void test() async {
-    var result = await MovieService().getMovieChoices();
-    var result2 = await MovieService().getUsersMovieChoices();
-
-    print(result);
-    print('and now result2');
-    print(result2);
-    // setState(() {
-    //   movieChoices = result;
-    // });
-
-    // List<int> movieChoices = [];
-    // movieChoices.add(314);
-    // movieChoices.add(78);
-
-    // await MovieService()
-    //     .saveMovie(movieChoices, '00b7ea42-d9ef-4e60-99ad-226ca02c2dd2', '8e9e5756-3d89-4329-9c08-8b46ded21184');
-  }
-
   @override
   void initState() {
     super.initState();
-    //test();
     loadMovies(page);
+  }
+
+  void checkForMatch(int movieId) async {
+    bool matchFound = await MovieService().isMovieSaved(movieId);
+    if (matchFound) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Match Found')));
+    }
   }
 
   @override
@@ -70,19 +57,19 @@ class _SwipePageState extends State<SwipePage> {
                 key: Key(item.id.toString()),
                 onDismissed: (direction) {
                   count--;
+                  setState(() {
+                    movies.removeAt(index);
+                  });
                   if (count == 0) {
                     page++;
                     loadMovies(page);
                   }
                   switch (direction) {
-                    case DismissDirection.endToStart:
-                      // ScaffoldMessenger.of(context)
-                      //     .showSnackBar(SnackBar(content: Text('${item.title} removed and count is now $count ')));
-                      break;
                     case DismissDirection.startToEnd:
                       MovieService().saveMovie(item.id);
-                      // ScaffoldMessenger.of(context)
-                      //     .showSnackBar(SnackBar(content: Text('${item.title} liked and count is now $count')));
+                      setState(() {
+                        checkForMatch(item.id);
+                      });
                       break;
                     default:
                       break;
