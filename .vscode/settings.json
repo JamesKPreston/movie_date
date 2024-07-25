@@ -3,8 +3,10 @@
         "dotenv",
         "getmoviechoices",
         "getusersmoviechoices",
+        "moviechoices",
         "moviedb",
         "Supabase",
-        "Tmdb"
+        "Tmdb",
+        "upsert"
     ]
 }
