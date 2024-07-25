@@ -47,16 +47,16 @@ class MovieService {
   Future<List<int>> _getMovieChoices() async {
     Room room = await RoomService().getRoom();
 
-    var result2 = await supabase.rpc('getmoviechoices', params: {'room_id': room.id});
-    List<int> movieIds = List<int>.from(jsonDecode(result2)).toList();
+    var result = await supabase.rpc('getmoviechoices', params: {'room_id': room.id});
+    List<int> movieIds = List<int>.from(jsonDecode(result)).toList();
     return movieIds;
   }
 
   Future<List<int>> _getUsersMovieChoices() async {
     Room room = await RoomService().getRoom();
 
-    var result2 = await supabase.rpc('getusersmoviechoices', params: {'room_id': room.id});
-    List<int> movieIds = List<int>.from(jsonDecode(result2)).toList();
+    var result = await supabase.rpc('getusersmoviechoices', params: {'room_id': room.id});
+    List<int> movieIds = List<int>.from(jsonDecode(result)).toList();
     return movieIds;
   }
 
