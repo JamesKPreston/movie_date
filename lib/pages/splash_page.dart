@@ -27,7 +27,7 @@ class SplashPageState extends State<SplashPage> {
     if (session == null) {
       Navigator.of(context).pushAndRemoveUntil(RegisterPage.route(), (route) => false);
     } else {
-      Navigator.of(context).pushAndRemoveUntil(RoomPage.route(), (route) => false);
+      Navigator.of(context).pushAndRemoveUntil(SwipePage.route(), (route) => false);
     }
   }
 
