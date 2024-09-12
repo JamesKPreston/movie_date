@@ -53,25 +53,16 @@ class _SwipePageState extends State<SwipePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Swipe'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          // More vibrant gradient background
+          // Vibrant background gradient
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFF0F2027), // Dark cyan
-                  Color(0xFF203A43), // Deep teal
-                  Color(0xFF2C5364), // Navy
-                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFFFF5F6D), Color(0xFFFFC371)], // Vibrant Tinder-like gradient
               ),
             ),
           ),
@@ -90,40 +81,71 @@ class _SwipePageState extends State<SwipePage> {
                           if (direction == DismissDirection.startToEnd) {
                             MovieService().saveMovie(movie.id);
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Match Found')),
+                              const SnackBar(content: Text('Liked')),
                             );
                           }
                         },
                         child: Padding(
-                          padding: const EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              // Image that fills available space
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: AspectRatio(
-                                  aspectRatio: 2 / 3, // Ensures movie poster ratio
+                              // Fully visible movie poster, scaled to avoid black borders
+                              Expanded(
+                                flex: 4,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
                                   child: Image.network(
                                     movie.posterPath,
-                                    fit: BoxFit.cover, // Ensures image covers without black bars
+                                    fit: BoxFit.contain, // Ensure full visibility of the poster
+                                    width: double.infinity, // Take up all available width
                                   ),
                                 ),
                               ),
                               const SizedBox(height: 20),
 
-                              // Release Date below image
+                              // Movie Info (title, year, etc.)
                               Text(
-                                'Release Date: ${movie.releaseDate.year}-${movie.releaseDate.month.toString().padLeft(2, '0')}-${movie.releaseDate.day.toString().padLeft(2, '0')}',
+                                '${movie.title}, ${movie.releaseDate.year}',
                                 style: const TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white70,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
                                 ),
+                              ),
+                              const SizedBox(height: 8),
+
+                              // Additional movie info (runtime, rating)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.timer, color: Colors.white70),
+                                  const SizedBox(width: 8),
+                                  const Text(
+                                    //'${movie.runtime} min',
+                                    '120 min',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  const Icon(Icons.star, color: Colors.white70),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '${movie.voteAverage}/10',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white70,
+                                    ),
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 20),
 
-                              // Movie description
+                              // Movie Description (overview)
                               Expanded(
+                                flex: 2,
                                 child: SingleChildScrollView(
                                   child: Text(
                                     movie.overview,
