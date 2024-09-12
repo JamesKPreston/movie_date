@@ -55,75 +55,96 @@ class _SwipePageState extends State<SwipePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Swipe'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
-      body: movies.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : PageView.builder(
-              itemCount: movies.length,
-              itemBuilder: (context, index) {
-                final movie = movies[index];
-                return Dismissible(
-                  key: Key(movie.id.toString()),
-                  onDismissed: (direction) {
-                    handleDismissed(movie);
-
-                    if (direction == DismissDirection.startToEnd) {
-                      MovieService().saveMovie(movie.id);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Match Found')),
-                      );
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Row for Title and Release Date
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                movie.title,
-                                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Release Date: ${movie.releaseDate.year.toString()}-${movie.releaseDate.month.toString().padLeft(2, '0')}-${movie.releaseDate.day.toString().padLeft(2, '0')}',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        // Centered Image
-                        Flexible(
-                          child: Center(
-                            child: Image.network(
-                              movie.posterPath,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        // Overview with flexible text
-                        Expanded(
-                          child: SingleChildScrollView(
-                            child: Text(
-                              movie.overview,
-                              style: const TextStyle(fontSize: 16),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          // More vibrant gradient background
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFF0F2027), // Dark cyan
+                  Color(0xFF203A43), // Deep teal
+                  Color(0xFF2C5364), // Navy
+                ],
+              ),
             ),
+          ),
+          SafeArea(
+            child: movies.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : PageView.builder(
+                    itemCount: movies.length,
+                    itemBuilder: (context, index) {
+                      final movie = movies[index];
+                      return Dismissible(
+                        key: Key(movie.id.toString()),
+                        onDismissed: (direction) {
+                          handleDismissed(movie);
+
+                          if (direction == DismissDirection.startToEnd) {
+                            MovieService().saveMovie(movie.id);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Match Found')),
+                            );
+                          }
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              // Image that fills available space
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: AspectRatio(
+                                  aspectRatio: 2 / 3, // Ensures movie poster ratio
+                                  child: Image.network(
+                                    movie.posterPath,
+                                    fit: BoxFit.cover, // Ensures image covers without black bars
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+
+                              // Release Date below image
+                              Text(
+                                'Release Date: ${movie.releaseDate.year}-${movie.releaseDate.month.toString().padLeft(2, '0')}-${movie.releaseDate.day.toString().padLeft(2, '0')}',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+
+                              // Movie description
+                              Expanded(
+                                child: SingleChildScrollView(
+                                  child: Text(
+                                    movie.overview,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      height: 1.5,
+                                      color: Colors.white,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
     );
   }
 }
