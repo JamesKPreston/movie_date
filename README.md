@@ -1,15 +1,17 @@
 # Movie Date
 
-Movie Date is a Flutter application that helps users find and schedule movie dates. The app provides information about movies, showtimes, and allows users to book tickets.
+Movie Date is a Flutter application that works similar to tinder in that you set up some filters on what your are looking for and then you and your group start swiping away at the movies until there is a match found which you can then watch
 
-## Features
+## Progress
 
-- Browse movies currently showing in theaters
-- View movie details, including synopsis, cast, and ratings
-- Search for movies by title or genre
-- Find nearby theaters and showtimes
-- Book tickets for a selected showtime
-- Add movie dates to your calendar
+- Create a room and choose filters (TBD)
+- Swipe left or right on a movie with a poster , description, runtime etc
+- User notified of match
+- Invite others to room (TBD)
+- Link to trailers (TBD)
+- When match occurs notify user and take them to the movie screen(TBD)
+- Bottom Menu Navigation(TBD)
+- Manage list of currently swiped right movies (TBD)
 
 ## Installation
 
