@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:jp_moviedb/api.dart';
-import 'package:jp_moviedb/filters/movie.dart';
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/models/room.dart';
+import 'package:movie_date/services/profile_service.dart';
 import 'package:movie_date/services/room_service.dart';
 import 'package:movie_date/utils/constants.dart';
 
@@ -17,14 +17,12 @@ class MovieService {
     api = TmdbApi(
       dotenv.env['API_KEY']!,
     );
-
+    final user = supabase.auth.currentUser;
+    final username = await ProfileService().getUsernameById(user!.id);
+    final roomId = await ProfileService().getRoomIdByUsername(username);
+    final room = await RoomService().getRoomByRoomId(roomId);
     movies.clear();
-    MovieFilters filters = MovieFilters();
-    filters.page = page;
-    filters.language = 'en';
-    filters.primaryReleaseDateGte = DateTime(1986, 01, 01);
-    filters.primaryReleaseDateLte = DateTime(1991, 01, 01);
-    var result = await api.discover.getMovies(filters);
+    var result = await api.discover.getMovies(room.filters.first);
 
     result = await Future.wait(result.map((movie) async {
       var detailedMovie = await api.discover.getMovieDetails(movie);

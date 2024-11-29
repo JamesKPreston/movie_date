@@ -18,4 +18,10 @@ class Room {
       filters: [MovieFilters.fromMap(map['filters'])],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'filters': filters.map((filter) => filter.toMap()).toList().first,
+    };
+  }
 }
