@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movie_date/pages/swipe_page.dart';
+import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/pages/register_page.dart';
 import 'package:movie_date/utils/constants.dart';
 
@@ -26,7 +26,7 @@ class SplashPageState extends State<SplashPage> {
     if (session == null) {
       Navigator.of(context).pushAndRemoveUntil(RegisterPage.route(), (route) => false);
     } else {
-      Navigator.of(context).pushAndRemoveUntil(SwipePage.route(), (route) => false);
+      Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
     }
   }
 
