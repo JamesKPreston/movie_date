@@ -80,9 +80,13 @@ class _SwipePageState extends State<SwipePage> {
 
                           if (direction == DismissDirection.startToEnd) {
                             MovieService().saveMovie(movie.id);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Liked')),
-                            );
+                            MovieService().isMovieSaved(movie.id).then((isSaved) {
+                              if (isSaved) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Match Found!')),
+                                );
+                              }
+                            });
                           }
                         },
                         child: Padding(
@@ -121,10 +125,10 @@ class _SwipePageState extends State<SwipePage> {
                                 children: [
                                   const Icon(Icons.timer, color: Colors.white70),
                                   const SizedBox(width: 8),
-                                  const Text(
+                                  Text(
                                     //'${movie.runtime} min',
-                                    '120 min',
-                                    style: TextStyle(
+                                    'Movie Id: ${movie.id}',
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       color: Colors.white70,
                                     ),
