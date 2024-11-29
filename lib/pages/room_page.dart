@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:jp_moviedb/filters/movie.dart';
 import 'package:jp_moviedb/types/genre.dart';
 import 'package:movie_date/services/genre_service.dart';
+import 'package:movie_date/services/profile_service.dart';
+import 'package:movie_date/services/room_service.dart';
+
+import 'package:movie_date/models/room.dart';
 
 class RoomPage extends StatefulWidget {
   const RoomPage({super.key});
@@ -101,7 +106,24 @@ class _RoomPageState extends State<RoomPage> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // Handle button press
+                  //Commented out test code
+                  // List<MovieFilters> filters = [];
+
+                  // MovieFilters filter = MovieFilters(
+                  //   page: 1,
+                  //   language: 'en-US',
+                  //   primaryReleaseDateGte: DateTime.parse('2021-01-01'),
+                  //   primaryReleaseDateLte: DateTime.parse('2021-12-31'),
+                  // );
+                  // filters.add(filter);
+                  // ProfileService().getRoomIdByUsername('dxsolo');
+                  // // Handle button press
+                  // RoomService().addRoom(
+                  //   Room(
+                  //     id: '1',
+                  //     filters: filters,
+                  //   ),
+                  // );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.deepPurple,
