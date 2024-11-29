@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:movie_date/pages/room_page.dart';
 import 'package:movie_date/pages/swipe_page.dart';
 import 'package:movie_date/pages/register_page.dart';
 import 'package:movie_date/utils/constants.dart';
