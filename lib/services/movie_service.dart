@@ -25,6 +25,11 @@ class MovieService {
     filters.primaryReleaseDateGte = DateTime(1986, 01, 01);
     filters.primaryReleaseDateLte = DateTime(1991, 01, 01);
     var result = await api.discover.getMovies(filters);
+
+    result = await Future.wait(result.map((movie) async {
+      var detailedMovie = await api.discover.getMovieDetails(movie);
+      return detailedMovie;
+    }));
     return result;
   }
 

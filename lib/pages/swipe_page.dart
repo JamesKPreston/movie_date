@@ -126,8 +126,7 @@ class _SwipePageState extends State<SwipePage> {
                                   const Icon(Icons.timer, color: Colors.white70),
                                   const SizedBox(width: 8),
                                   Text(
-                                    //'${movie.runtime} min',
-                                    'Movie Id: ${movie.id}',
+                                    '${movie.runtime} min',
                                     style: const TextStyle(
                                       fontSize: 16,
                                       color: Colors.white70,
