@@ -16,7 +16,9 @@ class ProfileService {
     return result['username'] as String;
   }
 
-  Future<void> updateProfile(Profile profile) async {
+  Future<void> updateProfileRoomId(String roomId) async {
     // Update room on the server
+    final user = supabase.auth.currentUser;
+    await supabase.from('profiles').update({'room_id': roomId}).eq('id', user!.id);
   }
 }

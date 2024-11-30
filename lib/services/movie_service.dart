@@ -22,6 +22,13 @@ class MovieService {
     final roomId = await ProfileService().getRoomIdByUsername(username);
     final room = await RoomService().getRoomByRoomId(roomId);
     movies.clear();
+    if (room.filters.first.withGenres == "") {
+      room.filters.first.withGenres = null;
+    }
+    if (room.filters.first.withCast == "") {
+      room.filters.first.withCast = null;
+    }
+
     var result = await api.discover.getMovies(room.filters.first);
 
     result = await Future.wait(result.map((movie) async {

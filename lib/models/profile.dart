@@ -16,7 +16,7 @@ class Profile {
   final DateTime createdAt;
 
   /// Room Id of the room occupants record
-  final String roomId;
+  String roomId;
 
   Profile.fromMap(Map<String, dynamic> map)
       : id = map['id'],

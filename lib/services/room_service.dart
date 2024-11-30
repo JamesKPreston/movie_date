@@ -16,9 +16,10 @@ class RoomService {
     return Room.fromMap(result);
   }
 
-  Future<void> addRoom(Room room) async {
+  Future<String> addRoom(Room room) async {
     // Add room to the server
-    await supabase.from('rooms').insert(room.toJson());
+    var result = await supabase.from('rooms').insert(room.toJson()).select('id').single();
+    return result['id'] as String;
   }
 
   Future<void> deleteRoom(Room room) async {
