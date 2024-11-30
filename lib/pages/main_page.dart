@@ -15,6 +15,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
+  final PageController _pageController = PageController();
 
   final List<Widget> _pages = [
     const SwipePage(),
@@ -25,13 +26,14 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       _selectedIndex = index;
     });
+    _pageController.jumpToPage(index);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
+      body: PageView(
+        controller: _pageController,
         children: _pages,
       ),
       bottomNavigationBar: NavigationBar(
