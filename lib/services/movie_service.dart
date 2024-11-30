@@ -39,7 +39,11 @@ class MovieService {
   }
 
   Future<void> saveMovie(int movieId) async {
-    Room room = await RoomService().getRoom();
+    final user = supabase.auth.currentUser;
+    final username = await ProfileService().getUsernameById(user!.id);
+    final roomId = await ProfileService().getRoomIdByUsername(username);
+    final room = await RoomService().getRoomByRoomId(roomId);
+
     // Save movie to the database
     await supabase
         .from('moviechoices')
@@ -55,7 +59,10 @@ class MovieService {
 
   //Get Movie Choices
   Future<List<int>> _getMovieChoices() async {
-    Room room = await RoomService().getRoom();
+    final user = supabase.auth.currentUser;
+    final username = await ProfileService().getUsernameById(user!.id);
+    final roomId = await ProfileService().getRoomIdByUsername(username);
+    final room = await RoomService().getRoomByRoomId(roomId);
 
     var result = await supabase.rpc('getmoviechoices', params: {'room_id': room.id});
     List<int> movieIds = List<int>.from(jsonDecode(result)).toList();
@@ -63,7 +70,10 @@ class MovieService {
   }
 
   Future<List<int>> _getUsersMovieChoices() async {
-    Room room = await RoomService().getRoom();
+    final user = supabase.auth.currentUser;
+    final username = await ProfileService().getUsernameById(user!.id);
+    final roomId = await ProfileService().getRoomIdByUsername(username);
+    final room = await RoomService().getRoomByRoomId(roomId);
 
     var result = await supabase.rpc('getusersmoviechoices', params: {'room_id': room.id});
     List<int> movieIds = List<int>.from(jsonDecode(result)).toList();
