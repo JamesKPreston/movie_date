@@ -38,6 +38,7 @@ dependencies:
   jp_moviedb: ^0.0.10
   flutter_dotenv: ^5.0.0
   supabase_flutter: ^1.0.0
+  random_string: ^2.3.0
 
 dev_dependencies:
   flutter_test:
