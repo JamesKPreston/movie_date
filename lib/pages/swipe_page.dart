@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jp_moviedb/types/movie.dart';
+import 'package:movie_date/pages/match_found_page.dart';
 import 'package:movie_date/services/movie_service.dart';
 
 class SwipePage extends StatefulWidget {
@@ -82,9 +83,8 @@ class _SwipePageState extends State<SwipePage> {
                             MovieService().saveMovie(movie.id);
                             MovieService().isMovieSaved(movie.id).then((isSaved) {
                               if (isSaved) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Match Found!')),
-                                );
+                                Navigator.of(context)
+                                    .pushAndRemoveUntil(MatchFoundPage.route(movie.id), (route) => false);
                               }
                             });
                           }

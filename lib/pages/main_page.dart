@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie_date/pages/join_page.dart';
 import 'package:movie_date/pages/room_page.dart';
 import 'package:movie_date/pages/swipe_page.dart';
 
@@ -19,6 +20,7 @@ class _MainPageState extends State<MainPage> {
 
   final List<Widget> _pages = [
     const SwipePage(),
+    JoinPage(),
     const RoomPage(),
   ];
 
@@ -47,9 +49,14 @@ class _MainPageState extends State<MainPage> {
             selectedIcon: Icon(Icons.home),
           ),
           NavigationDestination(
-            icon: Icon(Icons.room_outlined),
-            label: 'Rooms',
-            selectedIcon: Icon(Icons.room),
+            icon: Icon(Icons.door_front_door_outlined),
+            label: 'Join Room',
+            selectedIcon: Icon(Icons.door_front_door),
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.domain_add_outlined),
+            label: 'Create Room',
+            selectedIcon: Icon(Icons.domain_add),
           ),
         ],
       ),
