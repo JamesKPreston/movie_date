@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:movie_date/pages/swipe_page.dart';
+import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text,
         password: _passwordController.text,
       );
-      Navigator.of(context).pushAndRemoveUntil(SwipePage.route(), (route) => false);
+      Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
     } on AuthException catch (error) {
       context.showErrorSnackBar(message: error.message);
     } catch (_) {
