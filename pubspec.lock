@@ -196,10 +196,10 @@ packages:
     dependency: "direct main"
     description:
       name: jp_moviedb
-      sha256: a7fc3a4d834f85b1b7a3e09f9d52bb69d030123f3088ea33974e4863d131e9a2
+      sha256: e6807e3491c10552f57bfab28d9b3505ad57f0e7986784ffa639d5cfa9f15938
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.11"
+    version: "0.0.14"
   js:
     dependency: transitive
     description:

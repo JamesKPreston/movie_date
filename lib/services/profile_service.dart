@@ -1,4 +1,3 @@
-import 'package:movie_date/models/profile.dart';
 import 'package:movie_date/utils/constants.dart';
 
 class ProfileService {

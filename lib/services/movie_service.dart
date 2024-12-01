@@ -82,7 +82,12 @@ class MovieService {
 
   Future<Movie> getMovie(int movieId) async {
     // Fetch movie from the network
-    throw UnimplementedError();
+    await dotenv.load();
+    api = TmdbApi(
+      dotenv.env['API_KEY']!,
+    );
+    Movie movie = Movie(title: '', overview: '', releaseDate: DateTime.now(), id: movieId);
+    return await api.discover.getMovieDetails(movie);
   }
 
   Future<bool> isMovieSaved(int movieId) async {
