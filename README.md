@@ -2,16 +2,19 @@
 
 Movie Date is a Flutter application that works similar to tinder in that you set up some filters on what your are looking for and then you and your group start swiping away at the movies until there is a match found which you can then watch
 
-## Progress
-
-- Create a room and choose filters (TBD)
+## Complete Features
+- Create a room and choose filters
 - Swipe left or right on a movie with a poster , description, runtime etc
 - User notified of match
-- Invite others to room (TBD)
-- Link to trailers (TBD)
-- When match occurs notify user and take them to the movie screen(TBD)
-- Bottom Menu Navigation(TBD)
-- Manage list of currently swiped right movies (TBD)
+- Bottom Menu Navigation
+- When match occurs notify user and take them to the movie screen
+- User Can Join Room
+- 
+## In Progress
+- Add Room Code to Create Room screen to facilitate joining
+- Link to trailers on each movie screen
+
+
 
 ## Installation
 
