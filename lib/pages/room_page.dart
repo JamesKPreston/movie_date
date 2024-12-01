@@ -7,6 +7,7 @@ import 'package:movie_date/services/profile_service.dart';
 import 'package:movie_date/services/room_service.dart';
 
 import 'package:movie_date/models/room.dart';
+import 'package:random_string/random_string.dart';
 
 class RoomPage extends StatefulWidget {
   const RoomPage({super.key});
@@ -24,11 +25,14 @@ class _RoomPageState extends State<RoomPage> {
   List<String> selectedActors = [];
   DateTime? releaseDateGte;
   DateTime? releaseDateLte;
+  String roomCode = '';
 
   @override
   void initState() {
     super.initState();
     fetchGenres();
+    roomCode = randomAlphaNumeric(6).toUpperCase();
+    ProfileService().updateProfileRoomCode(roomCode);
   }
 
   Future<void> fetchGenres() async {
@@ -89,7 +93,13 @@ class _RoomPageState extends State<RoomPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Movie Genres'),
+        title: const Text(
+          'Movie Genres',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: Colors.deepPurple,
       ),
       body: SingleChildScrollView(
@@ -98,6 +108,7 @@ class _RoomPageState extends State<RoomPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 8),
               const Text(
                 'Select Genres:',
                 style: TextStyle(
@@ -156,7 +167,7 @@ class _RoomPageState extends State<RoomPage> {
               ),
               const SizedBox(height: 16),
               const Text(
-                'Release Date >=',
+                'Release Date:',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -164,44 +175,52 @@ class _RoomPageState extends State<RoomPage> {
                 ),
               ),
               const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: () => _selectDate(context, true),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple),
-                child: Text(releaseDateGte != null ? releaseDateGte.toString().split(' ')[0] : 'Select Start Date'),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Release Date <=',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
-                ),
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: () => _selectDate(context, false),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple),
-                child: Text(releaseDateLte != null ? releaseDateLte.toString().split(' ')[0] : 'Select End Date'),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  FilterChip(
+                    label: Text(releaseDateGte != null ? releaseDateGte.toString().split(' ')[0] : 'Select Start Date'),
+                    selected: releaseDateGte != null,
+                    onSelected: (bool selected) {
+                      if (selected) {
+                        _selectDate(context, true);
+                      } else {
+                        setState(() {
+                          releaseDateGte = null;
+                        });
+                      }
+                    },
+                    selectedColor: Colors.deepPurple.withOpacity(0.3),
+                    backgroundColor: Colors.deepPurple.withOpacity(0.1),
+                  ),
+                  FilterChip(
+                    label: Text(releaseDateLte != null ? releaseDateLte.toString().split(' ')[0] : 'Select End Date'),
+                    selected: releaseDateLte != null,
+                    onSelected: (bool selected) {
+                      if (selected) {
+                        _selectDate(context, false);
+                      } else {
+                        setState(() {
+                          releaseDateLte = null;
+                        });
+                      }
+                    },
+                    selectedColor: Colors.deepPurple.withOpacity(0.3),
+                    backgroundColor: Colors.deepPurple.withOpacity(0.1),
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
               Center(
-                child: ElevatedButton(
-                  onPressed: () {
+                child: FilterChip(
+                  label: const Text('Create Room'),
+                  selected: false,
+                  onSelected: (bool selected) {
                     createRoom();
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 30,
-                      vertical: 15,
-                    ),
-                    textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  child: const Text('Submit'),
+                  selectedColor: Colors.deepPurple.withOpacity(0.3),
+                  backgroundColor: Colors.deepPurple.withOpacity(0.1),
                 ),
               ),
             ],

@@ -18,7 +18,7 @@ class MovieService {
       dotenv.env['API_KEY']!,
     );
     final user = supabase.auth.currentUser;
-    final username = await ProfileService().getUsernameById(user!.id);
+    final username = await ProfileService().getRoomCodeById(user!.id);
     final roomId = await ProfileService().getRoomIdByUsername(username);
     final room = await RoomService().getRoomByRoomId(roomId);
     movies.clear();
@@ -40,7 +40,7 @@ class MovieService {
 
   Future<void> saveMovie(int movieId) async {
     final user = supabase.auth.currentUser;
-    final username = await ProfileService().getUsernameById(user!.id);
+    final username = await ProfileService().getRoomCodeById(user!.id);
     final roomId = await ProfileService().getRoomIdByUsername(username);
     final room = await RoomService().getRoomByRoomId(roomId);
 
@@ -60,7 +60,7 @@ class MovieService {
   //Get Movie Choices
   Future<List<int>> _getMovieChoices() async {
     final user = supabase.auth.currentUser;
-    final username = await ProfileService().getUsernameById(user!.id);
+    final username = await ProfileService().getRoomCodeById(user!.id);
     final roomId = await ProfileService().getRoomIdByUsername(username);
     final room = await RoomService().getRoomByRoomId(roomId);
 
@@ -71,7 +71,7 @@ class MovieService {
 
   Future<List<int>> _getUsersMovieChoices() async {
     final user = supabase.auth.currentUser;
-    final username = await ProfileService().getUsernameById(user!.id);
+    final username = await ProfileService().getRoomCodeById(user!.id);
     final roomId = await ProfileService().getRoomIdByUsername(username);
     final room = await RoomService().getRoomByRoomId(roomId);
 
