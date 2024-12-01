@@ -1,6 +1,6 @@
 # Movie Date
 
-Movie Date is a Flutter application that works similar to tinder in that you set up some filters on what your are looking for and then you and your group start swiping away at the movies until there is a match found which you can then watch
+Movie Date is a Flutter application that works similar to tinder in that you set up some filters on what you're are looking for and then you and your group start swiping away at the movies until there is a match found which you can then watch
 
 ## Complete Features
 - Create a room and choose filters
