@@ -21,6 +21,7 @@ class MovieService {
     final username = await ProfileService().getRoomCodeById(user!.id);
     final roomId = await ProfileService().getRoomIdByUsername(username);
     final room = await RoomService().getRoomByRoomId(roomId);
+    room.filters.first.page = page;
     movies.clear();
     if (room.filters.first.withGenres == "") {
       room.filters.first.withGenres = null;
