@@ -23,9 +23,16 @@ platform :ios do
       scheme: "Runner",
     )
   end
-
+  desc "Increment the build number"
+  lane :increment_version do
+    latest_release = firebase_app_distribution_get_latest_release(
+      app: "1:969395528079:ios:120b02032f7882f7066bfa"
+    )
+    increment_build_number({ build_number: latest_release[:buildVersion].to_i + 1 })
+  end
   desc "Build and Distribute the iOS app"
   lane :distribute_ios do
+    increment_version
     build
     firebase_app_distribution(
       app: "1:969395528079:ios:120b02032f7882f7066bfa",
