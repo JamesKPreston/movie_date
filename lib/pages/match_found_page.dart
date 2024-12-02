@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jp_moviedb/types/movie.dart';
+import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/services/movie_service.dart';
 
 class MatchFoundPage extends StatefulWidget {
@@ -54,104 +55,144 @@ class _MatchFoundPageState extends State<MatchFoundPage> {
             ),
           ),
           SafeArea(
-            child: movies.isEmpty
-                ? const Center(child: CircularProgressIndicator())
-                : SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: movies.map((movie) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                // Stylized text indicating Match Found
-                                const Text(
-                                  'Match Found',
-                                  style: TextStyle(
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                const Text(
-                                  'Your Movie Tonight!',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: Colors.white70,
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
+            child: Column(
+              children: [
+                // Fixed Header Section
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Column(
+                    children: const [
+                      Text(
+                        'Match Found',
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Your Movie Tonight!',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
 
-                                // Fully visible movie poster, scaled to avoid black borders
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: Image.network(
-                                    movie.posterPath,
-                                    fit: BoxFit.contain, // Ensure full visibility of the poster
-                                    width: double.infinity, // Take up all available width
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-
-                                // Movie Info (title, year, etc.)
-                                Text(
-                                  '${movie.title}, ${movie.releaseDate.year}',
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-
-                                // Additional movie info (runtime, rating)
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                // Expandable Content Section
+                Expanded(
+                  child: movies.isEmpty
+                      ? const Center(child: CircularProgressIndicator())
+                      : SingleChildScrollView(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: movies.map((movie) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    const Icon(Icons.timer, color: Colors.white70),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      '${movie.runtime} min',
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white70,
+                                    // Resized Movie Poster
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: Image.network(
+                                        movie.posterPath,
+                                        fit: BoxFit.contain,
+                                        width: MediaQuery.of(context).size.width *
+                                            0.7, // Scaled to 70% of the screen width
                                       ),
                                     ),
-                                    const SizedBox(width: 20),
-                                    const Icon(Icons.star, color: Colors.white70),
-                                    const SizedBox(width: 8),
+                                    const SizedBox(height: 20),
+
+                                    // Movie Info (title, year, etc.)
                                     Text(
-                                      '${movie.voteAverage}/10',
+                                      '${movie.title}, ${movie.releaseDate.year}',
+                                      style: const TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+
+                                    // Additional movie info (runtime, rating)
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(Icons.timer, color: Colors.white70),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          '${movie.runtime} min',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 20),
+                                        const Icon(Icons.star, color: Colors.white70),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          '${movie.voteAverage}/10',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white70,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 20),
+
+                                    // Movie Description (overview)
+                                    Text(
+                                      movie.overview,
                                       style: const TextStyle(
                                         fontSize: 16,
-                                        color: Colors.white70,
+                                        height: 1.5,
+                                        color: Colors.white,
                                       ),
+                                      textAlign: TextAlign.center,
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 20),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                ),
 
-                                // Movie Description (overview)
-                                Text(
-                                  movie.overview,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    height: 1.5,
-                                    color: Colors.white,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
+                // Navigation Button (always visible)
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black,
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MainPage.route(),
+                        (route) => false,
+                      );
+                    },
+                    child: const Text(
+                      'Back to Start',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
