@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jp_moviedb/filters/movie.dart';
 import 'package:jp_moviedb/types/genre.dart';
+import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/services/actor_service.dart';
 import 'package:movie_date/services/genre_service.dart';
 import 'package:movie_date/services/profile_service.dart';
@@ -68,7 +69,8 @@ class _RoomPageState extends State<RoomPage> {
       ),
     );
 
-    var result = await ProfileService().updateProfileRoomId(newRoomId);
+    await ProfileService().updateProfileRoomId(newRoomId);
+    Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
   }
 
   Future<void> _selectDate(BuildContext context, bool isGte) async {
