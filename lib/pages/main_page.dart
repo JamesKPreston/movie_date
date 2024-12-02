@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:movie_date/pages/join_page.dart';
 import 'package:movie_date/pages/room_page.dart';
 import 'package:movie_date/pages/swipe_page.dart';
+import 'package:movie_date/services/profile_service.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -20,15 +20,58 @@ class _MainPageState extends State<MainPage> {
 
   final List<Widget> _pages = [
     const SwipePage(),
-    JoinPage(),
+    Container(), // Placeholder for the Join Room modal
     const RoomPage(),
   ];
 
   void _onDestinationSelected(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    _pageController.jumpToPage(index);
+    if (index == 1) {
+      // Show the Join Room modal when Join Room is selected
+      _showJoinRoomDialog();
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+      _pageController.jumpToPage(index);
+    }
+  }
+
+  void _showJoinRoomDialog() {
+    TextEditingController roomCodeController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Join Room'),
+          content: TextField(
+            controller: roomCodeController,
+            decoration: const InputDecoration(
+              labelText: 'Enter Room Code',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                // Handle room code submission logic here
+                final roomCode = roomCodeController.text;
+                var roomId = await ProfileService().getRoomIdByUsername(roomCode);
+                await ProfileService().updateProfileRoomId(roomId);
+                Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false); // Close the dialog
+              },
+              child: const Text('Submit'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
