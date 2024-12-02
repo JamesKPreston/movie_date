@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/services/profile_service.dart';
 
 class JoinPage extends StatelessWidget {
   JoinPage({super.key});
   final TextEditingController usernameController = TextEditingController();
 
-  Future<void> joinRoom(String username) async {
+  Future<void> joinRoom(String username, BuildContext context) async {
     // Simulate a network call or database query
     var roomId = await ProfileService().getRoomIdByUsername(username);
     await ProfileService().updateProfileRoomId(roomId);
+    // Navigate back to the main page
+    Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
   }
 
   @override
@@ -25,7 +28,7 @@ class JoinPage extends StatelessWidget {
             TextField(
               controller: usernameController,
               decoration: const InputDecoration(
-                labelText: 'Username',
+                labelText: 'Room Code',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -35,11 +38,11 @@ class JoinPage extends StatelessWidget {
                 // Get the value of the Username input and pass it to joinRoom
                 final username = usernameController.text.trim();
                 if (username.isNotEmpty) {
-                  await joinRoom(username);
+                  await joinRoom(username, context);
                 } else {
                   // Optionally show a message if the field is empty
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please enter a username')),
+                    const SnackBar(content: Text('Please enter a room code')),
                   );
                 }
               },
