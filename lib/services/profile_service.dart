@@ -3,9 +3,13 @@ import 'package:movie_date/utils/constants.dart';
 class ProfileService {
   Future<String> getRoomIdByUsername(String username) async {
     // Fetch profile from the server
-    var result = await supabase.from('profiles').select('room_id').eq('username', username).single();
-
-    return result['room_id'] as String;
+    var result = await supabase.from('profiles').select('room_id').eq('username', username);
+    if (result != null) {
+      return result[0]['room_id'] as String;
+    }
+    {
+      throw Exception('Room code did not match');
+    }
   }
 
   Future<String> getRoomCodeById(String id) async {

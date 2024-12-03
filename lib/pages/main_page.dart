@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:movie_date/pages/room_page.dart';
 import 'package:movie_date/pages/swipe_page.dart';
 import 'package:movie_date/services/profile_service.dart';
@@ -50,6 +51,9 @@ class _MainPageState extends State<MainPage> {
               labelText: 'Enter Room Code',
               border: OutlineInputBorder(),
             ),
+            inputFormatters: [
+              UpperCaseTextFormatter(),
+            ],
           ),
           actions: [
             TextButton(
@@ -62,8 +66,19 @@ class _MainPageState extends State<MainPage> {
               onPressed: () async {
                 // Handle room code submission logic here
                 final roomCode = roomCodeController.text;
-                var roomId = await ProfileService().getRoomIdByUsername(roomCode);
-                await ProfileService().updateProfileRoomId(roomId);
+                try {
+                  var roomId = await ProfileService().getRoomIdByUsername(roomCode);
+                  await ProfileService().updateProfileRoomId(roomId);
+                } catch (e) {
+                  // Show an error message if the room code is invalid
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Invalid room code'),
+                    ),
+                  );
+                  return;
+                }
+
                 Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false); // Close the dialog
               },
               child: const Text('Submit'),
@@ -103,6 +118,16 @@ class _MainPageState extends State<MainPage> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    return newValue.copyWith(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
     );
   }
 }

@@ -106,7 +106,18 @@ class _SwipePageState extends State<SwipePage> {
                   ),
                 Expanded(
                   child: movies.isEmpty
-                      ? const Center(child: CircularProgressIndicator())
+                      ? isLoading
+                          ? const Center(child: CircularProgressIndicator())
+                          : const Center(
+                              child: Text(
+                                'No movies found',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            )
                       : PageView.builder(
                           itemCount: movies.length,
                           itemBuilder: (context, index) {

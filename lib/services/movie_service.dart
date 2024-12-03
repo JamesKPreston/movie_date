@@ -19,24 +19,29 @@ class MovieService {
     );
     final user = supabase.auth.currentUser;
     final username = await ProfileService().getRoomCodeById(user!.id);
-    final roomId = await ProfileService().getRoomIdByUsername(username);
-    final room = await RoomService().getRoomByRoomId(roomId);
-    room.filters.first.page = page;
-    movies.clear();
-    if (room.filters.first.withGenres == "") {
-      room.filters.first.withGenres = null;
-    }
-    if (room.filters.first.withCast == "") {
-      room.filters.first.withCast = null;
-    }
+    try {
+      final roomId = await ProfileService().getRoomIdByUsername(username);
+      final room = await RoomService().getRoomByRoomId(roomId);
+      room.filters.first.page = page;
 
-    var result = await api.discover.getMovies(room.filters.first);
+      movies.clear();
+      if (room.filters.first.withGenres == "") {
+        room.filters.first.withGenres = null;
+      }
+      if (room.filters.first.withCast == "") {
+        room.filters.first.withCast = null;
+      }
 
-    result = await Future.wait(result.map((movie) async {
-      var detailedMovie = await api.discover.getMovieDetails(movie);
-      return detailedMovie;
-    }));
-    return result;
+      var result = await api.discover.getMovies(room.filters.first);
+
+      result = await Future.wait(result.map((movie) async {
+        var detailedMovie = await api.discover.getMovieDetails(movie);
+        return detailedMovie;
+      }));
+      return result;
+    } catch (e) {
+      return [];
+    }
   }
 
   Future<void> saveMovie(int movieId) async {
