@@ -29,7 +29,7 @@ Build the iOS app
 [bundle exec] fastlane ios increment_version
 ```
 
-Increment the build number
+Increment the version
 
 ### ios distribute_ios
 
