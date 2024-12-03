@@ -5,42 +5,12 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000329">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000337">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: Switch to ios increment_version lane" time="0.000702">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="2: increment_version_number" time="0.290759">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="3: Switch to ios build lane" time="0.000317">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="4: is_ci" time="0.002241">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="5: match" time="22.879402">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="6: build_ios_app" time="101.620451">
-        
-      </testcase>
-    
-      
-      <testcase classname="fastlane.lanes" name="7: firebase_app_distribution" time="46.813322">
+      <testcase classname="fastlane.lanes" name="1: increment_version_number" time="0.287884">
         
       </testcase>
     

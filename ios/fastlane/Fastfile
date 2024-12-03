@@ -33,7 +33,7 @@ platform :ios do
   desc "Increment the version"
   lane :increment_version do
     increment_version_number(
-      version_number: "1.0.1"
+      bump_type: "patch"
     )
   end 
   desc "Build and Distribute the iOS app"
