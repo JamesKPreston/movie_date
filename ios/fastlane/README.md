@@ -39,6 +39,14 @@ Increment the version
 
 Build and Distribute the iOS app
 
+### ios deploy_spindance
+
+```sh
+[bundle exec] fastlane ios deploy_spindance
+```
+
+Build and Distribute the iOS app Spindance
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
