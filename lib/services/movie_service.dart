@@ -82,6 +82,9 @@ class MovieService {
     final room = await RoomService().getRoomByRoomId(roomId);
 
     var result = await supabase.rpc('getusersmoviechoices', params: {'room_id': room.id});
+    if (result == null) {
+      return [];
+    }
     List<int> movieIds = List<int>.from(jsonDecode(result)).toList();
     return movieIds;
   }

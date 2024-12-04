@@ -4,6 +4,7 @@ import 'package:movie_date/pages/match_found_page.dart';
 import 'package:movie_date/services/movie_service.dart';
 import 'package:movie_date/services/profile_service.dart';
 import 'package:movie_date/utils/constants.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SwipePage extends StatefulWidget {
   const SwipePage({super.key});
@@ -21,12 +22,21 @@ class _SwipePageState extends State<SwipePage> {
   int page = 1;
   bool isLoading = false;
   String? roomCode;
+  RealtimeChannel? movieChoicesChannel;
 
   @override
   void initState() {
     super.initState();
     loadRoomCode();
     loadMovies(page);
+    listenToMovieChoices();
+  }
+
+  @override
+  void dispose() {
+    // Unsubscribe from the real-time channel
+    movieChoicesChannel?.unsubscribe();
+    super.dispose();
   }
 
   void loadRoomCode() async {
@@ -58,6 +68,30 @@ class _SwipePageState extends State<SwipePage> {
       page++;
       loadMovies(page);
     }
+  }
+
+  void isMovieSaved(movieId) async {
+    final isSaved = await MovieService().isMovieSaved(movieId);
+    if (isSaved) {
+      Navigator.of(context).pushAndRemoveUntil(MatchFoundPage.route(movieId), (route) => false);
+    }
+  }
+
+  void listenToMovieChoices() {
+    movieChoicesChannel = supabase.channel('public:moviechoices')
+      ..on(
+        RealtimeListenTypes.postgresChanges,
+        ChannelFilter(
+          event: '*', // Listen to INSERT events
+          schema: 'public',
+          table: 'moviechoices',
+        ),
+        (payload, [ref]) {
+          var movieId = (payload['new']['movie_id'] as double).toInt();
+          isMovieSaved(movieId);
+        },
+      )
+      ..subscribe();
   }
 
   @override
@@ -129,12 +163,6 @@ class _SwipePageState extends State<SwipePage> {
 
                                 if (direction == DismissDirection.startToEnd) {
                                   MovieService().saveMovie(movie.id);
-                                  MovieService().isMovieSaved(movie.id).then((isSaved) {
-                                    if (isSaved) {
-                                      Navigator.of(context)
-                                          .pushAndRemoveUntil(MatchFoundPage.route(movie.id), (route) => false);
-                                    }
-                                  });
                                 }
                               },
                               child: Padding(
