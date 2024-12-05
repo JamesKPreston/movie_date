@@ -16,7 +16,11 @@ jobs:
         with:
           flutter-version: '3.22.2'
       - name: Install dependencies
-        run: flutter pub get
+        working-directory: ./ios
+        run: | 
+            flutter pub get
+            pod install
+
       - name: Set up Fastlane
         run: |
           cd ios
