@@ -30,9 +30,14 @@ jobs:
         working-directory: ./android
         run: ls -la
        
+      - name: Install Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 8.2 # Use the desired Gradle version
+
       - name: Generate Gradle Wrapper
         working-directory: ./android
-        run: ./gradlew wrapper
+        run: gradle wrapper
 
       - name: Make gradlew executable
         working-directory: ./android
