@@ -27,6 +27,7 @@ jobs:
             echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
           
       - name: Debug file location
+        working-directory: ./android
         run: ls -la
        
       - name: Make gradlew executable
