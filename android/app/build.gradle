@@ -72,6 +72,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+      applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def appName = "Movie Date" // Set your desired name
+            def versionName = variant.versionName
+            def versionCode = variant.versionCode
+            def buildType = variant.buildType.name
+
+            outputFileName = "${appName}-${buildType}.apk"
+        }
+    }
 }
 
 flutter {
