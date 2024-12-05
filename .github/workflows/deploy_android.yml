@@ -30,8 +30,13 @@ jobs:
         working-directory: ./android
         run: ls -la
        
+      - name: Generate Gradle Wrapper
+        working-directory: ./android
+        run: ./gradlew wrapper
+
       - name: Make gradlew executable
-        run: chmod +x android/gradlew
+        working-directory: ./android
+        run: chmod +x gradlew
 
       - name: Set up Fastlane
         working-directory: ./android
