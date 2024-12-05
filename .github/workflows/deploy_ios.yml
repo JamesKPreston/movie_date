@@ -21,6 +21,15 @@ jobs:
             flutter pub get
             pod install
 
+      - name: Generate .env file
+        run: |
+            echo "API_KEY=${{ secrets.API_KEY }}" >> .env
+            echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
+            echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+          
+      - name: Debug file location
+        run: ls -la
+          
       - name: Set up Fastlane
         run: |
           cd ios
