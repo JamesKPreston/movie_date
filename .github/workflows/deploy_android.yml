@@ -30,12 +30,14 @@ jobs:
       #   run: ls -la
           
       - name: Set up Fastlane
+        working-directory: ./android
         run: |
-          cd android
           bundle install
+    
       - name: Build Android and distribute with Fastlane
+        working-directory: ./android
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          cd android
           fastlane deploy_debug
+    
