@@ -26,9 +26,12 @@ jobs:
             echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
             echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
           
-      # - name: Debug file location
-      #   run: ls -la
-          
+      - name: Debug file location
+        run: ls -la
+       
+      - name: Make gradlew executable
+        run: chmod +x android/gradlew
+
       - name: Set up Fastlane
         working-directory: ./android
         run: |
