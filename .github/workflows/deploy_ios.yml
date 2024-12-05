@@ -21,7 +21,6 @@ jobs:
             flutter pub get
             pod install
 
-
       - name: Set up Fastlane
         run: |
           cd ios
