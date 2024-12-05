@@ -18,7 +18,7 @@ setup_ci()
 platform :ios do
   desc "Build the iOS app"
   lane :build do
-    match(type: "adhoc", app_identifier: "com.dxsolo.movie" ,   readonly: is_ci, git_url: "git@github.com:JamesKPreston/movie_date_match.git")
+    match(type: "adhoc", app_identifier: "com.dxsolo.movie" ,   readonly: is_ci, git_url: ENV['MATCH_GIT_URL'])
     build_ios_app(
       scheme: "Runner",
     )
