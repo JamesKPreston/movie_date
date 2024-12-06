@@ -46,5 +46,62 @@ platform :android do
       apk_path: "../build/app/outputs/bundle/release/app-release.aab" # Path to the release APK
     )
   end
+
+  lane :test do
+    flutter_version_manager(
+      arguments: "-major",
+      yml: "/Users/james.preston/Documents/source/flutter/movie_date/version.yml",
+      pubspec: "/Users/james.preston/Documents/source/flutter/movie_date/pubspec.yaml")
+  end
+  
+  lane :bump_major do
+    flutter_version_manager(
+      arguments: "-major",
+      yml: "/Users/james.preston/Documents/source/flutter/movie_date/version.yml",
+      pubspec: "/Users/james.preston/Documents/source/flutter/movie_date/pubspec.yaml")
+  end
+  
+  lane :bump_minor do
+    flutter_version_manager(
+      arguments: "-minor",
+      yml: "/Users/james.preston/Documents/source/flutter/movie_date/version.yml",
+      pubspec: "/Users/james.preston/Documents/source/flutter/movie_date/pubspec.yaml")
+  end
+  
+  lane :bump_patch do
+    flutter_version_manager(
+      arguments: "-patch",
+      yml: "/Users/james.preston/Documents/source/flutter/movie_date/version.yml",
+      pubspec: "/Users/james.preston/Documents/source/flutter/movie_date/pubspec.yaml")
+  end
+  
+  lane :read_version do
+    flutter_version_manager(
+      arguments: "-version",
+      yml: "/Users/james.preston/Documents/source/flutter/movie_date/version.yml",
+      pubspec: "/Users/james.preston/Documents/source/flutter/movie_date/pubspec.yaml")
+  end
+  
+  lane :read_code do
+    flutter_version_manager(
+      arguments: "-code",
+      yml: "/Users/james.preston/Documents/source/flutter/movie_date/version.yml",
+      pubspec: "/Users/james.preston/Documents/source/flutter/movie_date/pubspec.yaml")
+  end
+  
+  lane :apply_new_version do
+    flutter_version_manager(
+      arguments: "-apply",
+      yml: "/Users/james.preston/Documents/source/flutter/movie_date/version.yml",
+      pubspec: "/Users/james.preston/Documents/source/flutter/movie_date/pubspec.yaml")
+  end
+  
+  lane :get_help do
+    flutter_version_manager(
+      arguments: "-h",
+      yml: "/Users/james.preston/Documents/source/flutter/movie_date/version.yml",
+      pubspec: "/Users/james.preston/Documents/source/flutter/movie_date/pubspec.yaml")
+  end
+
 end
 

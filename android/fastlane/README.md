@@ -31,6 +31,70 @@ Deploy to Firebase App Distribution
 
 Deploy Debug Build to Firebase App Distribution
 
+### android test
+
+```sh
+[bundle exec] fastlane android test
+```
+
+
+
+### android bump_major
+
+```sh
+[bundle exec] fastlane android bump_major
+```
+
+
+
+### android bump_minor
+
+```sh
+[bundle exec] fastlane android bump_minor
+```
+
+
+
+### android bump_patch
+
+```sh
+[bundle exec] fastlane android bump_patch
+```
+
+
+
+### android read_version
+
+```sh
+[bundle exec] fastlane android read_version
+```
+
+
+
+### android read_code
+
+```sh
+[bundle exec] fastlane android read_code
+```
+
+
+
+### android apply_new_version
+
+```sh
+[bundle exec] fastlane android apply_new_version
+```
+
+
+
+### android get_help
+
+```sh
+[bundle exec] fastlane android get_help
+```
+
+
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
