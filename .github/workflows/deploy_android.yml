@@ -23,6 +23,7 @@ jobs:
         run: flutter pub get
 
       - name: Build app bundle
+        working-directory: ./android
         run: flutter build appbundle --release
 
       - name: Deploy using Fastlane
