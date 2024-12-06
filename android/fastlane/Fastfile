@@ -34,16 +34,16 @@ platform :android do
 
   desc "Deploy Debug Build to Firebase App Distribution"
   lane :deploy_debug do
-    gradle(
-      task: "assemble",
-      build_type: "Debug"
-    )
+    # gradle(
+    #   task: "assemble",
+    #   build_type: "Debug"
+    # )
 
     firebase_app_distribution(
       app: "1:969395528079:android:b7219b6300d97039066bfa", # Replace with your Firebase App ID
       groups: "android", # Specify tester groups or emails
       release_notes: "New Android build deployed via Fastlane",
-      apk_path: "../build/app/outputs/flutter-apk/Movie Date-debug.apk" # Path to the release APK
+      apk_path: "../build/app/outputs/bundle/release/app-release.aab" # Path to the release APK
     )
   end
 end

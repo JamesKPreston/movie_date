@@ -7,42 +7,54 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Set up Dart SDK
-        uses: dart-lang/setup-dart@v1
-        with:
-          sdk: '3.4.3'
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.22.2'
-      - name: Install dependencies
-        working-directory: ./android
-        run: | 
-            flutter pub get
-
+      
       - name: Generate .env file
         run: |
             echo "API_KEY=${{ secrets.API_KEY }}" >> .env
             echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
             echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
-          
-      - name: Debug file location
-        working-directory: ./android
-        run: ls -la
-       
-     # Build the app
-      - name: Build APK
-        run: flutter build apk --debug
 
-      - name: Set up Fastlane
-        working-directory: ./android
-        run: |
-          bundle install
-    
-      - name: Build Android and distribute with Fastlane
-        working-directory: ./android
+      # - name: Set up Dart SDK
+      #   uses: dart-lang/setup-dart@v1
+      #   with:
+      #     sdk: '3.4.3'
+      # - name: Set up Flutter
+      #   uses: subosito/flutter-action@v2
+      #   with:
+      #     flutter-version: '3.22.2'
+      # - name: Install dependencies
+      #   working-directory: ./android
+      #   run: | 
+      #       flutter pub get
+            
+      - uses: subosito/flutter-action@v2
+      - run: flutter packages pub get
+      - run: flutter build appbundle --release
+      - name: Fastlane Action
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        run: |
-          fastlane deploy_debug
+        uses: maierj/fastlane-action@v2.3.0
+        with:
+          lane: deploy_debug
+          subdirectory: android
+    
+      # - name: Debug file location
+      #   working-directory: ./android
+      #   run: ls -la
+       
+     # Build the app
+      # - name: Build APK
+      #   run: flutter build apk --debug
+
+      # - name: Set up Fastlane
+      #   working-directory: ./android
+      #   run: |
+      #     bundle install
+    
+      # - name: Build Android and distribute with Fastlane
+      #   working-directory: ./android
+      #   env:
+      #     FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      #   run: |
+      #     fastlane deploy_debug
     
