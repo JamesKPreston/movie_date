@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movie_date/pages/login_page.dart';
 import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/pages/register_page.dart';
 import 'package:movie_date/utils/constants.dart';
@@ -24,7 +25,7 @@ class SplashPageState extends State<SplashPage> {
 
     final session = supabase.auth.currentSession;
     if (session == null) {
-      Navigator.of(context).pushAndRemoveUntil(RegisterPage.route(), (route) => false);
+      Navigator.of(context).pushAndRemoveUntil(LoginPage.route(), (route) => false);
     } else {
       Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
     }
