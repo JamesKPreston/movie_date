@@ -47,17 +47,17 @@ class _RoomPageState extends State<RoomPage> {
     roomCode = randomAlphaNumeric(6).toUpperCase();
     ProfileService().updateProfileRoomCode(roomCode);
     List<MovieFilters> filters = [];
-    List<String> selectedActorIds = [];
+    //List<String> selectedActorIds = [];
     MovieFilters filter = MovieFilters(
       page: 1,
     );
 
-    for (var actor in selectedActors) {
-      var result = await ActorService().getActors(actor.trim());
-      selectedActorIds.add(result.first.id.toString());
-    }
+    // for (var actor in selectedActors) {
+    //   var result = await ActorService().getActors(actor.trim());
+    //   selectedActorIds.add(result.first.id.toString());
+    // }
     filter.withGenres = selectedGenres.join('|');
-    filter.withCast = selectedActorIds.join('|');
+    filter.withCast = selectedActors.join('|');
     filter.language = 'en';
     filter.primaryReleaseDateGte = releaseDateGte;
     filter.primaryReleaseDateLte = releaseDateLte;
@@ -122,7 +122,16 @@ class _RoomPageState extends State<RoomPage> {
               return StatefulBuilder(
                 builder: (context, setState) {
                   return AlertDialog(
-                    title: Text('Select Actor'),
+                    title: Center(
+                      child: Text(
+                        'Select Actor',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.deepPurple,
+                        ),
+                      ),
+                    ),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -182,22 +191,27 @@ class _RoomPageState extends State<RoomPage> {
                       ],
                     ),
                     actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Icon(Icons.close, color: Colors.red),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          // if (actors.isNotEmpty) {
-                          //   setState(() {
-                          //    // Add an actor selectedActors.add(actors[currentIndex].name);
-                          //   });
-                          // }
-                          Navigator.of(context).pop();
-                        },
-                        child: Icon(Icons.check, color: Colors.green),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Icon(Icons.close, color: Colors.red, size: 30),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              if (actors.isNotEmpty) {
+                                setState(() {
+                                  selectedActors.add(actors[currentIndex].id.toString());
+                                });
+                              }
+                              Navigator.of(context).pop();
+                            },
+                            child: Icon(Icons.check, color: Colors.green, size: 30),
+                          ),
+                        ],
                       ),
                     ],
                   );
