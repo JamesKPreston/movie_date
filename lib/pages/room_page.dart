@@ -27,6 +27,7 @@ class _RoomPageState extends State<RoomPage> {
   DateTime? releaseDateGte;
   DateTime? releaseDateLte;
   String roomCode = '';
+  TextEditingController actorController = TextEditingController();
 
   @override
   void initState() {
@@ -91,6 +92,124 @@ class _RoomPageState extends State<RoomPage> {
     }
   }
 
+  void _showActorDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return FutureBuilder(
+          future: ActorService().getActors(actorController.text.trim()),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return AlertDialog(
+                title: Text('Error'),
+                content: Text('Failed to load actors'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Close'),
+                  ),
+                ],
+              );
+            } else {
+              var actors = snapshot.data;
+
+              int currentIndex = 0;
+
+              return StatefulBuilder(
+                builder: (context, setState) {
+                  return AlertDialog(
+                    title: Text('Select Actor'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (actors!.isNotEmpty)
+                          Column(
+                            children: [
+                              //Text(actors[currentIndex].name),
+                              Text(actors[currentIndex].name ?? 'Unknown'),
+                              SizedBox(height: 10),
+                              if (actors[currentIndex].profilePath != null &&
+                                  actors[currentIndex].profilePath != 'https://image.tmdb.org/t/p/originalnull')
+                                Center(
+                                  child: Image.network(
+                                    '${actors[currentIndex].profilePath}',
+                                    height: 150,
+                                    width: 100,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              else
+                                Center(
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 150,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.arrow_back),
+                                    onPressed: currentIndex > 0
+                                        ? () {
+                                            setState(() {
+                                              currentIndex--;
+                                            });
+                                          }
+                                        : null,
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.arrow_forward),
+                                    onPressed: currentIndex < actors.length - 1
+                                        ? () {
+                                            setState(() {
+                                              currentIndex++;
+                                            });
+                                          }
+                                        : null,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+                        else
+                          Text('No actors found'),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Icon(Icons.close, color: Colors.red),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // if (actors.isNotEmpty) {
+                          //   setState(() {
+                          //    // Add an actor selectedActors.add(actors[currentIndex].name);
+                          //   });
+                          // }
+                          Navigator.of(context).pop();
+                        },
+                        child: Icon(Icons.check, color: Colors.green),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,21 +270,28 @@ class _RoomPageState extends State<RoomPage> {
                 ),
               ),
               const SizedBox(height: 8),
-              TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: actorController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        labelText: 'Enter Actor Name',
+                        prefixIcon: const Icon(Icons.person, color: Colors.deepPurple),
+                        focusedBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.deepPurple),
+                        ),
+                      ),
+                    ),
                   ),
-                  labelText: 'Enter Actor Name',
-                  prefixIcon: const Icon(Icons.person, color: Colors.deepPurple),
-                  focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.deepPurple),
+                  IconButton(
+                    icon: Icon(Icons.search, color: Colors.deepPurple),
+                    onPressed: _showActorDialog,
                   ),
-                ),
-                onChanged: (value) {
-                  selectedActors.clear();
-                  selectedActors = value.split(",");
-                },
+                ],
               ),
               const SizedBox(height: 16),
               const Text(
