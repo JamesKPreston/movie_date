@@ -46,6 +46,18 @@ platform :ios do
       release_notes: "Realtime movie date matching",
     )
   end
+
+  desc "Build and Distribute the iOS app"
+  lane :self do
+    increment_version
+    build
+    firebase_app_distribution(
+      app: "1:969395528079:ios:120b02032f7882f7066bfa",
+      groups: "self",
+      release_notes: "Realtime movie date matching",
+    )
+  end
+
   desc "Build and Distribute the iOS app Spindance"
   lane :deploy_spindance do
     increment_version
