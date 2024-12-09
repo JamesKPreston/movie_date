@@ -31,6 +31,14 @@ Build the iOS app
 
 Increment the version
 
+### ios read_version
+
+```sh
+[bundle exec] fastlane ios read_version
+```
+
+Read version from pubspec.yaml
+
 ### ios distribute_ios
 
 ```sh

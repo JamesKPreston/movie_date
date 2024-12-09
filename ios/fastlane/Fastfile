@@ -32,18 +32,35 @@ platform :ios do
   # end
   desc "Increment the version"
   lane :increment_version do
+    pubspec_path = "/Users/james.preston/Documents/source/flutter/movie_date/pubspec.yaml"
+    pubspec = YAML.load_file(pubspec_path)
+    version = pubspec['version']
+    UI.message("Current version: #{version}")
     increment_version_number(
-      bump_type: "minor"
+      version_number: version
     )
   end 
+
+  desc "Read version from pubspec.yaml"
+  lane :read_version do
+    pubspec_path = "/Users/james.preston/Documents/source/flutter/movie_date/pubspec.yaml"
+    pubspec = YAML.load_file(pubspec_path)
+    
+    version = pubspec['version']
+    UI.message("Current version: #{version}")
+    
+  return version
+end
+
+
   desc "Build and Distribute the iOS app"
   lane :distribute_ios do
     increment_version
     build
     firebase_app_distribution(
       app: "1:969395528079:ios:120b02032f7882f7066bfa",
-      groups: "dev",
-      release_notes: "Realtime movie date matching",
+      groups: "self",
+      release_notes: "Trying new auto version",
     )
   end
   desc "Build and Distribute the iOS app Spindance"
