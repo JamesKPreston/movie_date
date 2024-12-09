@@ -67,7 +67,7 @@ class _MainPageState extends State<MainPage> {
                 // Handle room code submission logic here
                 final roomCode = roomCodeController.text;
                 try {
-                  var roomId = await ProfileService().getRoomIdByUsername(roomCode);
+                  var roomId = await ProfileService().getRoomIdByRoomCode(roomCode);
                   await ProfileService().updateProfileRoomId(roomId);
                 } catch (e) {
                   // Show an error message if the room code is invalid

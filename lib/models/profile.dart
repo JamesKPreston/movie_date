@@ -2,7 +2,7 @@ class Profile {
   Profile(
     this.roomId, {
     required this.id,
-    required this.username,
+    required this.room_code,
     required this.createdAt,
   });
 
@@ -10,7 +10,7 @@ class Profile {
   final String id;
 
   /// Username of the profile
-  final String username;
+  final String room_code;
 
   /// Date and time when the profile was created
   final DateTime createdAt;
@@ -20,7 +20,7 @@ class Profile {
 
   Profile.fromMap(Map<String, dynamic> map)
       : id = map['id'],
-        username = map['username'],
+        room_code = map['username'],
         createdAt = DateTime.parse(map['created_at']),
         roomId = map['room_id'];
 }

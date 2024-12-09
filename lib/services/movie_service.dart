@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:jp_moviedb/api.dart';
 import 'package:jp_moviedb/types/movie.dart';
-import 'package:movie_date/models/room.dart';
 import 'package:movie_date/services/profile_service.dart';
 import 'package:movie_date/services/room_service.dart';
 import 'package:movie_date/utils/constants.dart';
@@ -18,9 +17,9 @@ class MovieService {
       dotenv.env['API_KEY']!,
     );
     final user = supabase.auth.currentUser;
-    final username = await ProfileService().getRoomCodeById(user!.id);
+    final room_code = await ProfileService().getRoomCodeById(user!.id);
     try {
-      final roomId = await ProfileService().getRoomIdByUsername(username);
+      final roomId = await ProfileService().getRoomIdByRoomCode(room_code);
       final room = await RoomService().getRoomByRoomId(roomId);
       room.filters.first.page = page;
 
@@ -46,8 +45,8 @@ class MovieService {
 
   Future<void> saveMovie(int movieId) async {
     final user = supabase.auth.currentUser;
-    final username = await ProfileService().getRoomCodeById(user!.id);
-    final roomId = await ProfileService().getRoomIdByUsername(username);
+    final room_code = await ProfileService().getRoomCodeById(user!.id);
+    final roomId = await ProfileService().getRoomIdByRoomCode(room_code);
     final room = await RoomService().getRoomByRoomId(roomId);
 
     // Save movie to the database
@@ -66,8 +65,8 @@ class MovieService {
   //Get Movie Choices
   Future<List<int>> _getMovieChoices() async {
     final user = supabase.auth.currentUser;
-    final username = await ProfileService().getRoomCodeById(user!.id);
-    final roomId = await ProfileService().getRoomIdByUsername(username);
+    final room_code = await ProfileService().getRoomCodeById(user!.id);
+    final roomId = await ProfileService().getRoomIdByRoomCode(room_code);
     final room = await RoomService().getRoomByRoomId(roomId);
 
     var result = await supabase.rpc('getmoviechoices', params: {'room_id': room.id});
@@ -77,8 +76,8 @@ class MovieService {
 
   Future<List<int>> _getUsersMovieChoices() async {
     final user = supabase.auth.currentUser;
-    final username = await ProfileService().getRoomCodeById(user!.id);
-    final roomId = await ProfileService().getRoomIdByUsername(username);
+    final room_code = await ProfileService().getRoomCodeById(user!.id);
+    final roomId = await ProfileService().getRoomIdByRoomCode(room_code);
     final room = await RoomService().getRoomByRoomId(roomId);
 
     var result = await supabase.rpc('getusersmoviechoices', params: {'room_id': room.id});
