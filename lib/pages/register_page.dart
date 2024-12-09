@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:movie_date/pages/swipe_page.dart';
 import 'package:movie_date/pages/login_page.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -26,7 +25,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _usernameController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   Future<void> _signUp() async {
     final isValid = _formKey.currentState!.validate();
@@ -35,10 +34,9 @@ class _RegisterPageState extends State<RegisterPage> {
     }
     final email = _emailController.text;
     final password = _passwordController.text;
-    final username = _usernameController.text;
     try {
-      await supabase.auth.signUp(email: email, password: password, data: {'username': username});
-      Navigator.of(context).pushAndRemoveUntil(SwipePage.route(), (route) => false);
+      await supabase.auth.signUp(email: email, password: password);
+      Navigator.of(context).pushAndRemoveUntil(LoginPage.route(), (route) => false);
     } on AuthException catch (error) {
       context.showErrorSnackBar(message: error.message);
     } catch (error) {
@@ -49,74 +47,154 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
-      ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: formPadding,
-          children: [
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                label: Text('Email'),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/movieDate.png', // Replace this with your app icon path
+                height: 100,
               ),
-              validator: (val) {
-                if (val == null || val.isEmpty) {
-                  return 'Required';
-                }
-                return null;
-              },
-              keyboardType: TextInputType.emailAddress,
-            ),
-            formSpacer,
-            TextFormField(
-              controller: _passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                label: Text('Password'),
+              const SizedBox(height: 16),
+              RichText(
+                text: const TextSpan(
+                  text: 'Movie',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: 'Date',
+                      style: TextStyle(color: Colors.green),
+                    ),
+                  ],
+                ),
               ),
-              validator: (val) {
-                if (val == null || val.isEmpty) {
-                  return 'Required';
-                }
-                if (val.length < 6) {
-                  return '6 characters minimum';
-                }
-                return null;
-              },
-            ),
-            formSpacer,
-            TextFormField(
-              controller: _usernameController,
-              decoration: const InputDecoration(
-                label: Text('Username'),
+              const SizedBox(height: 32),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'USERNAME',
+                        labelStyle: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.red),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.red),
+                        ),
+                      ),
+                      validator: (val) {
+                        if (val == null || val.isEmpty) {
+                          return 'Required';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'PASSWORD',
+                        labelStyle: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.red),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.red),
+                        ),
+                      ),
+                      validator: (val) {
+                        if (val == null || val.isEmpty) {
+                          return 'Required';
+                        }
+                        if (val.length < 6) {
+                          return '6 characters minimum';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _confirmPasswordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'CONFIRM PASSWORD',
+                        labelStyle: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.red),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.red),
+                        ),
+                      ),
+                      validator: (val) {
+                        if (val == null || val.isEmpty) {
+                          return 'Required';
+                        }
+                        if (val != _passwordController.text) {
+                          return 'Passwords do not match';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        onPressed: _isLoading ? null : _signUp,
+                        child: const Text(
+                          'Register',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Navigate back to the previous screen
+                      },
+                      child: const Text(
+                        'Back to Login',
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              validator: (val) {
-                if (val == null || val.isEmpty) {
-                  return 'Required';
-                }
-                final isValid = RegExp(r'^[A-Za-z0-9_]{3,24}$').hasMatch(val);
-                if (!isValid) {
-                  return '3-24 long with alphanumeric or underscore';
-                }
-                return null;
-              },
-            ),
-            formSpacer,
-            ElevatedButton(
-              onPressed: _isLoading ? null : _signUp,
-              child: const Text('Register'),
-            ),
-            formSpacer,
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).push(LoginPage.route());
-              },
-              child: const Text('I already have an account'),
-            )
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movie_date/pages/main_page.dart';
+import 'package:movie_date/pages/register_page.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -32,12 +33,13 @@ class _LoginPageState extends State<LoginPage> {
     } on AuthException catch (error) {
       context.showErrorSnackBar(message: error.message);
     } catch (_) {
-      context.showErrorSnackBar(message: unexpectedErrorMessage);
-    }
-    if (mounted) {
-      setState(() {
-        _isLoading = true;
-      });
+      context.showErrorSnackBar(message: "Unexpected error occurred.");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -51,27 +53,138 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign In')),
-      body: ListView(
-        padding: formPadding,
-        children: [
-          TextFormField(
-            controller: _emailController,
-            decoration: const InputDecoration(labelText: 'Email'),
-            keyboardType: TextInputType.emailAddress,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Placeholder for the app icon
+              Image.asset(
+                'assets/movieDate.png', // Replace with your app icon path
+                height: 100,
+              ),
+              const SizedBox(height: 16),
+              // App title
+              RichText(
+                text: const TextSpan(
+                  text: 'Movie',
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: 'Date',
+                      style: TextStyle(color: Colors.green),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+              // Form for login
+              Form(
+                child: Column(
+                  children: [
+                    // Email input
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'USERNAME',
+                        labelStyle: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.red),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.red),
+                        ),
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 16),
+                    // Password input
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration: InputDecoration(
+                        labelText: 'PASSWORD',
+                        labelStyle: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.red),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.red),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Login button
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        onPressed: _isLoading ? null : _signIn,
+                        child: _isLoading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : const Text(
+                                'LOG IN',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Sign-up link
+                    TextButton(
+                      onPressed: () {
+                        // Navigate to register page
+                        Navigator.of(context).push(RegisterPage.route());
+                      },
+                      child: const Text(
+                        'No account yet? Sign up.',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    // // Social login buttons
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     IconButton(
+                    //       icon: const Icon(Icons.facebook, color: Colors.blue),
+                    //       onPressed: () {
+                    //         // Handle Facebook login
+                    //       },
+                    //     ),
+                    //     IconButton(
+                    //       icon: const Icon(Icons.apple, color: Colors.blue),
+                    //       onPressed: () {
+                    //         // Handle LinkedIn login
+                    //       },
+                    //     ),
+                    //   ],
+                    // ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          formSpacer,
-          TextFormField(
-            controller: _passwordController,
-            decoration: const InputDecoration(labelText: 'Password'),
-            obscureText: true,
-          ),
-          formSpacer,
-          ElevatedButton(
-            onPressed: _isLoading ? null : _signIn,
-            child: const Text('Login'),
-          ),
-        ],
+        ),
       ),
     );
   }
