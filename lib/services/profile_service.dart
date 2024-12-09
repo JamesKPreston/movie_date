@@ -1,9 +1,9 @@
 import 'package:movie_date/utils/constants.dart';
 
 class ProfileService {
-  Future<String> getRoomIdByUsername(String username) async {
+  Future<String> getRoomIdByRoomCode(String room_code) async {
     // Fetch profile from the server
-    var result = await supabase.from('profiles').select('room_id').eq('username', username);
+    var result = await supabase.from('profiles').select('room_id').eq('room_code', room_code);
     if (result != null) {
       return result[0]['room_id'] as String;
     }
@@ -25,9 +25,9 @@ class ProfileService {
 
   Future<String> getRoomCodeById(String id) async {
     // Fetch profile from the server
-    var result = await supabase.from('profiles').select('username').eq('id', id).single();
+    var result = await supabase.from('profiles').select('room_code').eq('id', id).single();
 
-    return result['username'] as String;
+    return result['room_code'] as String;
   }
 
   Future<void> updateProfileRoomId(String roomId) async {
@@ -37,9 +37,9 @@ class ProfileService {
   }
 
   //currently roomcode is called username in the database but this will change eventually
-  Future<void> updateProfileRoomCode(String roomCode) async {
+  Future<void> updateProfileRoomCode(String room_code) async {
     // Update room on the server
     final user = supabase.auth.currentUser;
-    await supabase.from('profiles').update({'username': roomCode}).eq('id', user!.id);
+    await supabase.from('profiles').update({'room_code': room_code}).eq('id', user!.id);
   }
 }
