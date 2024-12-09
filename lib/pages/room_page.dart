@@ -32,8 +32,6 @@ class _RoomPageState extends State<RoomPage> {
   void initState() {
     super.initState();
     fetchGenres();
-    roomCode = randomAlphaNumeric(6).toUpperCase();
-    ProfileService().updateProfileRoomCode(roomCode);
   }
 
   Future<void> fetchGenres() async {
@@ -45,6 +43,8 @@ class _RoomPageState extends State<RoomPage> {
   }
 
   Future<void> createRoom() async {
+    roomCode = randomAlphaNumeric(6).toUpperCase();
+    ProfileService().updateProfileRoomCode(roomCode);
     List<MovieFilters> filters = [];
     List<String> selectedActorIds = [];
     MovieFilters filter = MovieFilters(

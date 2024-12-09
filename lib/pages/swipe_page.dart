@@ -30,6 +30,7 @@ class _SwipePageState extends State<SwipePage> {
     loadRoomCode();
     loadMovies(page);
     listenToMovieChoices();
+    listenToFilterUpdates();
   }
 
   @override
@@ -89,6 +90,34 @@ class _SwipePageState extends State<SwipePage> {
         (payload, [ref]) {
           var movieId = (payload['new']['movie_id'] as double).toInt();
           isMovieSaved(movieId);
+        },
+      )
+      ..subscribe();
+  }
+
+  void listenToFilterUpdates() {
+    movieChoicesChannel = supabase.channel('public:profiles')
+      ..on(
+        RealtimeListenTypes.postgresChanges,
+        ChannelFilter(
+          event: '*', // Listen to INSERT events
+          schema: 'public',
+          table: 'profiles',
+        ),
+        (payload, [ref]) async {
+          var oldRoomId = payload['old']['room_id'] as String;
+          var newRoomId = payload['new']['room_id'] as String;
+          var userId = supabase.auth.currentUser!.id;
+          var currentRoomId = await ProfileService().getRoomIdById(userId);
+          var updateUserId = payload['new']['id'] as String;
+          if (userId != updateUserId && currentRoomId == oldRoomId) {
+            await ProfileService().updateProfileRoomId(newRoomId);
+            setState(() {
+              page = 1;
+              movies.clear();
+            });
+            loadMovies(page);
+          }
         },
       )
       ..subscribe();

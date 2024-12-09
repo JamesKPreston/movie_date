@@ -12,6 +12,17 @@ class ProfileService {
     }
   }
 
+  Future<String> getRoomIdById(String id) async {
+    // Fetch profile from the server
+    var result = await supabase.from('profiles').select('room_id').eq('id', id);
+    if (result != null) {
+      return result[0]['room_id'] as String;
+    }
+    {
+      throw Exception('Room code not found');
+    }
+  }
+
   Future<String> getRoomCodeById(String id) async {
     // Fetch profile from the server
     var result = await supabase.from('profiles').select('username').eq('id', id).single();
