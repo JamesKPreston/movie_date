@@ -6,6 +6,7 @@ import 'package:movie_date/services/movie_service.dart';
 import 'package:movie_date/services/profile_service.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:movie_date/widgets/movie_details.dart';
 
 class SwipePage extends StatefulWidget {
   const SwipePage({super.key});
@@ -124,6 +125,17 @@ class _SwipePageState extends State<SwipePage> {
       ..subscribe();
   }
 
+  void showMovieDetails(BuildContext context, Movie movie) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.black87,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => MovieDetailsWidget(movie: movie),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -219,11 +231,16 @@ class _SwipePageState extends State<SwipePage> {
                                         style: const TextStyle(fontSize: 16, color: Colors.white70),
                                       ),
                                       const SizedBox(height: 10),
-                                      Text(
-                                        movie.overview,
-                                        maxLines: 3,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(fontSize: 14, color: Colors.white),
+                                      GestureDetector(
+                                        onLongPress: () {
+                                          showMovieDetails(context, movie);
+                                        },
+                                        child: Text(
+                                          movie.overview,
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(fontSize: 14, color: Colors.white),
+                                        ),
                                       ),
                                     ],
                                   ),
