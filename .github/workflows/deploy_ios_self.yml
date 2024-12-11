@@ -1,4 +1,4 @@
-name: Build and Distribute iOS
+name: Build and Distribute iOS To Self
 on:
   workflow_dispatch:
 jobs:
