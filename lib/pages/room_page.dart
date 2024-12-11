@@ -2,13 +2,17 @@ import 'package:filter_list/filter_list.dart';
 import 'package:flutter/material.dart';
 import 'package:jp_moviedb/filters/movie.dart';
 import 'package:jp_moviedb/types/genre.dart';
+import 'package:jp_moviedb/types/person.dart';
 import 'package:movie_date/pages/main_page.dart';
+import 'package:movie_date/pages/test_page.dart';
 import 'package:movie_date/services/actor_service.dart';
 import 'package:movie_date/services/genre_service.dart';
 import 'package:movie_date/services/profile_service.dart';
 import 'package:movie_date/services/room_service.dart';
 import 'package:movie_date/models/room.dart';
+import 'package:movie_date/widgets/actor.dart';
 import 'package:random_string/random_string.dart';
+import 'package:movie_date/widgets/calendar.dart';
 
 class RoomPage extends StatefulWidget {
   const RoomPage({super.key});
@@ -23,7 +27,7 @@ class RoomPage extends StatefulWidget {
 class _RoomPageState extends State<RoomPage> {
   List<Genre> genres = [];
   List<Genre> selectedGenres = [];
-  List<String> selectedActors = [];
+  List<Person> selectedActors = [];
   DateTime? releaseDateGte;
   DateTime? releaseDateLte;
   String roomCode = '';
@@ -44,7 +48,7 @@ class _RoomPageState extends State<RoomPage> {
     });
   }
 
-  void openFilterDialog() async {
+  Future<void> _showFilterDialog() async {
     await FilterListDialog.display<Genre>(
       context,
       listData: genres,
@@ -64,153 +68,48 @@ class _RoomPageState extends State<RoomPage> {
     );
   }
 
-  void _showActorDialog() {
+  Future<void> _showActorDialog() async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return FutureBuilder(
-          future: ActorService().getActors(actorController.text.trim()),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return AlertDialog(
-                title: Text('Error'),
-                content: Text('Failed to load actors'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Close'),
-                  ),
-                ],
-              );
-            } else {
-              var actors = snapshot.data;
-
-              int currentIndex = 0;
-
-              return StatefulBuilder(
-                builder: (context, setState) {
-                  return AlertDialog(
-                    title: Center(
-                      child: Text(
-                        'Select Actor',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.deepPurple,
-                        ),
-                      ),
-                    ),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (actors!.isNotEmpty)
-                          Column(
-                            children: [
-                              Text(actors[currentIndex].name ?? 'Unknown'),
-                              SizedBox(height: 10),
-                              if (actors[currentIndex].profilePath != null &&
-                                  actors[currentIndex].profilePath != 'https://image.tmdb.org/t/p/originalnull')
-                                Center(
-                                  child: Image.network(
-                                    '${actors[currentIndex].profilePath}',
-                                    height: 150,
-                                    width: 100,
-                                    fit: BoxFit.cover,
-                                  ),
-                                )
-                              else
-                                Center(
-                                  child: Icon(
-                                    Icons.person,
-                                    size: 150,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  IconButton(
-                                    icon: Icon(Icons.arrow_back),
-                                    onPressed: currentIndex > 0
-                                        ? () {
-                                            setState(() {
-                                              currentIndex--;
-                                            });
-                                          }
-                                        : null,
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.arrow_forward),
-                                    onPressed: currentIndex < actors.length - 1
-                                        ? () {
-                                            setState(() {
-                                              currentIndex++;
-                                            });
-                                          }
-                                        : null,
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )
-                        else
-                          Text('No actors found'),
-                      ],
-                    ),
-                    actions: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: Icon(Icons.close, color: Colors.red, size: 30),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              if (actors.isNotEmpty) {
-                                setState(() {
-                                  selectedActors.add(actors[currentIndex].id.toString());
-                                });
-                              }
-                              Navigator.of(context).pop();
-                            },
-                            child: Icon(Icons.check, color: Colors.green, size: 30),
-                          ),
-                        ],
-                      ),
-                    ],
-                  );
-                },
-              );
-            }
+        return ActorWidget(
+          onSelectedActors: (selected) {
+            setState(() {
+              selectedActors = selected;
+              actorController.text = selectedActors.map((actor) => actor.name).join(', ');
+            });
           },
+          currentlySelectedActors: selectedActors,
         );
       },
     );
   }
 
-  Future<void> _selectDate(BuildContext context, bool isGte) async {
-    final DateTime? picked = await showDatePicker(
+  Future<void> _showCalendar(bool isGte) async {
+    await showDialog(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2100),
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: SizedBox(
+            height: 400, // Adjust the height as needed
+            child: CalendarWidget(
+              onConfirm: (DateTime selectedDate) {
+                setState(() {
+                  if (isGte) {
+                    releaseDateGte = selectedDate;
+                  } else {
+                    releaseDateLte = selectedDate;
+                  }
+                });
+              },
+            ),
+          ),
+        );
+      },
     );
-    if (picked != null) {
-      setState(() {
-        if (isGte) {
-          releaseDateGte = picked;
-        } else {
-          releaseDateLte = picked;
-        }
-      });
-    }
   }
 
   Future<void> createRoom() async {
@@ -221,7 +120,7 @@ class _RoomPageState extends State<RoomPage> {
       page: 1,
     );
     filter.withGenres = selectedGenres.map((genre) => genre.id).join('|');
-    filter.withCast = selectedActors.join('|');
+    filter.withCast = selectedActors.map((actor) => actor.id).join('|');
     filter.language = 'en';
     filter.primaryReleaseDateGte = releaseDateGte;
     filter.primaryReleaseDateLte = releaseDateLte;
@@ -238,7 +137,6 @@ class _RoomPageState extends State<RoomPage> {
     Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
   }
 
-// Define a common InputDecoration style
   final InputDecoration commonInputDecoration = InputDecoration(
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10.0),
@@ -254,7 +152,7 @@ class _RoomPageState extends State<RoomPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Movie Genres',
+          'Filters',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -286,17 +184,18 @@ class _RoomPageState extends State<RoomPage> {
                       decoration: commonInputDecoration.copyWith(
                         prefixIcon: const Icon(Icons.category, color: Colors.deepPurple),
                       ),
+                      onTap: _showFilterDialog,
                     ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.add, color: Colors.deepPurple),
-                    onPressed: openFilterDialog,
+                    onPressed: _showFilterDialog,
                   ),
                 ],
               ),
               const SizedBox(height: 16),
               const Text(
-                'Actor Name:',
+                'Actors:',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -309,8 +208,10 @@ class _RoomPageState extends State<RoomPage> {
                   Expanded(
                     child: TextField(
                       controller: actorController,
+                      readOnly: true,
+                      onTap: _showActorDialog,
                       decoration: commonInputDecoration.copyWith(
-                        prefixIcon: const Icon(Icons.category, color: Colors.deepPurple),
+                        prefixIcon: const Icon(Icons.person, color: Colors.deepPurple),
                       ),
                     ),
                   ),
@@ -330,46 +231,69 @@ class _RoomPageState extends State<RoomPage> {
                 ),
               ),
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  FilterChip(
-                    label: Text(releaseDateGte != null ? releaseDateGte.toString().split(' ')[0] : 'Select Start Date'),
-                    selected: releaseDateGte != null,
-                    onSelected: (bool selected) {
-                      if (selected) {
-                        _selectDate(context, true);
-                      } else {
-                        setState(() {
-                          releaseDateGte = null;
-                        });
-                      }
-                    },
-                    selectedColor: Colors.deepPurple.withOpacity(0.3),
-                    backgroundColor: Colors.deepPurple.withOpacity(0.1),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Start:',
+                          style: TextStyle(fontSize: 14, color: Colors.deepPurple),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            releaseDateGte != null ? releaseDateGte!.toString().split(' ')[0] : '',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.deepPurple,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
+                          onPressed: () {
+                            _showCalendar(true);
+                            //_selectDate(context, true);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                  FilterChip(
-                    label: Text(releaseDateLte != null ? releaseDateLte.toString().split(' ')[0] : 'Select End Date'),
-                    selected: releaseDateLte != null,
-                    onSelected: (bool selected) {
-                      if (selected) {
-                        _selectDate(context, false);
-                      } else {
-                        setState(() {
-                          releaseDateLte = null;
-                        });
-                      }
-                    },
-                    selectedColor: Colors.deepPurple.withOpacity(0.3),
-                    backgroundColor: Colors.deepPurple.withOpacity(0.1),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        const Text(
+                          'End:',
+                          style: TextStyle(fontSize: 14, color: Colors.deepPurple),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            releaseDateLte != null ? releaseDateLte!.toString().split(' ')[0] : '',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.deepPurple,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
+                          onPressed: () {
+                            _showCalendar(false);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 20),
               Center(
                 child: FilterChip(
-                  label: const Text('Create Room'),
+                  label: const Text('Save Filters'),
                   selected: false,
                   onSelected: (bool selected) {
                     createRoom();

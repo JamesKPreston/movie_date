@@ -40,6 +40,7 @@ dependencies:
   supabase_flutter: ^1.0.0
   random_string: ^2.3.0
   filter_list: ^1.0.3
+  scroll_date_picker: ^3.8.0
 
 dev_dependencies:
   flutter_test:

@@ -1,20 +1,21 @@
 {
-    "cSpell.words": [
-        "COCOAPODS",
-        "cupertino",
-        "dotenv",
-        "getmoviechoices",
-        "getusersmoviechoices",
-        "gotrue",
-        "moviechoices",
-        "moviedb",
-        "PODFILE",
-        "postgrest",
-        "rxdart",
-        "Schyler",
-        "Supabase",
-        "Tmdb",
-        "upsert",
-        "wkwebview"
-    ]
+  "cSpell.words": [
+    "COCOAPODS",
+    "cupertino",
+    "dotenv",
+    "getmoviechoices",
+    "getusersmoviechoices",
+    "gotrue",
+    "moviechoices",
+    "moviedb",
+    "PODFILE",
+    "postgrest",
+    "rxdart",
+    "Schyler",
+    "Supabase",
+    "Tmdb",
+    "upsert",
+    "wkwebview"
+  ],
+  "dart.flutterSdkPath": ".fvm/versions/3.24.3"
 }
