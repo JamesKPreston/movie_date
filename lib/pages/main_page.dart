@@ -112,9 +112,9 @@ class _MainPageState extends State<MainPage> {
             selectedIcon: Icon(Icons.door_front_door),
           ),
           NavigationDestination(
-            icon: Icon(Icons.domain_add_outlined),
-            label: 'Create Room',
-            selectedIcon: Icon(Icons.domain_add),
+            icon: Icon(Icons.filter_b_and_w_outlined),
+            label: 'Filters',
+            selectedIcon: Icon(Icons.filter_b_and_w),
           ),
         ],
       ),
