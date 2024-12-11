@@ -251,6 +251,9 @@ class _SwipePageState extends State<SwipePage> {
                           },
                           onSwipe: (previousIndex, _, direction) {
                             handleDismissed();
+                            if (direction == CardSwiperDirection.right) {
+                              MovieService().saveMovie(movies[previousIndex].id);
+                            }
                             return true;
                           },
                         ),
