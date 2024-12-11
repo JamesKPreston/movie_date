@@ -37,7 +37,6 @@ class _SwipePageState extends State<SwipePage> {
 
   @override
   void dispose() {
-    // Unsubscribe from the real-time channel
     movieChoicesChannel?.unsubscribe();
     super.dispose();
   }
@@ -61,7 +60,6 @@ class _SwipePageState extends State<SwipePage> {
   }
 
   void handleDismissed() async {
-    // Check if more movies need to be loaded
     if (swipeCount >= movies.length - 1 && !isLoading) {
       page++;
       setState(() {
@@ -86,7 +84,7 @@ class _SwipePageState extends State<SwipePage> {
       ..on(
         RealtimeListenTypes.postgresChanges,
         ChannelFilter(
-          event: '*', // Listen to INSERT events
+          event: '*',
           schema: 'public',
           table: 'moviechoices',
         ),
@@ -103,7 +101,7 @@ class _SwipePageState extends State<SwipePage> {
       ..on(
         RealtimeListenTypes.postgresChanges,
         ChannelFilter(
-          event: '*', // Listen to INSERT events
+          event: '*',
           schema: 'public',
           table: 'profiles',
         ),
@@ -132,13 +130,12 @@ class _SwipePageState extends State<SwipePage> {
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          // Vibrant background gradient
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFFFF5F6D), Color(0xFFFFC371)], // Vibrant Tinder-like gradient
+                colors: [Color(0xFFFF5F6D), Color(0xFFFFC371)],
               ),
             ),
           ),
@@ -147,149 +144,125 @@ class _SwipePageState extends State<SwipePage> {
               children: [
                 if (roomCode != null)
                   Padding(
-                    padding: const EdgeInsets.all(1),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'Room Code: ',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Text(
-                          roomCode!,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      'Room Code: $roomCode',
+                      style: const TextStyle(fontSize: 18, color: Colors.white),
                     ),
                   ),
-                if (movies.isEmpty)
-                  Expanded(
-                    child: isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : const Center(
-                            child: Text(
-                              'No movies found',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                  )
-                else
-                  Expanded(
-                    child: CardSwiper(
-                      allowedSwipeDirection: AllowedSwipeDirection.only(right: true, left: true),
-                      numberOfCardsDisplayed: 1,
-                      cardsCount: movies.length,
-                      isLoop: false,
-                      cardBuilder: (context, index, percentThresholdX, percentThresholdY) {
-                        final movie = movies[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              // Movie Poster
-                              Expanded(
-                                flex: 4,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: Image.network(
-                                    movie.posterPath,
-                                    fit: BoxFit.contain, // Ensures the image is fully visible
-                                    width: double.infinity,
+                Expanded(
+                  child: movies.isEmpty
+                      ? Center(
+                          child: isLoading
+                              ? const CircularProgressIndicator()
+                              : const Text(
+                                  'No movies found',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 20),
+                        )
+                      : CardSwiper(
+                          cardsCount: movies.length,
+                          isLoop: true,
+                          numberOfCardsDisplayed: 3,
+                          allowedSwipeDirection: AllowedSwipeDirection.only(right: true, left: true),
+                          cardBuilder: (context, index, percentThresholdX, __) {
+                            final movie = movies[index];
+                            String? overlayText;
+                            Color? overlayColor;
 
-                              // Movie Title and Year
-                              Text(
-                                '${movie.title}, ${movie.releaseDate.year}',
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                            if (percentThresholdX < -0.2) {
+                              overlayText = "Don't Watch";
+                              overlayColor = Colors.red;
+                            } else if (percentThresholdX > 0.2) {
+                              overlayText = "Watch Movie";
+                              overlayColor = Colors.green;
+                            }
+
+                            return Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                Image.network(
+                                  movie.posterPath,
+                                  fit: BoxFit.cover,
                                 ),
-                              ),
-                              const SizedBox(height: 8),
-
-                              // Additional Movie Info (Runtime and Ratings)
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.timer, color: Colors.white70),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    '${movie.runtime} min',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white70,
+                                Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [Colors.black.withOpacity(0.7), Colors.transparent],
+                                      begin: Alignment.bottomCenter,
+                                      end: Alignment.topCenter,
                                     ),
-                                  ),
-                                  const SizedBox(width: 20),
-                                  const Icon(Icons.star, color: Colors.white70),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    '${movie.voteAverage}/10',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white70,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-
-                              // Movie Description (Overview)
-                              Expanded(
-                                flex: 2,
-                                child: SingleChildScrollView(
-                                  child: Text(
-                                    movie.overview,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      height: 1.5,
-                                      color: Colors.white,
-                                    ),
-                                    textAlign: TextAlign.center,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                      onSwipe: _onSwipe,
-                    ),
-                  ),
+                                Positioned(
+                                  bottom: 20,
+                                  left: 20,
+                                  right: 20,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${movie.title}, ${movie.releaseDate.year}',
+                                        style: const TextStyle(
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        '${movie.runtime} min  |  ${movie.voteAverage}/10',
+                                        style: const TextStyle(fontSize: 16, color: Colors.white70),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        movie.overview,
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(fontSize: 14, color: Colors.white),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                if (overlayText != null)
+                                  Center(
+                                    child: Text(
+                                      overlayText,
+                                      style: TextStyle(
+                                        fontSize: 48,
+                                        color: overlayColor,
+                                        fontWeight: FontWeight.bold,
+                                        shadows: [
+                                          Shadow(
+                                            blurRadius: 10.0,
+                                            color: Colors.black,
+                                            offset: Offset(2.0, 2.0),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            );
+                          },
+                          onSwipe: (previousIndex, _, direction) {
+                            handleDismissed();
+                            if (direction == CardSwiperDirection.right) {
+                              MovieService().saveMovie(movies[previousIndex].id);
+                            }
+                            return true;
+                          },
+                        ),
+                ),
               ],
             ),
           ),
         ],
       ),
     );
-  }
-
-  bool _onSwipe(
-    int previousIndex,
-    int? currentIndex,
-    CardSwiperDirection direction,
-  ) {
-    handleDismissed();
-    if (direction == CardSwiperDirection.right) {
-      MovieService().saveMovie(movies[previousIndex!].id);
-    }
-    return true;
   }
 }
