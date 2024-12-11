@@ -1,3 +1,4 @@
+import 'package:filter_list/filter_list.dart';
 import 'package:flutter/material.dart';
 import 'package:jp_moviedb/filters/movie.dart';
 import 'package:jp_moviedb/types/genre.dart';
@@ -6,7 +7,6 @@ import 'package:movie_date/services/actor_service.dart';
 import 'package:movie_date/services/genre_service.dart';
 import 'package:movie_date/services/profile_service.dart';
 import 'package:movie_date/services/room_service.dart';
-
 import 'package:movie_date/models/room.dart';
 import 'package:random_string/random_string.dart';
 
@@ -22,12 +22,13 @@ class RoomPage extends StatefulWidget {
 
 class _RoomPageState extends State<RoomPage> {
   List<Genre> genres = [];
-  List<int> selectedGenres = [];
+  List<Genre> selectedGenres = [];
   List<String> selectedActors = [];
   DateTime? releaseDateGte;
   DateTime? releaseDateLte;
   String roomCode = '';
   TextEditingController actorController = TextEditingController();
+  TextEditingController genreController = TextEditingController();
 
   @override
   void initState() {
@@ -43,53 +44,24 @@ class _RoomPageState extends State<RoomPage> {
     });
   }
 
-  Future<void> createRoom() async {
-    roomCode = randomAlphaNumeric(6).toUpperCase();
-    ProfileService().updateProfileRoomCode(roomCode);
-    List<MovieFilters> filters = [];
-    //List<String> selectedActorIds = [];
-    MovieFilters filter = MovieFilters(
-      page: 1,
+  void openFilterDialog() async {
+    await FilterListDialog.display<Genre>(
+      context,
+      listData: genres,
+      selectedListData: selectedGenres,
+      choiceChipLabel: (genre) => genre!.name,
+      validateSelectedItem: (list, val) => list!.contains(val),
+      onItemSearch: (genre, query) {
+        return genre.name!.toLowerCase().contains(query.toLowerCase());
+      },
+      onApplyButtonClick: (list) {
+        setState(() {
+          selectedGenres = List.from(list!);
+          genreController.text = selectedGenres.map((genre) => genre.name).join(', ');
+        });
+        Navigator.pop(context);
+      },
     );
-
-    // for (var actor in selectedActors) {
-    //   var result = await ActorService().getActors(actor.trim());
-    //   selectedActorIds.add(result.first.id.toString());
-    // }
-    filter.withGenres = selectedGenres.join('|');
-    filter.withCast = selectedActors.join('|');
-    filter.language = 'en';
-    filter.primaryReleaseDateGte = releaseDateGte;
-    filter.primaryReleaseDateLte = releaseDateLte;
-    filters.add(filter);
-
-    var newRoomId = await RoomService().addRoom(
-      Room(
-        id: '1',
-        filters: filters,
-      ),
-    );
-
-    await ProfileService().updateProfileRoomId(newRoomId);
-    Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
-  }
-
-  Future<void> _selectDate(BuildContext context, bool isGte) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null) {
-      setState(() {
-        if (isGte) {
-          releaseDateGte = picked;
-        } else {
-          releaseDateLte = picked;
-        }
-      });
-    }
   }
 
   void _showActorDialog() {
@@ -138,7 +110,6 @@ class _RoomPageState extends State<RoomPage> {
                         if (actors!.isNotEmpty)
                           Column(
                             children: [
-                              //Text(actors[currentIndex].name),
                               Text(actors[currentIndex].name ?? 'Unknown'),
                               SizedBox(height: 10),
                               if (actors[currentIndex].profilePath != null &&
@@ -224,6 +195,60 @@ class _RoomPageState extends State<RoomPage> {
     );
   }
 
+  Future<void> _selectDate(BuildContext context, bool isGte) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        if (isGte) {
+          releaseDateGte = picked;
+        } else {
+          releaseDateLte = picked;
+        }
+      });
+    }
+  }
+
+  Future<void> createRoom() async {
+    roomCode = randomAlphaNumeric(6).toUpperCase();
+    ProfileService().updateProfileRoomCode(roomCode);
+    List<MovieFilters> filters = [];
+    MovieFilters filter = MovieFilters(
+      page: 1,
+    );
+    filter.withGenres = selectedGenres.map((genre) => genre.id).join('|');
+    filter.withCast = selectedActors.join('|');
+    filter.language = 'en';
+    filter.primaryReleaseDateGte = releaseDateGte;
+    filter.primaryReleaseDateLte = releaseDateLte;
+    filters.add(filter);
+
+    var newRoomId = await RoomService().addRoom(
+      Room(
+        id: '1',
+        filters: filters,
+      ),
+    );
+
+    await ProfileService().updateProfileRoomId(newRoomId);
+    Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
+  }
+
+// Define a common InputDecoration style
+  final InputDecoration commonInputDecoration = InputDecoration(
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10.0),
+    ),
+    prefixIcon: const Icon(Icons.category, color: Colors.deepPurple),
+    focusedBorder: const OutlineInputBorder(
+      borderSide: BorderSide(color: Colors.deepPurple),
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -243,36 +268,31 @@ class _RoomPageState extends State<RoomPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 8),
               const Text(
-                'Select Genres:',
+                'Genres:',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Colors.deepPurple,
                 ),
               ),
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: genres.map((genre) {
-                  return FilterChip(
-                    label: Text(genre.name),
-                    selected: selectedGenres.contains(genre.id),
-                    onSelected: (bool selected) {
-                      setState(() {
-                        if (selected) {
-                          selectedGenres.add(genre.id);
-                        } else {
-                          selectedGenres.remove(genre.id);
-                        }
-                      });
-                    },
-                    selectedColor: Colors.deepPurple.withOpacity(0.3),
-                    backgroundColor: Colors.deepPurple.withOpacity(0.1),
-                  );
-                }).toList(),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: genreController,
+                      readOnly: true,
+                      decoration: commonInputDecoration.copyWith(
+                        prefixIcon: const Icon(Icons.category, color: Colors.deepPurple),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add, color: Colors.deepPurple),
+                    onPressed: openFilterDialog,
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               const Text(
@@ -289,15 +309,8 @@ class _RoomPageState extends State<RoomPage> {
                   Expanded(
                     child: TextField(
                       controller: actorController,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        labelText: 'Enter Actor Name',
-                        prefixIcon: const Icon(Icons.person, color: Colors.deepPurple),
-                        focusedBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.deepPurple),
-                        ),
+                      decoration: commonInputDecoration.copyWith(
+                        prefixIcon: const Icon(Icons.category, color: Colors.deepPurple),
                       ),
                     ),
                   ),
