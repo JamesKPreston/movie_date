@@ -39,6 +39,14 @@ Increment the version
 
 Build and Distribute the iOS app
 
+### ios self
+
+```sh
+[bundle exec] fastlane ios self
+```
+
+Build and Distribute the iOS app
+
 ### ios deploy_spindance
 
 ```sh

@@ -92,9 +92,19 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        children: _pages,
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          // Prevent user-initiated horizontal scrolling in the PageView
+          if (notification is OverscrollNotification || notification is ScrollUpdateNotification) {
+            return true;
+          }
+          return false;
+        },
+        child: PageView(
+          controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(), // Prevent swipe gestures for PageView
+          children: _pages,
+        ),
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
