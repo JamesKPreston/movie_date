@@ -191,7 +191,6 @@ class _SwipePageState extends State<SwipePage> {
                       allowedSwipeDirection: AllowedSwipeDirection.only(right: true, left: true),
                       numberOfCardsDisplayed: 1,
                       cardsCount: movies.length,
-                      onEnd: _onEnd,
                       isLoop: false,
                       cardBuilder: (context, index, percentThresholdX, percentThresholdY) {
                         final movie = movies[index];
@@ -291,22 +290,6 @@ class _SwipePageState extends State<SwipePage> {
     if (direction == CardSwiperDirection.right) {
       MovieService().saveMovie(movies[previousIndex!].id);
     }
-    // if (currentIndex != null) {
-    //   debugPrint(
-    //     'The Movie ${movies[previousIndex].title} was swiped to the ${direction.name}. Now the movie ${movies[currentIndex!].title} is on top',
-    //   );
-    // }
-
     return true;
-  }
-
-  _onEnd() {
-    return () {
-      setState(() {
-        page++;
-      });
-      movies.clear();
-      loadMovies(page);
-    };
   }
 }
