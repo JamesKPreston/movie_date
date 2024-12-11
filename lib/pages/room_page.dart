@@ -4,8 +4,6 @@ import 'package:jp_moviedb/filters/movie.dart';
 import 'package:jp_moviedb/types/genre.dart';
 import 'package:jp_moviedb/types/person.dart';
 import 'package:movie_date/pages/main_page.dart';
-import 'package:movie_date/pages/test_page.dart';
-import 'package:movie_date/services/actor_service.dart';
 import 'package:movie_date/services/genre_service.dart';
 import 'package:movie_date/services/profile_service.dart';
 import 'package:movie_date/services/room_service.dart';
