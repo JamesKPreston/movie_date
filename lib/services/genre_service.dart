@@ -7,7 +7,6 @@ class GenreService {
   List<Genre> genres = [];
   int count = 0;
   Future<List<Genre>> getGenres() async {
-    // Fetch movies from the network
     await dotenv.load();
     api = TmdbApi(
       dotenv.env['API_KEY']!,

@@ -44,20 +44,18 @@ class _MatchFoundPageState extends State<MatchFoundPage> {
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          // Vibrant background gradient
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFFFF5F6D), Color(0xFFFFC371)], // Vibrant Tinder-like gradient
+                colors: [Color(0xFFFF5F6D), Color(0xFFFFC371)],
               ),
             ),
           ),
           SafeArea(
             child: Column(
               children: [
-                // Fixed Header Section
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Column(
@@ -81,8 +79,6 @@ class _MatchFoundPageState extends State<MatchFoundPage> {
                     ],
                   ),
                 ),
-
-                // Expandable Content Section
                 Expanded(
                   child: movies.isEmpty
                       ? const Center(child: CircularProgressIndicator())
@@ -96,19 +92,15 @@ class _MatchFoundPageState extends State<MatchFoundPage> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    // Resized Movie Poster
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(16),
                                       child: Image.network(
                                         movie.posterPath,
                                         fit: BoxFit.contain,
-                                        width: MediaQuery.of(context).size.width *
-                                            0.7, // Scaled to 70% of the screen width
+                                        width: MediaQuery.of(context).size.width * 0.7,
                                       ),
                                     ),
                                     const SizedBox(height: 20),
-
-                                    // Movie Info (title, year, etc.)
                                     Text(
                                       '${movie.title}, ${movie.releaseDate.year}',
                                       style: const TextStyle(
@@ -118,8 +110,6 @@ class _MatchFoundPageState extends State<MatchFoundPage> {
                                       ),
                                     ),
                                     const SizedBox(height: 8),
-
-                                    // Additional movie info (runtime, rating)
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
@@ -145,8 +135,6 @@ class _MatchFoundPageState extends State<MatchFoundPage> {
                                       ],
                                     ),
                                     const SizedBox(height: 20),
-
-                                    // Movie Description (overview)
                                     Text(
                                       movie.overview,
                                       style: const TextStyle(
@@ -163,8 +151,6 @@ class _MatchFoundPageState extends State<MatchFoundPage> {
                           ),
                         ),
                 ),
-
-                // Navigation Button (always visible)
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(

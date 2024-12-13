@@ -59,9 +59,8 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Placeholder for the app icon
               Image.asset(
-                'assets/movieDate.png', // Replace with your app icon path
+                'assets/movieDate.png',
                 height: 100,
               ),
               const SizedBox(height: 16),
@@ -91,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                     TextFormField(
                       controller: _emailController,
                       decoration: InputDecoration(
-                        labelText: 'USERNAME',
+                        labelText: 'EMAIL',
                         labelStyle: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.red,

@@ -27,7 +27,6 @@ class _MainPageState extends State<MainPage> {
 
   void _onDestinationSelected(int index) {
     if (index == 1) {
-      // Show the Join Room modal when Join Room is selected
       _showJoinRoomDialog();
     } else {
       setState(() {
@@ -58,19 +57,17 @@ class _MainPageState extends State<MainPage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
               child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () async {
-                // Handle room code submission logic here
                 final roomCode = roomCodeController.text;
                 try {
                   var roomId = await ProfileService().getRoomIdByRoomCode(roomCode);
                   await ProfileService().updateProfileRoomId(roomId);
                 } catch (e) {
-                  // Show an error message if the room code is invalid
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Invalid room code'),
@@ -79,7 +76,7 @@ class _MainPageState extends State<MainPage> {
                   return;
                 }
 
-                Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false); // Close the dialog
+                Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
               },
               child: const Text('Submit'),
             ),

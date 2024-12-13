@@ -124,7 +124,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
             borderRadius: BorderRadius.circular(10.0),
           ),
           child: SizedBox(
-            height: 400, // Adjust the height as needed
+            height: 400,
             child: CalendarWidget(
               onConfirm: (DateTime selectedDate) {
                 setState(() {
@@ -332,7 +332,6 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            // Clear all filters
                             setState(() {
                               selectedGenres = [];
                               selectedActors = [];
@@ -343,19 +342,21 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                             });
                           },
                           style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white, backgroundColor: Colors.deepPurple, // Text color
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.deepPurple,
                           ),
                           child: const Text('Clear Filters'),
                         ),
                       ),
-                      const SizedBox(width: 10), // Spacing between buttons
+                      const SizedBox(width: 10),
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
                             createRoom();
                           },
                           style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white, backgroundColor: Colors.deepPurple, // Text color
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.deepPurple,
                           ),
                           child: const Text('Save Filters'),
                         ),

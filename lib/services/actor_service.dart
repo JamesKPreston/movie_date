@@ -7,7 +7,6 @@ class ActorService {
   int count = 0;
 
   Future<List<Person>> getActors(String names) async {
-    // Fetch actor from the network
     await dotenv.load();
     api = TmdbApi(
       dotenv.env['API_KEY']!,

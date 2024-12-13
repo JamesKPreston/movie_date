@@ -11,7 +11,6 @@ class MovieService {
   List<Movie> movies = [];
   int count = 0;
   Future<List<Movie>> getMovies(int page) async {
-    // Fetch movies from the network
     await dotenv.load();
     api = TmdbApi(
       dotenv.env['API_KEY']!,
@@ -49,7 +48,6 @@ class MovieService {
     final roomId = await ProfileService().getRoomIdByRoomCode(room_code);
     final room = await RoomService().getRoomByRoomId(roomId);
 
-    // Save movie to the database
     await supabase
         .from('moviechoices')
         .upsert({
@@ -62,7 +60,6 @@ class MovieService {
         .eq('room_id', room.id);
   }
 
-  //Get Movie Choices
   Future<List<int>> _getMovieChoices() async {
     final user = supabase.auth.currentUser;
     final room_code = await ProfileService().getRoomCodeById(user!.id);
@@ -89,7 +86,6 @@ class MovieService {
   }
 
   Future<Movie> getMovie(int movieId) async {
-    // Fetch movie from the network
     await dotenv.load();
     api = TmdbApi(
       dotenv.env['API_KEY']!,
@@ -99,7 +95,6 @@ class MovieService {
   }
 
   Future<bool> isMovieSaved(int movieId) async {
-    // Check if movie is saved in the database
     List<int> otherUsersChoices = await MovieService()._getMovieChoices();
     List<int> myChoices = await MovieService()._getUsersMovieChoices();
 

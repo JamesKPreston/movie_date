@@ -54,7 +54,7 @@ class _RegisterPageState extends State<RegisterPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                'assets/movieDate.png', // Replace this with your app icon path
+                'assets/movieDate.png',
                 height: 100,
               ),
               const SizedBox(height: 16),
@@ -82,7 +82,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     TextFormField(
                       controller: _emailController,
                       decoration: InputDecoration(
-                        labelText: 'USERNAME',
+                        labelText: 'EMAIL',
                         labelStyle: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.red,

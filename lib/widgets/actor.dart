@@ -21,7 +21,6 @@ class _ActorWidgetState extends State<ActorWidget> {
   @override
   void initState() {
     super.initState();
-    // Initialize selectedActors to the passed list or an empty list
     selectedActors = widget.currentlySelectedActors ?? [];
   }
 

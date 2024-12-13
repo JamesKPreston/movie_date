@@ -20,7 +20,6 @@ class SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _redirect() async {
-    // await for for the widget to mount
     await Future.delayed(Duration.zero);
 
     final session = supabase.auth.currentSession;
