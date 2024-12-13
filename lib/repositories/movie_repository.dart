@@ -7,9 +7,7 @@ import 'package:movie_date/utils/constants.dart';
 class MovieRepository {
   late TmdbApi api;
 
-  MovieRepository() {
-    api = TmdbApi(dotenv.env['API_KEY']!);
-  }
+  MovieRepository(String apiKey) : api = TmdbApi(apiKey);
 
   Future<List<Movie>> fetchMoviesWithFilters(dynamic filter) async {
     return await api.discover.getMovies(filter);

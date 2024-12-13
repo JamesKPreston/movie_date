@@ -56,11 +56,3 @@ class MovieService {
     return otherUsersChoices.contains(movieId) && myChoices.contains(movieId);
   }
 }
-
-class MovieService1 {
-  // final MovieRepository movieRepository;
-  final ProfileRepository profileRepository;
-  final RoomService roomService;
-
-  MovieService1(this.profileRepository, this.roomService);
-}

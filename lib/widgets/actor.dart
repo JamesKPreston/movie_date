@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/types/person.dart';
-import 'package:movie_date/services/actor_service.dart';
+import 'package:movie_date/providers/actor_provider.dart';
 
-class ActorWidget extends StatefulWidget {
+class ActorWidget extends ConsumerStatefulWidget {
   final Function(List<Person>) onSelectedActors;
   final List<Person>? currentlySelectedActors;
 
@@ -12,7 +13,7 @@ class ActorWidget extends StatefulWidget {
   _ActorWidgetState createState() => _ActorWidgetState();
 }
 
-class _ActorWidgetState extends State<ActorWidget> {
+class _ActorWidgetState extends ConsumerState<ActorWidget> {
   final TextEditingController _searchController = TextEditingController();
   List<Person> searchResults = [];
   late List<Person> selectedActors;
@@ -32,7 +33,8 @@ class _ActorWidgetState extends State<ActorWidget> {
     });
 
     try {
-      var actors = await ActorService().getActors(_searchController.text.trim());
+      final actorRepo = ref.read(actorRepositoryProvider);
+      var actors = await actorRepo.getActors(_searchController.text.trim());
       setState(() {
         searchResults = actors;
       });

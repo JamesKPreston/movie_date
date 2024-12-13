@@ -5,8 +5,6 @@ import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/pages/match_found_page.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
-import 'package:movie_date/services/movie_service.dart';
-import 'package:movie_date/services/profile_service.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:movie_date/widgets/movie_details.dart';
