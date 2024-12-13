@@ -1,7 +1,7 @@
-import 'package:movie_date/models/room.dart';
+import 'package:movie_date/models/room_model.dart';
 import 'package:movie_date/utils/constants.dart';
 
-class RoomService {
+class RoomRepository {
   Future<Room> getRoomByRoomId(String id) async {
     var result = await supabase.from('rooms').select().eq('id', id).single();
 

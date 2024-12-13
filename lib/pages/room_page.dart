@@ -9,11 +9,11 @@ import 'package:movie_date/providers/filters_provider.dart';
 import 'package:movie_date/providers/genre_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_id_provider.dart';
-import 'package:movie_date/services/room_service.dart';
-import 'package:movie_date/models/room.dart';
-import 'package:movie_date/widgets/actor.dart';
+import 'package:movie_date/providers/room_repository_provider.dart';
+import 'package:movie_date/models/room_model.dart';
+import 'package:movie_date/widgets/actor_widget.dart';
 import 'package:random_string/random_string.dart';
-import 'package:movie_date/widgets/calendar.dart';
+import 'package:movie_date/widgets/calendar_widget.dart';
 
 class RoomPage extends ConsumerStatefulWidget {
   const RoomPage({super.key});
@@ -159,7 +159,8 @@ class _RoomPageState extends ConsumerState<RoomPage> {
     filter.primaryReleaseDateLte = releaseDateLte;
     filters.add(filter);
 
-    var newRoomId = await RoomService().addRoom(
+    var roomRepo = await ref.read(roomRepositoryProvider);
+    var newRoomId = await roomRepo.addRoom(
       Room(
         id: '1',
         filters: filters,
