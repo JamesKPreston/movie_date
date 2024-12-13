@@ -3,6 +3,7 @@ import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/pages/match_found_page.dart';
+import 'package:movie_date/providers/genre_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/utils/constants.dart';
@@ -22,6 +23,7 @@ class SwipePage extends ConsumerStatefulWidget {
 
 class _SwipePageState extends ConsumerState<SwipePage> {
   List<Movie> movies = [];
+  String movieGenres = '';
   int page = 1;
   bool isLoading = false;
   String? roomCode;
@@ -55,9 +57,19 @@ class _SwipePageState extends ConsumerState<SwipePage> {
     });
     final movieService = await ref.read(movieServiceProvider);
     var result = await movieService.getMovies(page);
+
+    await setGenres(result.first.genreIds);
     setState(() {
       movies.addAll(result);
       isLoading = false;
+    });
+  }
+
+  Future<void> setGenres(List<int> genreIds) async {
+    var genreRepo = ref.read(genreRepositoryProvider);
+    final genres = await genreRepo.getGenreNames(genreIds);
+    setState(() {
+      movieGenres = genres;
     });
   }
 
@@ -136,7 +148,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      builder: (context) => MovieDetailsWidget(movie: movie),
+      builder: (context) => MovieDetailsWidget(movie: movie, genres: movieGenres),
     );
   }
 
@@ -231,6 +243,11 @@ class _SwipePageState extends ConsumerState<SwipePage> {
                                       ),
                                       const SizedBox(height: 10),
                                       Text(
+                                        '${movieGenres}',
+                                        style: const TextStyle(fontSize: 16, color: Colors.white70),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Text(
                                         '${movie.runtime} min  |  ${movie.voteAverage}/10',
                                         style: const TextStyle(fontSize: 16, color: Colors.white70),
                                       ),
@@ -270,8 +287,12 @@ class _SwipePageState extends ConsumerState<SwipePage> {
                               ],
                             );
                           },
-                          onSwipe: (previousIndex, _, direction) {
+                          onSwipe: (previousIndex, currentIndex, direction) {
                             handleDismissed();
+                            if (currentIndex != null) {
+                              setGenres(movies[currentIndex].genreIds);
+                            }
+
                             if (direction == CardSwiperDirection.right) {
                               final movieService = ref.read(movieServiceProvider);
                               movieService.saveMovie(movies[previousIndex].id);

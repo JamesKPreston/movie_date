@@ -3,8 +3,9 @@ import 'package:jp_moviedb/types/movie.dart';
 
 class MovieDetailsWidget extends StatelessWidget {
   final Movie movie;
+  final String genres;
 
-  const MovieDetailsWidget({Key? key, required this.movie}) : super(key: key);
+  const MovieDetailsWidget({Key? key, required this.movie, required this.genres}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +37,14 @@ class MovieDetailsWidget extends StatelessWidget {
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${genres}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white70,
                       ),
                     ),
                     const SizedBox(height: 8),
