@@ -3,6 +3,8 @@ import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/pages/match_found_page.dart';
+import 'package:movie_date/providers/movie_service_provider.dart';
+import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/services/movie_service.dart';
 import 'package:movie_date/services/profile_service.dart';
 import 'package:movie_date/utils/constants.dart';
@@ -44,7 +46,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
   }
 
   void loadRoomCode() async {
-    roomCode = await ProfileService().getRoomCodeById(supabase.auth.currentUser!.id);
+    roomCode = await ref.read(profileRepositoryProvider).getRoomCodeById(supabase.auth.currentUser!.id);
     setState(() {});
   }
 
@@ -53,8 +55,8 @@ class _SwipePageState extends ConsumerState<SwipePage> {
     setState(() {
       isLoading = true;
     });
-
-    var result = await MovieService().getMovies(page);
+    final movieService = await ref.read(movieServiceProvider);
+    var result = await movieService.getMovies(page);
     setState(() {
       movies.addAll(result);
       isLoading = false;
@@ -75,7 +77,8 @@ class _SwipePageState extends ConsumerState<SwipePage> {
   }
 
   void isMovieSaved(movieId) async {
-    final isSaved = await MovieService().isMovieSaved(movieId);
+    final movieService = ref.read(movieServiceProvider);
+    final isSaved = await movieService.isMovieSaved(movieId);
     if (isSaved) {
       Navigator.of(context).pushAndRemoveUntil(MatchFoundPage.route(movieId), (route) => false);
     }
@@ -99,6 +102,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
   }
 
   void listenToFilterUpdates() {
+    final profileRepo = ref.read(profileRepositoryProvider);
     movieChoicesChannel = supabase.channel('public:profiles')
       ..on(
         RealtimeListenTypes.postgresChanges,
@@ -111,10 +115,11 @@ class _SwipePageState extends ConsumerState<SwipePage> {
           var oldRoomId = payload['old']['room_id'] as String;
           var newRoomId = payload['new']['room_id'] as String;
           var userId = supabase.auth.currentUser!.id;
-          var currentRoomId = await ProfileService().getRoomIdById(userId);
+
+          var currentRoomId = await profileRepo.getRoomIdById(userId);
           var updateUserId = payload['new']['id'] as String;
           if (userId != updateUserId && currentRoomId == oldRoomId) {
-            await ProfileService().updateProfileRoomId(newRoomId);
+            await profileRepo.updateProfileRoomId(newRoomId);
             setState(() {
               page = 1;
               movies.clear();
@@ -270,7 +275,8 @@ class _SwipePageState extends ConsumerState<SwipePage> {
                           onSwipe: (previousIndex, _, direction) {
                             handleDismissed();
                             if (direction == CardSwiperDirection.right) {
-                              MovieService().saveMovie(movies[previousIndex].id);
+                              final movieService = ref.read(movieServiceProvider);
+                              movieService.saveMovie(movies[previousIndex].id);
                             }
                             return true;
                           },

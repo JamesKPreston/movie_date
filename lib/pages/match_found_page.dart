@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/pages/main_page.dart';
+import 'package:movie_date/providers/movie_repository_provider.dart';
+import 'package:movie_date/providers/movie_service_provider.dart';
 import 'package:movie_date/services/movie_service.dart';
 
-class MatchFoundPage extends StatefulWidget {
+class MatchFoundPage extends ConsumerStatefulWidget {
   final int movieId;
 
   const MatchFoundPage({super.key, required this.movieId});
@@ -13,10 +16,10 @@ class MatchFoundPage extends StatefulWidget {
   }
 
   @override
-  State<MatchFoundPage> createState() => _MatchFoundPageState();
+  ConsumerState<MatchFoundPage> createState() => _MatchFoundPageState();
 }
 
-class _MatchFoundPageState extends State<MatchFoundPage> {
+class _MatchFoundPageState extends ConsumerState<MatchFoundPage> {
   List<Movie> movies = [];
   bool isLoading = false;
 
@@ -25,7 +28,8 @@ class _MatchFoundPageState extends State<MatchFoundPage> {
     setState(() {
       isLoading = true;
     });
-    Movie match = await MovieService().getMovie(movieId);
+    final movieRepo = ref.read(movieRepositoryProvider);
+    Movie match = await movieRepo.getMovie(movieId);
     setState(() {
       movies.add(match);
       isLoading = false;
