@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:movie_date/pages/main_page.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:movie_date/notifier/login_notifier.dart';
 import 'package:movie_date/pages/register_page.dart';
-import 'package:movie_date/utils/constants.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-class LoginPage extends StatefulWidget {
+// Providers for state management
+final loginProvider = StateNotifierProvider<LoginNotifier, bool>((ref) => LoginNotifier());
+final emailControllerProvider = Provider((ref) => TextEditingController());
+final passwordControllerProvider = Provider((ref) => TextEditingController());
+
+class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
 
   static Route<void> route() {
@@ -12,46 +16,11 @@ class LoginPage extends StatefulWidget {
   }
 
   @override
-  _LoginPageState createState() => _LoginPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref.watch(loginProvider);
+    final emailController = ref.read(emailControllerProvider);
+    final passwordController = ref.read(passwordControllerProvider);
 
-class _LoginPageState extends State<LoginPage> {
-  bool _isLoading = false;
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  Future<void> _signIn() async {
-    setState(() {
-      _isLoading = true;
-    });
-    try {
-      await supabase.auth.signInWithPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
-      Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
-    } on AuthException catch (error) {
-      context.showErrorSnackBar(message: error.message);
-    } catch (_) {
-      context.showErrorSnackBar(message: "Unexpected error occurred.");
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -64,7 +33,6 @@ class _LoginPageState extends State<LoginPage> {
                 height: 100,
               ),
               const SizedBox(height: 16),
-              // App title
               RichText(
                 text: const TextSpan(
                   text: 'Movie',
@@ -82,13 +50,11 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 32),
-              // Form for login
               Form(
                 child: Column(
                   children: [
-                    // Email input
                     TextFormField(
-                      controller: _emailController,
+                      controller: emailController,
                       decoration: InputDecoration(
                         labelText: 'EMAIL',
                         labelStyle: const TextStyle(
@@ -107,9 +73,8 @@ class _LoginPageState extends State<LoginPage> {
                       keyboardType: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: 16),
-                    // Password input
                     TextFormField(
-                      controller: _passwordController,
+                      controller: passwordController,
                       obscureText: true,
                       decoration: InputDecoration(
                         labelText: 'PASSWORD',
@@ -128,7 +93,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    // Login button
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -136,8 +100,16 @@ class _LoginPageState extends State<LoginPage> {
                           backgroundColor: Colors.red,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                        onPressed: _isLoading ? null : _signIn,
-                        child: _isLoading
+                        onPressed: isLoading
+                            ? null
+                            : () {
+                                ref.read(loginProvider.notifier).signIn(
+                                      context,
+                                      emailController.text,
+                                      passwordController.text,
+                                    );
+                              },
+                        child: isLoading
                             ? const CircularProgressIndicator(
                                 color: Colors.white,
                               )
@@ -148,10 +120,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    // Sign-up link
                     TextButton(
                       onPressed: () {
-                        // Navigate to register page
                         Navigator.of(context).push(RegisterPage.route());
                       },
                       child: const Text(
@@ -159,25 +129,6 @@ class _LoginPageState extends State<LoginPage> {
                         style: TextStyle(color: Colors.red),
                       ),
                     ),
-                    const SizedBox(height: 32),
-                    // // Social login buttons
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.center,
-                    //   children: [
-                    //     IconButton(
-                    //       icon: const Icon(Icons.facebook, color: Colors.blue),
-                    //       onPressed: () {
-                    //         // Handle Facebook login
-                    //       },
-                    //     ),
-                    //     IconButton(
-                    //       icon: const Icon(Icons.apple, color: Colors.blue),
-                    //       onPressed: () {
-                    //         // Handle LinkedIn login
-                    //       },
-                    //     ),
-                    //   ],
-                    // ),
                   ],
                 ),
               ),
