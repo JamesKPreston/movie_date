@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/pages/match_found_page.dart';
 import 'package:movie_date/services/movie_service.dart';
@@ -8,7 +9,7 @@ import 'package:movie_date/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:movie_date/widgets/movie_details.dart';
 
-class SwipePage extends StatefulWidget {
+class SwipePage extends ConsumerStatefulWidget {
   const SwipePage({super.key});
 
   static Route route() {
@@ -16,10 +17,10 @@ class SwipePage extends StatefulWidget {
   }
 
   @override
-  State<SwipePage> createState() => _SwipePageState();
+  ConsumerState<SwipePage> createState() => _SwipePageState();
 }
 
-class _SwipePageState extends State<SwipePage> {
+class _SwipePageState extends ConsumerState<SwipePage> {
   List<Movie> movies = [];
   int page = 1;
   bool isLoading = false;
@@ -179,7 +180,7 @@ class _SwipePageState extends State<SwipePage> {
                       : CardSwiper(
                           cardsCount: movies.length,
                           isLoop: true,
-                          numberOfCardsDisplayed: 3,
+                          numberOfCardsDisplayed: movies.length < 3 ? movies.length : 3,
                           allowedSwipeDirection: AllowedSwipeDirection.only(right: true, left: true),
                           cardBuilder: (context, index, percentThresholdX, __) {
                             final movie = movies[index];

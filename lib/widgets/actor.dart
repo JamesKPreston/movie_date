@@ -80,21 +80,24 @@ class _ActorWidgetState extends State<ActorWidget> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Center(
-        child: Text(
-          'Search and Select Actors',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.deepPurple,
-          ),
-        ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
       ),
+      contentPadding: const EdgeInsets.all(16.0),
       content: SizedBox(
-        width: double.maxFinite,
+        width: MediaQuery.of(context).size.width * 0.9,
+        height: MediaQuery.of(context).size.height * 0.8,
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
+            const Text(
+              'Search and Select Actors',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.deepPurple,
+              ),
+            ),
+            const SizedBox(height: 16),
             TextField(
               controller: _searchController,
               decoration: InputDecoration(
@@ -108,69 +111,86 @@ class _ActorWidgetState extends State<ActorWidget> {
                 ),
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 16),
             if (isLoading)
               const Center(child: CircularProgressIndicator())
-            else if (searchResults.isNotEmpty)
-              SizedBox(
-                height: 200,
-                child: ListView.builder(
-                  itemCount: searchResults
-                      .where((actor) =>
-                          actor.profilePath != null && actor.profilePath != 'https://image.tmdb.org/t/p/originalnull')
-                      .length,
-                  itemBuilder: (context, index) {
-                    final actor = searchResults
-                        .where((actor) =>
-                            actor.profilePath != null && actor.profilePath != 'https://image.tmdb.org/t/p/originalnull')
-                        .toList()[index];
-                    return ListTile(
-                      leading: Image.network(
-                        actor.profilePath!,
-                        width: 50,
-                        height: 50,
-                        fit: BoxFit.cover,
-                      ),
-                      title: Text(actor.name ?? 'Unknown'),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.add, color: Colors.deepPurple),
-                        onPressed: () => _addActor(actor),
-                      ),
-                    );
-                  },
-                ),
-              )
             else
-              const Text('No actors found'),
-            const Divider(),
-            const Text(
-              'Selected Actors:',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              height: 100,
-              child: ListView.builder(
-                itemCount: selectedActors.length,
-                itemBuilder: (context, index) {
-                  final actor = selectedActors[index];
-                  return ListTile(
-                    leading: actor.profilePath != null && actor.profilePath != 'https://image.tmdb.org/t/p/originalnull'
-                        ? Image.network(
-                            actor.profilePath!,
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                          )
-                        : const Icon(Icons.person, size: 50, color: Colors.grey),
-                    title: Text(actor.name ?? 'Unknown'),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.remove_circle, color: Colors.red),
-                      onPressed: () => _removeActor(actor),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (searchResults.isNotEmpty) ...[
+                      const Text(
+                        'Search Results:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: searchResults
+                              .where((actor) =>
+                                  actor.profilePath != null &&
+                                  actor.profilePath != 'https://image.tmdb.org/t/p/originalnull')
+                              .length,
+                          itemBuilder: (context, index) {
+                            final actor = searchResults
+                                .where((actor) =>
+                                    actor.profilePath != null &&
+                                    actor.profilePath != 'https://image.tmdb.org/t/p/originalnull')
+                                .toList()[index];
+                            return ListTile(
+                              leading: actor.profilePath != null
+                                  ? Image.network(
+                                      actor.profilePath!,
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : const Icon(Icons.person, size: 50, color: Colors.grey),
+                              title: Text(actor.name ?? 'Unknown'),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.add, color: Colors.deepPurple),
+                                onPressed: () => _addActor(actor),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ] else
+                      const Text('No actors found'),
+                    const Divider(),
+                    const Text(
+                      'Selected Actors:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                  );
-                },
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: selectedActors.length,
+                        itemBuilder: (context, index) {
+                          final actor = selectedActors[index];
+                          return ListTile(
+                            leading: actor.profilePath != null &&
+                                    actor.profilePath != 'https://image.tmdb.org/t/p/originalnull'
+                                ? Image.network(
+                                    actor.profilePath!,
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                  )
+                                : const Icon(Icons.person, size: 50, color: Colors.grey),
+                            title: Text(actor.name ?? 'Unknown'),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.remove_circle, color: Colors.red),
+                              onPressed: () => _removeActor(actor),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
           ],
         ),
       ),
