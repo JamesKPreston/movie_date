@@ -9,4 +9,9 @@ class GenreRepository {
   Future<List<Genre>> getGenres() async {
     return await api.genres.getGenres();
   }
+
+  Future<String> getGenreNames(List<int> genreIds) async {
+    final genres = await getGenres();
+    return genres.where((genre) => genreIds.contains(genre.id)).map((genre) => genre.name).join(', ');
+  }
 }
