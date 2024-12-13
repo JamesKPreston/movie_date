@@ -25,7 +25,8 @@ jobs:
         working-directory: ./ios
         run: | 
             flutter pub get
-            pod install
+            pod repo update
+            pod install --repo-update
 
       - name: Generate .env file
         run: |
