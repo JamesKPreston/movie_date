@@ -6,9 +6,9 @@ import 'package:jp_moviedb/types/genre.dart';
 import 'package:jp_moviedb/types/person.dart';
 import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/providers/filters_provider.dart';
+import 'package:movie_date/providers/genre_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_id_provider.dart';
-import 'package:movie_date/services/genre_service.dart';
 import 'package:movie_date/services/room_service.dart';
 import 'package:movie_date/models/room.dart';
 import 'package:movie_date/widgets/actor.dart';
@@ -71,7 +71,8 @@ class _RoomPageState extends ConsumerState<RoomPage> {
   }
 
   Future<void> fetchGenres() async {
-    var result = await GenreService().getGenres();
+    final genreRepo = ref.read(genreRepositoryProvider);
+    var result = await genreRepo.getGenres();
 
     setState(() {
       genres = result;
