@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_date/pages/room_page.dart';
 import 'package:movie_date/pages/swipe_page.dart';
-import 'package:movie_date/services/profile_service.dart';
+import 'package:movie_date/providers/profile_repository_provider.dart';
 
-class MainPage extends StatefulWidget {
+class MainPage extends ConsumerStatefulWidget {
   const MainPage({super.key});
 
   static Route route() {
@@ -12,10 +13,10 @@ class MainPage extends StatefulWidget {
   }
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  ConsumerState<MainPage> createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends ConsumerState<MainPage> {
   int _selectedIndex = 0;
   final PageController _pageController = PageController();
 
@@ -38,7 +39,7 @@ class _MainPageState extends State<MainPage> {
 
   void _showJoinRoomDialog() {
     TextEditingController roomCodeController = TextEditingController();
-
+    final profileRepo = ref.read(profileRepositoryProvider);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -65,8 +66,8 @@ class _MainPageState extends State<MainPage> {
               onPressed: () async {
                 final roomCode = roomCodeController.text;
                 try {
-                  var roomId = await ProfileService().getRoomIdByRoomCode(roomCode);
-                  await ProfileService().updateProfileRoomId(roomId);
+                  var roomId = await profileRepo.getRoomIdByRoomCode(roomCode);
+                  await profileRepo.updateProfileRoomId(roomId);
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
