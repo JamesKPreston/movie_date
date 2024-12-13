@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_date/utils/constants.dart';
+import 'package:movie_date/widgets/youtube_widget.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:movie_date/pages/splash_page.dart';
 
@@ -17,6 +19,16 @@ Future main() async {
     child: MyApp(),
   ));
 }
+
+// void main() {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   SystemChrome.setSystemUIOverlayStyle(
+//     const SystemUiOverlayStyle(
+//       statusBarColor: Colors.blueAccent,
+//     ),
+//   );
+//   runApp(const YoutubePlayerDemoApp());
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
