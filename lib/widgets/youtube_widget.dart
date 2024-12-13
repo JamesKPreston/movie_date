@@ -32,7 +32,8 @@ class YoutubePlayerDemoApp extends StatelessWidget {
 
 /// Homepage
 class YoutubeWidget extends StatefulWidget {
-  const YoutubeWidget({super.key});
+  final String trailerId;
+  const YoutubeWidget({super.key, required this.trailerId});
 
   @override
   State<YoutubeWidget> createState() => _YoutubeWidgetState();
@@ -47,7 +48,7 @@ class _YoutubeWidgetState extends State<YoutubeWidget> {
   void initState() {
     super.initState();
     _controller = YoutubePlayerController(
-      initialVideoId: "NBTTipJX-h4",
+      initialVideoId: this.widget.trailerId,
       flags: const YoutubePlayerFlags(
         mute: false,
         autoPlay: true,

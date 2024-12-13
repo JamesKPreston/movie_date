@@ -9,6 +9,7 @@ import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:movie_date/widgets/movie_details_widget.dart';
+import 'package:movie_date/providers/youtube_repository_provider.dart';
 
 class SwipePage extends ConsumerStatefulWidget {
   const SwipePage({super.key});
@@ -141,14 +142,16 @@ class _SwipePageState extends ConsumerState<SwipePage> {
       ..subscribe();
   }
 
-  void showMovieDetails(BuildContext context, Movie movie) {
+  Future<void> showMovieDetails(BuildContext context, Movie movie) async {
+    var youtube = ref.read(youTubeRepositoryProvider);
+    String movieId = await youtube.searchMovieTrailers(movie.title);
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.black87,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
-      builder: (context) => MovieDetailsWidget(movie: movie, genres: movieGenres),
+      builder: (context) => MovieDetailsWidget(movie: movie, genres: movieGenres, trailerId: movieId),
     );
   }
 

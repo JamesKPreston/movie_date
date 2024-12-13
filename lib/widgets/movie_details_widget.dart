@@ -5,8 +5,10 @@ import 'package:movie_date/widgets/youtube_widget.dart';
 class MovieDetailsWidget extends StatelessWidget {
   final Movie movie;
   final String genres;
+  final String trailerId;
 
-  const MovieDetailsWidget({Key? key, required this.movie, required this.genres}) : super(key: key);
+  const MovieDetailsWidget({Key? key, required this.movie, required this.genres, required this.trailerId})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class MovieDetailsWidget extends StatelessWidget {
             // YoutubeWidget at the top
             Container(
               height: 200, // Set a finite height for the video widget
-              child: YoutubeWidget(),
+              child: YoutubeWidget(trailerId: this.trailerId),
             ),
             const SizedBox(height: 16),
             Row(
