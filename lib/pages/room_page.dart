@@ -1,9 +1,12 @@
 import 'package:filter_list/filter_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/filters/movie.dart';
 import 'package:jp_moviedb/types/genre.dart';
 import 'package:jp_moviedb/types/person.dart';
 import 'package:movie_date/pages/main_page.dart';
+import 'package:movie_date/providers/filters_provider.dart';
+import 'package:movie_date/providers/room_id_provider.dart';
 import 'package:movie_date/services/genre_service.dart';
 import 'package:movie_date/services/profile_service.dart';
 import 'package:movie_date/services/room_service.dart';
@@ -12,7 +15,7 @@ import 'package:movie_date/widgets/actor.dart';
 import 'package:random_string/random_string.dart';
 import 'package:movie_date/widgets/calendar.dart';
 
-class RoomPage extends StatefulWidget {
+class RoomPage extends ConsumerStatefulWidget {
   const RoomPage({super.key});
   static Route route() {
     return MaterialPageRoute<void>(builder: (_) => const RoomPage());
@@ -22,7 +25,7 @@ class RoomPage extends StatefulWidget {
   _RoomPageState createState() => _RoomPageState();
 }
 
-class _RoomPageState extends State<RoomPage> {
+class _RoomPageState extends ConsumerState<RoomPage> {
   List<Genre> genres = [];
   List<Genre> selectedGenres = [];
   List<Person> selectedActors = [];
@@ -35,7 +38,36 @@ class _RoomPageState extends State<RoomPage> {
   @override
   void initState() {
     super.initState();
-    fetchGenres();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    fetchGenres().then((_) => _loadFilters());
+  }
+
+  Future<void> _loadFilters() async {
+    if (genres.isEmpty) {
+      return;
+    }
+    final filters = await getCurrentFilters(ref);
+    setState(() {
+      if (filters.first.withGenres != null && filters.first.withGenres!.isNotEmpty) {
+        selectedGenres = filters.first.withGenres!.split('|').map((genreId) {
+          return genres.firstWhere((genre) => genre.id == int.parse(genreId));
+        }).toList();
+        genreController.text = selectedGenres.map((genre) => genre.name).join(', ');
+      } else {
+        selectedGenres = [];
+        genreController.clear();
+      }
+
+      selectedActors = filters.first.persons ?? [];
+      actorController.text = selectedActors.map((actor) => actor.name).join(', ') ?? '';
+
+      releaseDateGte = filters.first.primaryReleaseDateGte;
+      releaseDateLte = filters.first.primaryReleaseDateLte;
+    });
   }
 
   Future<void> fetchGenres() async {
@@ -119,6 +151,7 @@ class _RoomPageState extends State<RoomPage> {
     );
     filter.withGenres = selectedGenres.map((genre) => genre.id).join('|');
     filter.withCast = selectedActors.map((actor) => actor.id).join('|');
+    filter.persons = selectedActors;
     filter.language = 'en';
     filter.primaryReleaseDateGte = releaseDateGte;
     filter.primaryReleaseDateLte = releaseDateLte;
@@ -131,8 +164,13 @@ class _RoomPageState extends State<RoomPage> {
       ),
     );
 
-    await ProfileService().updateProfileRoomId(newRoomId);
+    await ref.read(roomIdProvider.notifier).updateRoomId(newRoomId);
     Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
+  }
+
+  Future<List<MovieFilters>> getCurrentFilters(WidgetRef ref) async {
+    final filters = await ref.read(filtersProvider.future);
+    return filters;
   }
 
   final InputDecoration commonInputDecoration = InputDecoration(
@@ -147,163 +185,189 @@ class _RoomPageState extends State<RoomPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Filters',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Colors.deepPurple,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Genres:',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: genreController,
-                      readOnly: true,
-                      decoration: commonInputDecoration.copyWith(
-                        prefixIcon: const Icon(Icons.category, color: Colors.deepPurple),
-                      ),
-                      onTap: _showFilterDialog,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.add, color: Colors.deepPurple),
-                    onPressed: _showFilterDialog,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Actors:',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: actorController,
-                      readOnly: true,
-                      onTap: _showActorDialog,
-                      decoration: commonInputDecoration.copyWith(
-                        prefixIcon: const Icon(Icons.person, color: Colors.deepPurple),
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.search, color: Colors.deepPurple),
-                    onPressed: _showActorDialog,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Release Date:',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.deepPurple,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        const Text(
-                          'Start:',
-                          style: TextStyle(fontSize: 14, color: Colors.deepPurple),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            releaseDateGte != null ? releaseDateGte!.toString().split(' ')[0] : '',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.deepPurple,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
-                          onPressed: () {
-                            _showCalendar(true);
-                            //_selectDate(context, true);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        const Text(
-                          'End:',
-                          style: TextStyle(fontSize: 14, color: Colors.deepPurple),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            releaseDateLte != null ? releaseDateLte!.toString().split(' ')[0] : '',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.deepPurple,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
-                          onPressed: () {
-                            _showCalendar(false);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Center(
-                child: FilterChip(
-                  label: const Text('Save Filters'),
-                  selected: false,
-                  onSelected: (bool selected) {
-                    createRoom();
-                  },
-                  selectedColor: Colors.deepPurple.withOpacity(0.3),
-                  backgroundColor: Colors.deepPurple.withOpacity(0.1),
-                ),
-              ),
-            ],
-          ),
+    final roomIdAsyncValue = ref.watch(roomIdProvider);
+
+    return roomIdAsyncValue.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(
+        child: Text(
+          'Error loading room ID: $error',
+          style: const TextStyle(color: Colors.red),
         ),
       ),
+      data: (roomId) {
+        // Load filters when room ID changes
+        ref.listen<AsyncValue<List<MovieFilters>>>(
+          filtersProvider,
+          (previous, next) {
+            if (next is AsyncData) {
+              _loadFilters();
+            }
+          },
+        );
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              'Filters',
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: Colors.deepPurple,
+          ),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Genres:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: genreController,
+                          readOnly: true,
+                          decoration: commonInputDecoration.copyWith(
+                            prefixIcon: const Icon(Icons.category, color: Colors.deepPurple),
+                          ),
+                          onTap: _showFilterDialog,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.add, color: Colors.deepPurple),
+                        onPressed: _showFilterDialog,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Actors:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: actorController,
+                          readOnly: true,
+                          onTap: _showActorDialog,
+                          decoration: commonInputDecoration.copyWith(
+                            prefixIcon: const Icon(Icons.person, color: Colors.deepPurple),
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.search, color: Colors.deepPurple),
+                        onPressed: _showActorDialog,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Release Date:',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            const Text(
+                              'Start:',
+                              style: TextStyle(fontSize: 14, color: Colors.deepPurple),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                releaseDateGte != null ? releaseDateGte!.toString().split(' ')[0] : '',
+                                style: const TextStyle(fontSize: 14, color: Colors.deepPurple),
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
+                              onPressed: () {
+                                _showCalendar(true);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            const Text(
+                              'End:',
+                              style: TextStyle(fontSize: 14, color: Colors.deepPurple),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                releaseDateLte != null ? releaseDateLte!.toString().split(' ')[0] : '',
+                                style: const TextStyle(fontSize: 14, color: Colors.deepPurple),
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
+                              onPressed: () {
+                                _showCalendar(false);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // Clear all filters
+                            setState(() {
+                              selectedGenres = [];
+                              selectedActors = [];
+                              releaseDateGte = null;
+                              releaseDateLte = null;
+                              genreController.clear();
+                              actorController.clear();
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white, backgroundColor: Colors.deepPurple, // Text color
+                          ),
+                          child: const Text('Clear Filters'),
+                        ),
+                      ),
+                      const SizedBox(width: 10), // Spacing between buttons
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            createRoom();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white, backgroundColor: Colors.deepPurple, // Text color
+                          ),
+                          child: const Text('Save Filters'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
