@@ -10,11 +10,11 @@ jobs:
       - name: Set up Dart SDK
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: '3.4.3'
+          sdk: '3.5.3'
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.2'
+          flutter-version: '3.24.3'
       - name: Install dependencies
         working-directory: ./ios
         run: | 
