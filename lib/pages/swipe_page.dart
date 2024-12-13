@@ -7,7 +7,7 @@ import 'package:movie_date/providers/movie_service_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:movie_date/widgets/movie_details.dart';
+import 'package:movie_date/widgets/movie_details_widget.dart';
 
 class SwipePage extends ConsumerStatefulWidget {
   const SwipePage({super.key});

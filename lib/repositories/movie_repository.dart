@@ -9,11 +9,11 @@ class MovieRepository {
 
   MovieRepository(String apiKey) : api = TmdbApi(apiKey);
 
-  Future<List<Movie>> fetchMoviesWithFilters(dynamic filter) async {
+  Future<List<Movie>> getMoviesWithFilters(dynamic filter) async {
     return await api.discover.getMovies(filter);
   }
 
-  Future<Movie> fetchMovieDetails(Movie movie) async {
+  Future<Movie> getMovieDetails(Movie movie) async {
     return await api.discover.getMovieDetails(movie);
   }
 
@@ -34,12 +34,12 @@ class MovieRepository {
     });
   }
 
-  Future<List<int>> fetchMovieChoices(String roomId) async {
+  Future<List<int>> getMovieChoices(String roomId) async {
     var result = await supabase.rpc('getmoviechoices', params: {'room_id': roomId});
     return List<int>.from(jsonDecode(result)).toList();
   }
 
-  Future<List<int>> fetchUsersMovieChoices(String roomId) async {
+  Future<List<int>> getUsersMovieChoices(String roomId) async {
     var result = await supabase.rpc('getusersmoviechoices', params: {'room_id': roomId});
     return result != null ? List<int>.from(jsonDecode(result)) : [];
   }
