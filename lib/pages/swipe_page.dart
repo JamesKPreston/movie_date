@@ -58,8 +58,10 @@ class _SwipePageState extends ConsumerState<SwipePage> {
     });
     final movieService = await ref.read(movieServiceProvider);
     var result = await movieService.getMovies(page);
+    if (result.length > 0) {
+      await setGenres(result.first.genreIds);
+    }
 
-    await setGenres(result.first.genreIds);
     setState(() {
       movies.addAll(result);
       isLoading = false;
@@ -144,7 +146,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
 
   Future<void> showMovieDetails(BuildContext context, Movie movie) async {
     var youtube = ref.read(youTubeRepositoryProvider);
-    String movieId = await youtube.searchMovieTrailers(movie.title);
+    String movieId = await youtube.searchMovieTrailers('${movie.title} ${movie.releaseDate.year}');
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.black87,
@@ -292,7 +294,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
                           },
                           onSwipe: (previousIndex, currentIndex, direction) {
                             handleDismissed();
-                            if (currentIndex != null) {
+                            if (currentIndex != null && movies.length > 0) {
                               setGenres(movies[currentIndex].genreIds);
                             }
 
