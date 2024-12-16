@@ -41,7 +41,7 @@ platform :android do
 
     firebase_app_distribution(
       app: "1:969395528079:android:b7219b6300d97039066bfa", # Replace with your Firebase App ID
-      groups: "android", # Specify tester groups or emails
+      groups: "self", # Specify tester groups or emails
       release_notes: "New Android build deployed via Fastlane",
       apk_path: "../build/app/outputs/apk/debug/Movie Date-debug.apk" # Path to the release APK
     )
