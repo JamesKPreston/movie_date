@@ -10,10 +10,14 @@ Movie Date is a Flutter application that works similar to tinder in that you set
 - When match occurs notify user and take them to the movie screen
 - User Can Join Room
 - Add Room Code to Create Room screen to facilitate joining
+- Trailers Play in app
   
 ## In Progress
+- Fixing Android version issues
+- Adding skip to swipe functions
+- Adding undo to swipe functions
+- Adding view of currently swiped on movies
 
-- Link to trailers on each movie screen
 
 
 
@@ -69,4 +73,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-For any questions or feedback, please contact us at support@moviedateapp.com.
+For any questions or feedback, please contact us at dxsolo@gmail.com.
