@@ -31,11 +31,9 @@ jobs:
           
       - name: Set up Fastlane
         run: |
-          cd android
           bundle install
       - name: Build Android and distribute with Fastlane
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
-          cd android
           fastlane deploy_debug
