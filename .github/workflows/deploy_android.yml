@@ -6,17 +6,14 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Set up Dart SDK
-        uses: dart-lang/setup-dart@v1
-        with:
-          sdk: '3.5.3'
+        uses: actions/checkout@v3
+    
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.3'
+
       - name: Install dependencies
-        working-directory: ./android
         run: | 
             flutter pub get
 
@@ -28,12 +25,15 @@ jobs:
           
       # - name: Debug file location
       #   run: ls -la
-          
-      - name: Set up Fastlane
-        run: |
-          bundle install
-      - name: Build Android and distribute with Fastlane
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        run: |
-          fastlane deploy_debug
+      # Build the Flutter Android debug APK
+      - name: Build Flutter Debug APK
+        run: flutter build apk --debug
+
+      # - name: Set up Fastlane
+      #   run: |
+      #     bundle install
+      # - name: Build Android and distribute with Fastlane
+      #   env:
+      #     FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      #   run: |
+      #     fastlane deploy_debug
