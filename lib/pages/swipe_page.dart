@@ -214,82 +214,79 @@ class _SwipePageState extends ConsumerState<SwipePage> {
                               overlayText = "Watch Movie";
                               overlayColor = Colors.green;
                             }
-
-                            return Stack(
-                              fit: StackFit.expand,
-                              children: [
-                                Image.network(
-                                  movie.posterPath,
-                                  fit: BoxFit.cover,
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [Colors.black.withOpacity(0.7), Colors.transparent],
-                                      begin: Alignment.bottomCenter,
-                                      end: Alignment.topCenter,
+                            return GestureDetector(
+                              onTap: () => showMovieDetails(context, movie),
+                              child: Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  Image.network(
+                                    movie.posterPath,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [Colors.black.withOpacity(0.7), Colors.transparent],
+                                        begin: Alignment.bottomCenter,
+                                        end: Alignment.topCenter,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                Positioned(
-                                  bottom: 20,
-                                  left: 20,
-                                  right: 20,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${movie.title}, ${movie.releaseDate.year}',
-                                        style: const TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
+                                  Positioned(
+                                    bottom: 20,
+                                    left: 20,
+                                    right: 20,
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${movie.title}, ${movie.releaseDate.year}',
+                                          style: const TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                        '${movieGenres}',
-                                        style: const TextStyle(fontSize: 16, color: Colors.white70),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                        '${movie.runtime} min  |  ${movie.voteAverage}/10',
-                                        style: const TextStyle(fontSize: 16, color: Colors.white70),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      GestureDetector(
-                                        onLongPress: () {
-                                          showMovieDetails(context, movie);
-                                        },
-                                        child: Text(
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          '${movieGenres}',
+                                          style: const TextStyle(fontSize: 16, color: Colors.white70),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          '${movie.runtime} min  |  ${movie.voteAverage}/10',
+                                          style: const TextStyle(fontSize: 16, color: Colors.white70),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Text(
                                           movie.overview,
                                           maxLines: 3,
                                           overflow: TextOverflow.ellipsis,
                                           style: const TextStyle(fontSize: 14, color: Colors.white),
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                if (overlayText != null)
-                                  Center(
-                                    child: Text(
-                                      overlayText,
-                                      style: TextStyle(
-                                        fontSize: 48,
-                                        color: overlayColor,
-                                        fontWeight: FontWeight.bold,
-                                        shadows: [
-                                          Shadow(
-                                            blurRadius: 10.0,
-                                            color: Colors.black,
-                                            offset: Offset(2.0, 2.0),
-                                          ),
-                                        ],
-                                      ),
+                                      ],
                                     ),
                                   ),
-                              ],
+                                  if (overlayText != null)
+                                    Center(
+                                      child: Text(
+                                        overlayText,
+                                        style: TextStyle(
+                                          fontSize: 48,
+                                          color: overlayColor,
+                                          fontWeight: FontWeight.bold,
+                                          shadows: [
+                                            Shadow(
+                                              blurRadius: 10.0,
+                                              color: Colors.black,
+                                              offset: Offset(2.0, 2.0),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
                             );
                           },
                           onSwipe: (previousIndex, currentIndex, direction) {
