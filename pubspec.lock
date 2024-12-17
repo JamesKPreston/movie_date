@@ -230,6 +230,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.0"
+  flutter_intro:
+    dependency: "direct main"
+    description:
+      name: flutter_intro
+      sha256: f8cee0d0d03d60f076c342073228a8a1f43df5e99eade30bcf895af6e045008c
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.4.0"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -320,6 +328,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.3.0"
+  intro:
+    dependency: "direct main"
+    description:
+      name: intro
+      sha256: e1b4f7e773136640b6503eef5b3ec8b45cfde1c9453b2c5c07fa872b69f589ff
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.4"
   jp_moviedb:
     dependency: "direct main"
     description:
@@ -545,7 +561,7 @@ packages:
     source: hosted
     version: "3.8.0"
   shared_preferences:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences
       sha256: "95f9997ca1fb9799d494d0cb2a780fd7be075818d59f00c43832ed112b158a82"
