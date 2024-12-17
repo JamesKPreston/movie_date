@@ -9,15 +9,9 @@ import 'package:movie_date/providers/genre_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:movie_date/widgets/movie_details_widget.dart';
-import 'package:movie_date/providers/youtube_repository_provider.dart';
 
 class SwipePageTutorial extends ConsumerStatefulWidget {
   const SwipePageTutorial({super.key});
-
-  static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => const SwipePageTutorial());
-  }
 
   @override
   ConsumerState<SwipePageTutorial> createState() => _SwipePageState();
@@ -60,7 +54,6 @@ class _SwipePageState extends ConsumerState<SwipePageTutorial> {
 
   @override
   void dispose() {
-    movieChoicesChannel?.unsubscribe();
     super.dispose();
   }
 
@@ -97,27 +90,6 @@ class _SwipePageState extends ConsumerState<SwipePageTutorial> {
     } else {
       swipeCount++;
     }
-  }
-
-  void isMovieSaved(movieId) async {
-    // final movieService = ref.read(movieServiceProvider);
-    // final isSaved = await movieService.isMovieSaved(movieId);
-    // if (isSaved) {
-    //   Navigator.of(context).pushAndRemoveUntil(MatchFoundPage.route(movieId), (route) => false);
-    // }
-  }
-
-  Future<void> showMovieDetails(BuildContext context, Movie movie) async {
-    var youtube = ref.read(youTubeRepositoryProvider);
-    String movieId = await youtube.searchMovieTrailers('${movie.title} ${movie.releaseDate.year}');
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.black87,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) => MovieDetailsWidget(movie: movie, genres: movieGenres, trailerId: movieId),
-    );
   }
 
   @override
@@ -327,16 +299,11 @@ class _SwipePageState extends ConsumerState<SwipePageTutorial> {
                                           style: const TextStyle(fontSize: 16, color: Colors.white70),
                                         ),
                                         const SizedBox(height: 10),
-                                        GestureDetector(
-                                          onLongPress: () {
-                                            showMovieDetails(context, movie);
-                                          },
-                                          child: Text(
-                                            movie.overview,
-                                            maxLines: 3,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(fontSize: 14, color: Colors.white),
-                                          ),
+                                        Text(
+                                          movie.overview,
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(fontSize: 14, color: Colors.white),
                                         ),
                                       ],
                                     ),
