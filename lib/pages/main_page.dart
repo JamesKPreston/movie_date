@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_intro/flutter_intro.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:movie_date/pages/login_page.dart';
 import 'package:movie_date/pages/room_page.dart';
 import 'package:movie_date/pages/swipe_page.dart';
+import 'package:movie_date/pages/swipe_page_tutorial.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
+import 'package:movie_date/utils/constants.dart';
 
 class MainPage extends ConsumerStatefulWidget {
   const MainPage({super.key});
@@ -40,6 +44,7 @@ class _MainPageState extends ConsumerState<MainPage> {
   void _showJoinRoomDialog() {
     TextEditingController roomCodeController = TextEditingController();
     final profileRepo = ref.read(profileRepositoryProvider);
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -90,6 +95,43 @@ class _MainPageState extends ConsumerState<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Movie Date'),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.purple,
+              ),
+              child: Text('Movie Date'),
+            ),
+            ListTile(
+              title: const Text('Log Out'),
+              onTap: () {
+                supabase.auth.signOut();
+
+                Navigator.of(context).pushAndRemoveUntil(LoginPage.route(), (route) => false);
+              },
+            ),
+            ListTile(
+              title: const Text('Tutorial'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => Intro(
+                      child: const SwipePageTutorial(),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
       body: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
           // Prevent user-initiated horizontal scrolling in the PageView
