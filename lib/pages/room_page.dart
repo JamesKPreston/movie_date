@@ -4,13 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/filters/movie.dart';
 import 'package:jp_moviedb/types/genre.dart';
 import 'package:jp_moviedb/types/person.dart';
+import 'package:movie_date/models/member_model.dart';
 import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/providers/filters_provider.dart';
 import 'package:movie_date/providers/genre_provider.dart';
+import 'package:movie_date/providers/members_repository_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
-import 'package:movie_date/providers/room_id_provider.dart';
 import 'package:movie_date/providers/room_repository_provider.dart';
 import 'package:movie_date/models/room_model.dart';
+import 'package:movie_date/utils/constants.dart';
 import 'package:movie_date/widgets/actor_widget.dart';
 import 'package:random_string/random_string.dart';
 import 'package:movie_date/widgets/calendar_widget.dart';
@@ -63,7 +65,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
       }
 
       selectedActors = filters.first.persons ?? [];
-      actorController.text = selectedActors.map((actor) => actor.name).join(', ') ?? '';
+      actorController.text = selectedActors.map((actor) => actor.name).join(', ');
 
       releaseDateGte = filters.first.primaryReleaseDateGte;
       releaseDateLte = filters.first.primaryReleaseDateLte;
@@ -146,7 +148,6 @@ class _RoomPageState extends ConsumerState<RoomPage> {
   Future<void> createRoom() async {
     roomCode = randomAlphaNumeric(6).toUpperCase();
     final profileRepo = ref.read(profileRepositoryProvider);
-    profileRepo.updateProfileRoomCode(roomCode);
     List<MovieFilters> filters = [];
     MovieFilters filter = MovieFilters(
       page: 1,
@@ -164,10 +165,23 @@ class _RoomPageState extends ConsumerState<RoomPage> {
       Room(
         id: '1',
         filters: filters,
+        room_code: roomCode,
       ),
     );
 
-    await ref.read(roomIdProvider.notifier).updateRoomId(newRoomId);
+    final user = supabase.auth.currentUser;
+    //add current user to the members of that room
+    var member = Member(
+      id: '1',
+      room_id: newRoomId,
+      user_id: user!.id,
+      email: await profileRepo.getEmailById(user.id),
+    );
+
+    var memberRepo = ref.read(membersRepositoryProvider);
+    await memberRepo.addMember(member);
+
+    // await ref.read(roomIdProvider.notifier).updateRoomId(newRoomId);
     Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
   }
 
@@ -188,190 +202,167 @@ class _RoomPageState extends ConsumerState<RoomPage> {
 
   @override
   Widget build(BuildContext context) {
-    final roomIdAsyncValue = ref.watch(roomIdProvider);
-
-    return roomIdAsyncValue.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => Center(
-        child: Text(
-          'Error loading room ID: $error',
-          style: const TextStyle(color: Colors.red),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Filters',
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
+        backgroundColor: Colors.deepPurple,
       ),
-      data: (roomId) {
-        // Load filters when room ID changes
-        ref.listen<AsyncValue<List<MovieFilters>>>(
-          filtersProvider,
-          (previous, next) {
-            if (next is AsyncData) {
-              _loadFilters();
-            }
-          },
-        );
-
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              'Filters',
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            ),
-            backgroundColor: Colors.deepPurple,
-          ),
-          body: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Genres:',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+              ),
+              const SizedBox(height: 8),
+              Row(
                 children: [
-                  const Text(
-                    'Genres:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                  Expanded(
+                    child: TextField(
+                      controller: genreController,
+                      readOnly: true,
+                      decoration: commonInputDecoration.copyWith(
+                        prefixIcon: const Icon(Icons.category, color: Colors.deepPurple),
+                      ),
+                      onTap: _showFilterDialog,
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: genreController,
-                          readOnly: true,
-                          decoration: commonInputDecoration.copyWith(
-                            prefixIcon: const Icon(Icons.category, color: Colors.deepPurple),
-                          ),
-                          onTap: _showFilterDialog,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.add, color: Colors.deepPurple),
-                        onPressed: _showFilterDialog,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Actors:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: actorController,
-                          readOnly: true,
-                          onTap: _showActorDialog,
-                          decoration: commonInputDecoration.copyWith(
-                            prefixIcon: const Icon(Icons.person, color: Colors.deepPurple),
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.search, color: Colors.deepPurple),
-                        onPressed: _showActorDialog,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Release Date:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Row(
-                          children: [
-                            const Text(
-                              'Start:',
-                              style: TextStyle(fontSize: 14, color: Colors.deepPurple),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                releaseDateGte != null ? releaseDateGte!.toString().split(' ')[0] : '',
-                                style: const TextStyle(fontSize: 14, color: Colors.deepPurple),
-                              ),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
-                              onPressed: () {
-                                _showCalendar(true);
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Row(
-                          children: [
-                            const Text(
-                              'End:',
-                              style: TextStyle(fontSize: 14, color: Colors.deepPurple),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                releaseDateLte != null ? releaseDateLte!.toString().split(' ')[0] : '',
-                                style: const TextStyle(fontSize: 14, color: Colors.deepPurple),
-                              ),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
-                              onPressed: () {
-                                _showCalendar(false);
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              selectedGenres = [];
-                              selectedActors = [];
-                              releaseDateGte = null;
-                              releaseDateLte = null;
-                              genreController.clear();
-                              actorController.clear();
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.deepPurple,
-                          ),
-                          child: const Text('Clear Filters'),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            createRoom();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            foregroundColor: Colors.white,
-                            backgroundColor: Colors.deepPurple,
-                          ),
-                          child: const Text('Save Filters'),
-                        ),
-                      ),
-                    ],
+                  IconButton(
+                    icon: const Icon(Icons.add, color: Colors.deepPurple),
+                    onPressed: _showFilterDialog,
                   ),
                 ],
               ),
-            ),
+              const SizedBox(height: 16),
+              const Text(
+                'Actors:',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: actorController,
+                      readOnly: true,
+                      onTap: _showActorDialog,
+                      decoration: commonInputDecoration.copyWith(
+                        prefixIcon: const Icon(Icons.person, color: Colors.deepPurple),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.search, color: Colors.deepPurple),
+                    onPressed: _showActorDialog,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Release Date:',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Start:',
+                          style: TextStyle(fontSize: 14, color: Colors.deepPurple),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            releaseDateGte != null ? releaseDateGte!.toString().split(' ')[0] : '',
+                            style: const TextStyle(fontSize: 14, color: Colors.deepPurple),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
+                          onPressed: () {
+                            _showCalendar(true);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        const Text(
+                          'End:',
+                          style: TextStyle(fontSize: 14, color: Colors.deepPurple),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            releaseDateLte != null ? releaseDateLte!.toString().split(' ')[0] : '',
+                            style: const TextStyle(fontSize: 14, color: Colors.deepPurple),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
+                          onPressed: () {
+                            _showCalendar(false);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          selectedGenres = [];
+                          selectedActors = [];
+                          releaseDateGte = null;
+                          releaseDateLte = null;
+                          genreController.clear();
+                          actorController.clear();
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.deepPurple,
+                      ),
+                      child: const Text('Clear Filters'),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        createRoom();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.deepPurple,
+                      ),
+                      child: const Text('Save Filters'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }

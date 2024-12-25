@@ -1,4 +1,5 @@
 import 'package:jp_moviedb/types/movie.dart';
+import 'package:movie_date/repositories/members_repository.dart';
 import 'package:movie_date/repositories/movie_repository.dart';
 import 'package:movie_date/repositories/profile_repository.dart';
 import 'package:movie_date/repositories/room_repository.dart';
@@ -8,14 +9,15 @@ class MovieService {
   final MovieRepository movieRepository;
   final ProfileRepository profileRepository;
   final RoomRepository roomRepository;
+  final MembersRepository memberRepository;
 
-  MovieService(this.movieRepository, this.profileRepository, this.roomRepository);
+  MovieService(this.movieRepository, this.profileRepository, this.roomRepository, this.memberRepository);
 
   Future<List<Movie>> getMovies(int page) async {
     final user = supabase.auth.currentUser;
-    final roomCode = await profileRepository.getRoomCodeById(user!.id);
-    final roomId = await profileRepository.getRoomIdByRoomCode(roomCode);
-    final room = await roomRepository.getRoomByRoomId(roomId);
+    final room = await memberRepository.getRoomIdByUserId(user!.id).then((roomId) {
+      return roomRepository.getRoomByRoomId(roomId);
+    });
 
     room.filters.first.page = page;
 
@@ -37,17 +39,14 @@ class MovieService {
 
   Future<void> saveMovie(int movieId) async {
     final user = supabase.auth.currentUser;
-    final roomCode = await profileRepository.getRoomCodeById(user!.id);
-    final roomId = await profileRepository.getRoomIdByRoomCode(roomCode);
-    final room = await roomRepository.getRoomByRoomId(roomId);
+    final roomId = await memberRepository.getRoomIdByUserId(user!.id);
 
-    await movieRepository.saveMovie(movieId, user.id, room.id);
+    await movieRepository.saveMovie(movieId, user.id, roomId);
   }
 
   Future<bool> isMovieSaved(int movieId) async {
     final user = supabase.auth.currentUser;
-    final roomCode = await profileRepository.getRoomCodeById(user!.id);
-    final roomId = await profileRepository.getRoomIdByRoomCode(roomCode);
+    final roomId = await memberRepository.getRoomIdByUserId(user!.id);
 
     final otherUsersChoices = await movieRepository.getMovieChoices(roomId);
     final myChoices = await movieRepository.getUsersMovieChoices(roomId);
