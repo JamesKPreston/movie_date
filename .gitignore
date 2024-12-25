@@ -47,3 +47,4 @@ ios/Runner.ipa
 
 # FVM Version Cache
 .fvm/
+ios/fastlane/report.xml
