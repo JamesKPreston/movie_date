@@ -5,4 +5,8 @@ class ProfileRepository {
     var result = await supabase.from('profiles').select('email').eq('id', id).single();
     return result['email'] as String;
   }
+
+  Future<void> updateEmailById(String id, String email) async {
+    await supabase.from('profiles').update({'email': email}).eq('id', id);
+  }
 }

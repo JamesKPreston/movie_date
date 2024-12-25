@@ -9,7 +9,7 @@ class RoomRepository {
   }
 
   Future<String> addRoom(Room room) async {
-    var result = await supabase.from('rooms').insert(room.toJson()).select('id').single();
+    var result = await supabase.from('rooms').upsert(room.toJson()).select('id').single();
     return result['id'] as String;
   }
 

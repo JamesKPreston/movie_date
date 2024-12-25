@@ -5,47 +5,52 @@
     
     
       
-      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000268">
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000307">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="1: setup_ci" time="0.000305">
+      <testcase classname="fastlane.lanes" name="1: setup_ci" time="0.000293">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="2: Switch to ios increment_version lane" time="0.000144">
+      <testcase classname="fastlane.lanes" name="2: Switch to ios increment_build lane" time="0.000178">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="3: increment_version_number" time="0.308992">
+      <testcase classname="fastlane.lanes" name="3: firebase_app_distribution_get_latest_release" time="0.674535">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="4: Switch to ios build lane" time="0.000266">
+      <testcase classname="fastlane.lanes" name="4: increment_build_number" time="0.30001">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="5: is_ci" time="0.000472">
+      <testcase classname="fastlane.lanes" name="5: Switch to ios build lane" time="0.000194">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="6: match" time="5.195388">
+      <testcase classname="fastlane.lanes" name="6: is_ci" time="0.000203">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="7: build_ios_app" time="123.797095">
+      <testcase classname="fastlane.lanes" name="7: match" time="5.380103">
         
       </testcase>
     
       
-      <testcase classname="fastlane.lanes" name="8: firebase_app_distribution" time="11.408806">
+      <testcase classname="fastlane.lanes" name="8: build_ios_app" time="121.832168">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="9: firebase_app_distribution" time="15.482658">
         
       </testcase>
     
