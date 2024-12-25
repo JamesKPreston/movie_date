@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_date/pages/login_page.dart';
+import 'package:movie_date/providers/members_service_provider.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key, required this.isRegistering});
 
   static Route<void> route({bool isRegistering = false}) {
@@ -15,10 +17,10 @@ class RegisterPage extends StatefulWidget {
   final bool isRegistering;
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  ConsumerState<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _RegisterPageState extends ConsumerState<RegisterPage> {
   final bool _isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
@@ -35,7 +37,10 @@ class _RegisterPageState extends State<RegisterPage> {
     final email = _emailController.text;
     final password = _passwordController.text;
     try {
-      await supabase.auth.signUp(email: email, password: password);
+      var response = await supabase.auth.signUp(email: email, password: password);
+      var userId = response.user!.id;
+      var memberService = ref.read(membersServiceProvider);
+      memberService.createNewUser(userId, email);
       Navigator.of(context).pushAndRemoveUntil(LoginPage.route(), (route) => false);
     } on AuthException catch (error) {
       context.showErrorSnackBar(message: error.message);

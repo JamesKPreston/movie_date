@@ -43,7 +43,7 @@ platform :ios do
     firebase_app_distribution(
       app: "1:969395528079:ios:120b02032f7882f7066bfa",
       groups: "dev",
-      release_notes: "Realtime movie date matching",
+      release_notes: "Re-design rooms",
     )
   end
 
@@ -54,7 +54,7 @@ platform :ios do
     firebase_app_distribution(
       app: "1:969395528079:ios:120b02032f7882f7066bfa",
       groups: "self",
-      release_notes: "Added Tutorial, added side menu with some options including the ability to log out",
+      release_notes: "Re-design rooms",
     )
   end
 

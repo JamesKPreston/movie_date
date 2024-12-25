@@ -146,8 +146,8 @@ class _RoomPageState extends ConsumerState<RoomPage> {
   }
 
   Future<void> createRoom() async {
-    roomCode = randomAlphaNumeric(6).toUpperCase();
     final profileRepo = ref.read(profileRepositoryProvider);
+    final membersRepo = ref.read(membersRepositoryProvider);
     List<MovieFilters> filters = [];
     MovieFilters filter = MovieFilters(
       page: 1,
@@ -161,27 +161,28 @@ class _RoomPageState extends ConsumerState<RoomPage> {
     filters.add(filter);
 
     var roomRepo = await ref.read(roomRepositoryProvider);
+    var roomId = await membersRepo.getRoomIdByUserId(supabase.auth.currentUser!.id);
+    var room = await roomRepo.getRoomByRoomId(roomId);
     var newRoomId = await roomRepo.addRoom(
       Room(
-        id: '1',
+        id: room.id,
         filters: filters,
-        room_code: roomCode,
+        room_code: room.room_code,
       ),
     );
 
     final user = supabase.auth.currentUser;
     //add current user to the members of that room
     var member = Member(
-      id: '1',
+      id: user!.id,
       room_id: newRoomId,
-      user_id: user!.id,
+      user_id: user.id,
       email: await profileRepo.getEmailById(user.id),
     );
 
     var memberRepo = ref.read(membersRepositoryProvider);
     await memberRepo.addMember(member);
 
-    // await ref.read(roomIdProvider.notifier).updateRoomId(newRoomId);
     Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
   }
 

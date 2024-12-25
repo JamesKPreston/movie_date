@@ -25,6 +25,7 @@ class Room {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'filters': filters.map((filter) => filter.toMap()).toList().first,
       'room_code': room_code,
     };
