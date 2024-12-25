@@ -6,6 +6,8 @@ import 'package:movie_date/pages/match_found_page.dart';
 import 'package:movie_date/providers/genre_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
+import 'package:movie_date/providers/room_service_provider.dart';
+import 'package:movie_date/services/room_service.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:movie_date/widgets/movie_details_widget.dart';
@@ -47,7 +49,8 @@ class _SwipePageState extends ConsumerState<SwipePage> {
   }
 
   void loadRoomCode() async {
-    roomCode = await ref.read(profileRepositoryProvider).getRoomCodeById(supabase.auth.currentUser!.id);
+    final roomService = ref.read(roomServiceProvider);
+    roomCode = await roomService.getRoomCodeById(supabase.auth.currentUser!.id);
     setState(() {});
   }
 
@@ -116,6 +119,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
 
   void listenToFilterUpdates() {
     final profileRepo = ref.read(profileRepositoryProvider);
+    final RoomService roomService = ref.read(roomServiceProvider);
     movieChoicesChannel = supabase.channel('public:profiles')
       ..on(
         RealtimeListenTypes.postgresChanges,
@@ -129,10 +133,12 @@ class _SwipePageState extends ConsumerState<SwipePage> {
           var newRoomId = payload['new']['room_id'] as String;
           var userId = supabase.auth.currentUser!.id;
 
-          var currentRoomId = await profileRepo.getRoomIdById(userId);
+          var room = await roomService.getRoomByUserId(userId);
+          var currentRoomId = room.id;
+
           var updateUserId = payload['new']['id'] as String;
           if (userId != updateUserId && currentRoomId == oldRoomId) {
-            await profileRepo.updateProfileRoomId(newRoomId);
+            //await profileRepo.updateProfileRoomId(newRoomId);
             setState(() {
               page = 1;
               movies.clear();

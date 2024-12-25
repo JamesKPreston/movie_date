@@ -4,6 +4,7 @@ class Profile {
     required this.id,
     required this.room_code,
     required this.createdAt,
+    required this.email,
   });
 
   /// User ID of the profile
@@ -18,9 +19,12 @@ class Profile {
   /// Room Id of the room occupants record
   String roomId;
 
+  final String email;
+
   Profile.fromMap(Map<String, dynamic> map)
       : id = map['id'],
         room_code = map['username'],
         createdAt = DateTime.parse(map['created_at']),
-        roomId = map['room_id'];
+        roomId = map['room_id'],
+        email = map['email'];
 }

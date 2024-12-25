@@ -3,10 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_intro/flutter_intro.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_date/pages/login_page.dart';
+import 'package:movie_date/pages/members_page.dart';
 import 'package:movie_date/pages/room_page.dart';
 import 'package:movie_date/pages/swipe_page.dart';
 import 'package:movie_date/pages/swipe_page_tutorial.dart';
-import 'package:movie_date/providers/profile_repository_provider.dart';
+import 'package:movie_date/providers/room_service_provider.dart';
 import 'package:movie_date/utils/constants.dart';
 
 class MainPage extends ConsumerStatefulWidget {
@@ -24,10 +25,11 @@ class _MainPageState extends ConsumerState<MainPage> {
   int _selectedIndex = 0;
   final PageController _pageController = PageController();
 
-  final List<Widget> _pages = [
+  List<Widget> _pages = [
     const SwipePage(),
     Container(), // Placeholder for the Join Room modal
     const RoomPage(),
+    MembersPage(),
   ];
 
   void _onDestinationSelected(int index) {
@@ -41,9 +43,14 @@ class _MainPageState extends ConsumerState<MainPage> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
   void _showJoinRoomDialog() {
     TextEditingController roomCodeController = TextEditingController();
-    final profileRepo = ref.read(profileRepositoryProvider);
+    final roomService = ref.read(roomServiceProvider);
 
     showDialog(
       context: context,
@@ -71,8 +78,7 @@ class _MainPageState extends ConsumerState<MainPage> {
               onPressed: () async {
                 final roomCode = roomCodeController.text;
                 try {
-                  var roomId = await profileRepo.getRoomIdByRoomCode(roomCode);
-                  await profileRepo.updateProfileRoomId(roomId);
+                  await roomService.joinRoom(roomCode, supabase.auth.currentUser!.id);
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -135,9 +141,10 @@ class _MainPageState extends ConsumerState<MainPage> {
             const Divider(),
             ListTile(
               leading: const Icon(Icons.movie, color: Colors.black),
-              title: const Text('Manage Movies'),
+              title: const Text('Room Members'),
               onTap: () {
-                // Navigate to Manage Movie page (implement as needed)
+                Navigator.pop(context);
+                _pageController.jumpToPage(3);
               },
             ),
             ListTile(
@@ -163,12 +170,11 @@ class _MainPageState extends ConsumerState<MainPage> {
                   leading: const Icon(Icons.add, color: Colors.black),
                   title: const Text('Create Room'),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const RoomPage(), // Replace with Create Room page
-                      ),
-                    );
+                    Navigator.pop(context);
+                    _pageController.jumpToPage(2);
+                    setState(() {
+                      _selectedIndex = 2;
+                    });
                   },
                 ),
                 ListTile(
