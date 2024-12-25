@@ -96,7 +96,20 @@ class _MainPageState extends ConsumerState<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Movie Date'),
+        backgroundColor: Colors.black,
+        elevation: 4.0,
+        iconTheme: const IconThemeData(
+          color: Colors.white, // Matches the AppBar text color
+        ),
+        title: const Text(
+          'Movie Date',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
       ),
       drawer: Drawer(
         child: ListView(
@@ -104,19 +117,31 @@ class _MainPageState extends ConsumerState<MainPage> {
           children: [
             const DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.purple,
+                color: Colors.black87,
               ),
-              child: Text('Movie Date'),
+              child: Text(
+                'Movie Date',
+                style: TextStyle(color: Colors.white, fontSize: 24),
+              ),
             ),
             ListTile(
+              leading: const Icon(Icons.logout, color: Colors.black),
               title: const Text('Log Out'),
               onTap: () {
                 supabase.auth.signOut();
-
                 Navigator.of(context).pushAndRemoveUntil(LoginPage.route(), (route) => false);
               },
             ),
+            const Divider(),
             ListTile(
+              leading: const Icon(Icons.movie, color: Colors.black),
+              title: const Text('Manage Movies'),
+              onTap: () {
+                // Navigate to Manage Movie page (implement as needed)
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.info_outline, color: Colors.black),
               title: const Text('Tutorial'),
               onTap: () {
                 Navigator.push(
@@ -129,12 +154,35 @@ class _MainPageState extends ConsumerState<MainPage> {
                 );
               },
             ),
+            const Divider(),
+            ExpansionTile(
+              leading: const Icon(Icons.meeting_room, color: Colors.black),
+              title: const Text('Room'),
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.add, color: Colors.black),
+                  title: const Text('Create Room'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const RoomPage(), // Replace with Create Room page
+                      ),
+                    );
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.input, color: Colors.black),
+                  title: const Text('Join Room'),
+                  onTap: _showJoinRoomDialog,
+                ),
+              ],
+            ),
           ],
         ),
       ),
       body: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
-          // Prevent user-initiated horizontal scrolling in the PageView
           if (notification is OverscrollNotification || notification is ScrollUpdateNotification) {
             return true;
           }
@@ -142,14 +190,14 @@ class _MainPageState extends ConsumerState<MainPage> {
         },
         child: PageView(
           controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(), // Prevent swipe gestures for PageView
+          physics: const NeverScrollableScrollPhysics(),
           children: _pages,
         ),
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: _onDestinationSelected,
-        indicatorColor: Colors.amber,
+        indicatorColor: Colors.white70,
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
