@@ -6,15 +6,14 @@ import 'package:jp_moviedb/types/genre.dart';
 import 'package:jp_moviedb/types/person.dart';
 import 'package:movie_date/models/member_model.dart';
 import 'package:movie_date/pages/main_page.dart';
-import 'package:movie_date/providers/filters_provider.dart';
 import 'package:movie_date/providers/genre_provider.dart';
 import 'package:movie_date/providers/members_repository_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_repository_provider.dart';
 import 'package:movie_date/models/room_model.dart';
+import 'package:movie_date/providers/room_service_provider.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:movie_date/widgets/actor_widget.dart';
-import 'package:random_string/random_string.dart';
 import 'package:movie_date/widgets/calendar_widget.dart';
 
 class RoomPage extends ConsumerStatefulWidget {
@@ -156,7 +155,8 @@ class _RoomPageState extends ConsumerState<RoomPage> {
     filter.withCast = selectedActors.map((actor) => actor.id).join('|');
     filter.persons = selectedActors;
     filter.language = 'en';
-    filter.primaryReleaseDateGte = releaseDateGte;
+    filter.primaryReleaseDateGte =
+        releaseDateGte != null ? releaseDateGte : DateTime.parse('${DateTime.now().year}-01-01');
     filter.primaryReleaseDateLte = releaseDateLte;
     filters.add(filter);
 
@@ -187,8 +187,10 @@ class _RoomPageState extends ConsumerState<RoomPage> {
   }
 
   Future<List<MovieFilters>> getCurrentFilters(WidgetRef ref) async {
-    final filters = await ref.read(filtersProvider.future);
-    return filters;
+    var roomService = await ref.read(roomServiceProvider);
+    var room = await roomService.getRoomByUserId(supabase.auth.currentUser!.id);
+
+    return room.filters;
   }
 
   final InputDecoration commonInputDecoration = InputDecoration(
@@ -283,7 +285,9 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            releaseDateGte != null ? releaseDateGte!.toString().split(' ')[0] : '',
+                            releaseDateGte != null
+                                ? releaseDateGte!.toString().split(' ')[0]
+                                : DateTime.parse('${DateTime.now().year}-01-01').toString().split(' ')[0],
                             style: const TextStyle(fontSize: 14, color: Colors.deepPurple),
                           ),
                         ),
