@@ -14,7 +14,7 @@ class MemberService {
 
   MemberService(this._roomRepository, this._membersRepository, this._profileRepository);
 
-  Future<void> createNewUser(String userId, String email) async {
+  Future<void> createRoom(String userId, String email) async {
     var roomCode = randomAlphaNumeric(6).toUpperCase();
     List<MovieFilters> filters = [];
     MovieFilters filter = MovieFilters(
@@ -30,16 +30,20 @@ class MemberService {
       room_code: roomCode,
     );
 
-    var newRoomId = await _roomRepository.addRoom(room);
-    //add current user to the members of that room
+    var roomId = await _roomRepository.addRoom(room);
     var member = Member(
       id: userId,
-      room_id: newRoomId,
+      room_id: roomId,
       user_id: userId,
       email: email,
     );
 
     await _membersRepository.addMember(member);
+  }
+
+  Future<void> createNewUser(String userId, String email) async {
+    await createRoom(userId, email);
+
     await _profileRepository.updateEmailById(userId, email);
   }
 

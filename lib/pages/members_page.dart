@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:movie_date/repositories/members_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:movie_date/pages/main_page.dart';
+import 'package:movie_date/providers/members_repository_provider.dart';
+import 'package:movie_date/providers/members_service_provider.dart';
 import 'package:movie_date/utils/constants.dart';
 
-class MembersPage extends StatefulWidget {
+class MembersPage extends ConsumerStatefulWidget {
   static Route<void> route({String mRoomId = ''}) {
     return MaterialPageRoute(
       builder: (context) => MembersPage(),
@@ -15,7 +18,8 @@ class MembersPage extends StatefulWidget {
   _MembersPageState createState() => _MembersPageState();
 }
 
-class _MembersPageState extends State<MembersPage> {
+class _MembersPageState extends ConsumerState<MembersPage> {
+  int _selectedIndex = 0;
   List<String> _members = [];
   bool _isLoading = true;
 
@@ -26,9 +30,10 @@ class _MembersPageState extends State<MembersPage> {
   }
 
   Future<void> _fetchMembers() async {
+    var membersRepo = ref.read(membersRepositoryProvider);
     final user = supabase.auth.currentUser;
-    final roomId = await MembersRepository().getRoomIdByUserId(user!.id);
-    final response = await MembersRepository().getRoomMembers(roomId);
+    final roomId = await membersRepo.getRoomIdByUserId(user!.id);
+    final response = await membersRepo.getRoomMembers(roomId);
 
     setState(() {
       _members = response;
@@ -36,11 +41,53 @@ class _MembersPageState extends State<MembersPage> {
     });
   }
 
+  void _onDestinationSelected(int index) {
+    switch (index) {
+      case 1:
+        _leaveRoom();
+        break;
+      default:
+        setState(() {
+          _selectedIndex = index;
+        });
+      //_pageController.jumpToPage(index);
+    }
+  }
+
+  Future<void> _leaveRoom() async {
+    var membersService = ref.read(membersServiceProvider);
+    final user = supabase.auth.currentUser;
+    membersService.createRoom(user!.id, "");
+    Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Members'),
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: _onDestinationSelected,
+        indicatorColor: Colors.white70,
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            label: 'Home',
+            selectedIcon: Icon(Icons.home),
+          ),
+          // NavigationDestination(
+          //   icon: Icon(Icons.door_front_door_outlined),
+          //   label: 'Join Room',
+          //   selectedIcon: Icon(Icons.door_front_door),
+          // ),
+          NavigationDestination(
+            icon: Icon(Icons.logout_outlined),
+            label: 'Leave Room',
+            selectedIcon: Icon(Icons.logout_rounded),
+          ),
+        ],
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
