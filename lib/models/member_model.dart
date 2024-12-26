@@ -24,6 +24,13 @@ class Member {
   }
 
   Map<String, dynamic> toJson() {
+    if (email == "") {
+      return {
+        'id': id,
+        'room_id': room_id,
+        'user_id': user_id,
+      };
+    }
     return {
       'id': id,
       'room_id': room_id,

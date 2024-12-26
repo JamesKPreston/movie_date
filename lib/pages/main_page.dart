@@ -143,8 +143,7 @@ class _MainPageState extends ConsumerState<MainPage> {
               leading: const Icon(Icons.movie, color: Colors.black),
               title: const Text('Room Members'),
               onTap: () {
-                Navigator.pop(context);
-                _pageController.jumpToPage(3);
+                Navigator.of(context).push(MembersPage.route());
               },
             ),
             ListTile(
