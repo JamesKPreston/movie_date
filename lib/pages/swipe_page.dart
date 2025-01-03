@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/pages/match_found_page.dart';
 import 'package:movie_date/providers/genre_provider.dart';
+import 'package:movie_date/providers/movie_choices_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
@@ -38,7 +39,6 @@ class _SwipePageState extends ConsumerState<SwipePage> {
     super.initState();
     loadRoomCode();
     loadMovies(page);
-    listenToMovieChoices();
     listenToFilterUpdates();
   }
 
@@ -100,25 +100,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
     }
   }
 
-  void listenToMovieChoices() {
-    movieChoicesChannel = supabase.channel('public:moviechoices')
-      ..on(
-        RealtimeListenTypes.postgresChanges,
-        ChannelFilter(
-          event: '*',
-          schema: 'public',
-          table: 'moviechoices',
-        ),
-        (payload, [ref]) {
-          var movieId = (payload['new']['movie_id'] as double).toInt();
-          isMovieSaved(movieId);
-        },
-      )
-      ..subscribe();
-  }
-
   void listenToFilterUpdates() {
-    final profileRepo = ref.read(profileRepositoryProvider);
     final RoomService roomService = ref.read(roomServiceProvider);
     movieChoicesChannel = supabase.channel('public:profiles')
       ..on(
@@ -130,7 +112,6 @@ class _SwipePageState extends ConsumerState<SwipePage> {
         ),
         (payload, [ref]) async {
           var oldRoomId = payload['old']['room_id'] as String;
-          var newRoomId = payload['new']['room_id'] as String;
           var userId = supabase.auth.currentUser!.id;
 
           var room = await roomService.getRoomByUserId(userId);
@@ -138,7 +119,6 @@ class _SwipePageState extends ConsumerState<SwipePage> {
 
           var updateUserId = payload['new']['id'] as String;
           if (userId != updateUserId && currentRoomId == oldRoomId) {
-            //await profileRepo.updateProfileRoomId(newRoomId);
             setState(() {
               page = 1;
               movies.clear();
@@ -165,6 +145,26 @@ class _SwipePageState extends ConsumerState<SwipePage> {
 
   @override
   Widget build(BuildContext context) {
+    final movieChoices = ref.watch(movieChoicesProvider);
+
+    // Check if there is a match and navigate to MatchFoundPage
+    movieChoices.when(
+      data: (movieIds) {
+        if (movieIds.isNotEmpty) {
+          // Navigate to MatchFoundPage with the first matching movie ID
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MatchFoundPage.route(movieIds.first),
+              (route) => false,
+            );
+          });
+        }
+      },
+      loading: () {},
+      error: (error, stackTrace) {
+        print('Error loading movie choices: $error');
+      },
+    );
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: Stack(
