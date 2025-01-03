@@ -49,12 +49,12 @@ platform :ios do
 
   desc "Build and Distribute the iOS app"
   lane :self do
-    increment_build
+    increment_version
     build
     firebase_app_distribution(
       app: "1:969395528079:ios:120b02032f7882f7066bfa",
       groups: "self",
-      release_notes: "Re-design rooms",
+      release_notes: "Updates to the matching system. Match notifications happen regardless of screen and also happen when the app is re-opened",
     )
   end
 
