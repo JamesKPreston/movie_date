@@ -1,3 +1,4 @@
+import 'package:jp_moviedb/filters/movie.dart';
 import 'package:movie_date/models/member_model.dart';
 import 'package:movie_date/models/room_model.dart';
 import 'package:movie_date/repositories/members_repository.dart';
@@ -45,6 +46,15 @@ class RoomService {
       await _roomRepository.updateRoom(room);
     } catch (e) {
       throw Exception('Failed to update room: $e');
+    }
+  }
+
+  Future<List<MovieFilters>> getFiltersByRoomId(String roomId) async {
+    try {
+      Room room = await _roomRepository.getRoomByRoomId(roomId);
+      return room.filters;
+    } catch (e) {
+      throw Exception('Failed to get filters: $e');
     }
   }
 }
