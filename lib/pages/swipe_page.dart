@@ -63,6 +63,17 @@ class _SwipePageState extends ConsumerState<SwipePage> {
     var result = await movieService.getMovies(page);
     if (result.length > 0) {
       await setGenres(result.first.genreIds);
+      //if this is the first page then
+      //it is the first time this screen is loaded
+      //perhaps from when the user closed and reopened the app
+      //so we need to check if there is a match because the app
+      //was closed so the realtime monitoring was not active
+      if (page == 1) {
+        var movieId = await movieService.findMatchingMovieId();
+        if (movieId > 0) {
+          isMovieSaved(movieId);
+        }
+      }
     }
 
     setState(() {
@@ -160,7 +171,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
           });
         }
       },
-      loading: () {},
+      loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stackTrace) {
         print('Error loading movie choices: $error');
       },

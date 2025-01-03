@@ -59,4 +59,8 @@ class MovieRepository {
     Map<int, int> movieCounts = getMovieCounts(list);
     return movieCounts;
   }
+
+  Future<void> deleteMovieChoicesByRoomId(String roomId) async {
+    await supabase.from('moviechoices').delete().eq('room_id', roomId).eq('profile_id', supabase.auth.currentUser!.id);
+  }
 }
