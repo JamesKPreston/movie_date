@@ -62,4 +62,31 @@ class MovieService {
 
     return otherUsersChoices.containsKey(movieId) && myChoices.containsKey(movieId);
   }
+
+  Future<int> findMatchingMovieId() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) {
+      throw Exception("User is not logged in");
+    }
+
+    final roomId = await memberRepository.getRoomIdByUserId(user.id);
+
+    final otherUsersChoices = await movieRepository.getMovieChoices(roomId);
+    final myChoices = await movieRepository.getUsersMovieChoices(roomId);
+
+    for (final key in otherUsersChoices.keys) {
+      if (myChoices.containsKey(key)) {
+        return key; // Return the matching movie ID
+      }
+    }
+
+    return 0; // Return 0 if no matching key is found
+  }
+
+  Future<void> deleteMovieChoicesByRoomId() async {
+    final user = supabase.auth.currentUser;
+    final roomId = await memberRepository.getRoomIdByUserId(user!.id);
+
+    await movieRepository.deleteMovieChoicesByRoomId(roomId);
+  }
 }

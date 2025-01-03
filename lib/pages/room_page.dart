@@ -6,8 +6,10 @@ import 'package:jp_moviedb/types/genre.dart';
 import 'package:jp_moviedb/types/person.dart';
 import 'package:movie_date/models/member_model.dart';
 import 'package:movie_date/pages/main_page.dart';
+import 'package:movie_date/pages/match_found_page.dart';
 import 'package:movie_date/providers/genre_provider.dart';
 import 'package:movie_date/providers/members_repository_provider.dart';
+import 'package:movie_date/providers/movie_choices_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_repository_provider.dart';
 import 'package:movie_date/models/room_model.dart';
@@ -205,6 +207,26 @@ class _RoomPageState extends ConsumerState<RoomPage> {
 
   @override
   Widget build(BuildContext context) {
+    final movieChoices = ref.watch(movieChoicesProvider);
+
+    // Check if there is a match and navigate to MatchFoundPage
+    movieChoices.when(
+      data: (movieIds) {
+        if (movieIds.isNotEmpty) {
+          // Navigate to MatchFoundPage with the first matching movie ID
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MatchFoundPage.route(movieIds.first),
+              (route) => false,
+            );
+          });
+        }
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) {
+        print('Error loading movie choices: $error');
+      },
+    );
     return Scaffold(
       appBar: AppBar(
         title: Text(

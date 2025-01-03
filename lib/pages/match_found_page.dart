@@ -166,7 +166,9 @@ class _MatchFoundPageState extends ConsumerState<MatchFoundPage> {
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.black,
                     ),
-                    onPressed: () {
+                    onPressed: () async {
+                      final movieService = ref.read(movieServiceProvider);
+                      await movieService.deleteMovieChoicesByRoomId();
                       Navigator.of(context).pushAndRemoveUntil(
                         MainPage.route(),
                         (route) => false,
