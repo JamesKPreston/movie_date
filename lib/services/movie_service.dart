@@ -37,6 +37,15 @@ class MovieService {
     return result;
   }
 
+  Future<List<int>> getSavedMoviesByRoomId() async {
+    final user = supabase.auth.currentUser;
+    final room = await memberRepository.getRoomIdByUserId(user!.id).then((roomId) {
+      return roomRepository.getRoomByRoomId(roomId);
+    });
+    final movieIds = await movieRepository.getMovieChoices(room.id);
+    return movieIds.keys.toList();
+  }
+
   Future<void> saveMovie(int movieId) async {
     final user = supabase.auth.currentUser;
     final roomId = await memberRepository.getRoomIdByUserId(user!.id);
@@ -51,6 +60,6 @@ class MovieService {
     final otherUsersChoices = await movieRepository.getMovieChoices(roomId);
     final myChoices = await movieRepository.getUsersMovieChoices(roomId);
 
-    return otherUsersChoices.contains(movieId) && myChoices.contains(movieId);
+    return otherUsersChoices.containsKey(movieId) && myChoices.containsKey(movieId);
   }
 }
