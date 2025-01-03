@@ -3,12 +3,11 @@ import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/pages/match_found_page.dart';
+import 'package:movie_date/providers/filters_provider.dart';
 import 'package:movie_date/providers/genre_provider.dart';
 import 'package:movie_date/providers/movie_choices_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
-import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
-import 'package:movie_date/services/room_service.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:movie_date/widgets/movie_details_widget.dart';
@@ -39,7 +38,6 @@ class _SwipePageState extends ConsumerState<SwipePage> {
     super.initState();
     loadRoomCode();
     loadMovies(page);
-    listenToFilterUpdates();
   }
 
   @override
@@ -69,6 +67,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
       //so we need to check if there is a match because the app
       //was closed so the realtime monitoring was not active
       if (page == 1) {
+        movies.clear();
         var movieId = await movieService.findMatchingMovieId();
         if (movieId > 0) {
           isMovieSaved(movieId);
@@ -111,36 +110,6 @@ class _SwipePageState extends ConsumerState<SwipePage> {
     }
   }
 
-  void listenToFilterUpdates() {
-    final RoomService roomService = ref.read(roomServiceProvider);
-    movieChoicesChannel = supabase.channel('public:profiles')
-      ..on(
-        RealtimeListenTypes.postgresChanges,
-        ChannelFilter(
-          event: '*',
-          schema: 'public',
-          table: 'profiles',
-        ),
-        (payload, [ref]) async {
-          var oldRoomId = payload['old']['room_id'] as String;
-          var userId = supabase.auth.currentUser!.id;
-
-          var room = await roomService.getRoomByUserId(userId);
-          var currentRoomId = room.id;
-
-          var updateUserId = payload['new']['id'] as String;
-          if (userId != updateUserId && currentRoomId == oldRoomId) {
-            setState(() {
-              page = 1;
-              movies.clear();
-            });
-            loadMovies(page);
-          }
-        },
-      )
-      ..subscribe();
-  }
-
   Future<void> showMovieDetails(BuildContext context, Movie movie) async {
     var youtube = ref.read(youTubeRepositoryProvider);
     String movieId = await youtube.searchMovieTrailers('${movie.title} ${movie.releaseDate.year}');
@@ -156,26 +125,42 @@ class _SwipePageState extends ConsumerState<SwipePage> {
 
   @override
   Widget build(BuildContext context) {
-    final movieChoices = ref.watch(movieChoicesProvider);
+    ref.listen(movieChoicesProvider, (previous, next) {
+      next.when(
+        data: (movieIds) {
+          if (movieIds.isNotEmpty) {
+            // Avoid multiple navigations by checking a flag
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Navigator.of(context).pushAndRemoveUntil(
+                MatchFoundPage.route(movieIds.first),
+                (route) => false,
+              );
+            });
+          }
+        },
+        loading: () {}, // Handle loading state if needed
+        error: (error, stackTrace) {
+          print('Error loading movie choices: $error');
+        },
+      );
+    });
 
-    // Check if there is a match and navigate to MatchFoundPage
-    movieChoices.when(
-      data: (movieIds) {
-        if (movieIds.isNotEmpty) {
-          // Navigate to MatchFoundPage with the first matching movie ID
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.of(context).pushAndRemoveUntil(
-              MatchFoundPage.route(movieIds.first),
-              (route) => false,
-            );
-          });
-        }
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) {
-        print('Error loading movie choices: $error');
-      },
-    );
+    // Listen for filter updates and reload movies if needed
+    ref.listen(filtersProvider, (previous, next) {
+      next.when(
+        data: (filters) {
+          // if (filters.id != 'blank') {
+          // Refresh page with new filters
+          loadMovies(1);
+          // }
+        },
+        loading: () {}, // Handle loading state if needed
+        error: (error, stackTrace) {
+          print('Error loading filters: $error');
+        },
+      );
+    });
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: Stack(
