@@ -4,6 +4,7 @@ import 'package:movie_date/models/room_model.dart';
 import 'package:movie_date/repositories/members_repository.dart';
 import 'package:movie_date/repositories/profile_repository.dart';
 import 'package:movie_date/repositories/room_repository.dart';
+import 'package:movie_date/utils/constants.dart';
 import 'package:random_string/random_string.dart';
 import 'package:uuid/uuid.dart';
 
@@ -39,6 +40,18 @@ class RoomService {
     );
 
     await _membersRepository.addMember(member);
+  }
+
+  Future<void> updateFiltersForRoom(List<MovieFilters> filters) async {
+    var roomId = await _membersRepository.getRoomIdByUserId(supabase.auth.currentUser!.id);
+    var room = await _roomRepository.getRoomByRoomId(roomId);
+    await _roomRepository.addRoom(
+      Room(
+        id: room.id,
+        filters: filters,
+        room_code: room.room_code,
+      ),
+    );
   }
 
   Future<String> getRoomCodeById(String id) async {
