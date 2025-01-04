@@ -4,13 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/filters/movie.dart';
 import 'package:jp_moviedb/types/genre.dart';
 import 'package:jp_moviedb/types/person.dart';
+import 'package:movie_date/pages/actor_page.dart';
 import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/pages/match_found_page.dart';
 import 'package:movie_date/providers/genre_repository_provider.dart';
 import 'package:movie_date/providers/movie_choices_channel_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
 import 'package:movie_date/utils/constants.dart';
-import 'package:movie_date/widgets/actor_widget.dart';
 import 'package:movie_date/widgets/calendar_widget.dart';
 
 class RoomPage extends ConsumerStatefulWidget {
@@ -105,21 +105,21 @@ class _RoomPageState extends ConsumerState<RoomPage> {
     );
   }
 
-  Future<void> _showActorDialog() async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return ActorWidget(
-          onSelectedActors: (selected) {
-            setState(() {
-              selectedActors = selected;
-              actorController.text = selectedActors.map((actor) => actor.name).join(', ');
-            });
-          },
+  Future<void> _showActorPage() async {
+    final result = await Navigator.of(context).push<List<Person>>(
+      MaterialPageRoute(
+        builder: (context) => ActorPage(
           currentlySelectedActors: selectedActors,
-        );
-      },
+        ),
+      ),
     );
+
+    if (result != null) {
+      setState(() {
+        selectedActors = result;
+        actorController.text = selectedActors.map((actor) => actor.name).join(', ');
+      });
+    }
   }
 
   Future<void> _showCalendar(bool isGte) async {
@@ -249,7 +249,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                     child: TextField(
                       controller: actorController,
                       readOnly: true,
-                      onTap: _showActorDialog,
+                      onTap: _showActorPage,
                       decoration: commonInputDecoration.copyWith(
                         prefixIcon: const Icon(Icons.person, color: Colors.deepPurple),
                       ),
@@ -257,7 +257,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                   ),
                   IconButton(
                     icon: const Icon(Icons.search, color: Colors.deepPurple),
-                    onPressed: _showActorDialog,
+                    onPressed: _showActorPage,
                   ),
                 ],
               ),
