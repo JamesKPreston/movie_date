@@ -3,9 +3,9 @@ import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/pages/match_found_page.dart';
-import 'package:movie_date/providers/filters_provider.dart';
-import 'package:movie_date/providers/genre_provider.dart';
-import 'package:movie_date/providers/movie_choices_provider.dart';
+import 'package:movie_date/providers/filters_channel_provider.dart';
+import 'package:movie_date/providers/genre_repository_provider.dart';
+import 'package:movie_date/providers/movie_choices_channel_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
 import 'package:movie_date/utils/constants.dart';
@@ -125,7 +125,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(movieChoicesProvider, (previous, next) {
+    ref.listen(movieChoicesChannelProvider, (previous, next) {
       next.when(
         data: (movieIds) {
           if (movieIds.isNotEmpty) {
@@ -146,7 +146,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
     });
 
     // Listen for filter updates and reload movies if needed
-    ref.listen(filtersProvider, (previous, next) {
+    ref.listen(filtersChannelProvider, (previous, next) {
       next.when(
         data: (filters) {
           // if (filters.id != 'blank') {

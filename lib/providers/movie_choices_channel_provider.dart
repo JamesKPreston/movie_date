@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-final movieChoicesProvider = StreamProvider.autoDispose<List<int>>((ref) {
+final movieChoicesChannelProvider = StreamProvider.autoDispose<List<int>>((ref) {
   final supabaseClient = Supabase.instance.client;
   final movieChoicesChannel = supabaseClient.channel('public:moviechoices');
   final controller = StreamController<int>();

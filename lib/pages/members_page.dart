@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/providers/members_repository_provider.dart';
-import 'package:movie_date/providers/members_service_provider.dart';
+import 'package:movie_date/providers/room_service_provider.dart';
 import 'package:movie_date/utils/constants.dart';
 
 class MembersPage extends ConsumerStatefulWidget {
@@ -55,9 +55,9 @@ class _MembersPageState extends ConsumerState<MembersPage> {
   }
 
   Future<void> _leaveRoom() async {
-    var membersService = ref.read(membersServiceProvider);
+    var roomService = ref.read(roomServiceProvider);
     final user = supabase.auth.currentUser;
-    membersService.createRoom(user!.id, "");
+    roomService.createRoom(user!.id, "");
     Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
   }
 

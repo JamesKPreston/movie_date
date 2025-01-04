@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/types/person.dart';
-import 'package:movie_date/providers/actor_provider.dart';
+import 'package:movie_date/providers/actor_repository_provider.dart';
 
 class ActorWidget extends ConsumerStatefulWidget {
   final Function(List<Person>) onSelectedActors;

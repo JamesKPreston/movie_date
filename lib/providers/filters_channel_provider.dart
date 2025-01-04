@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_date/models/room_model.dart';
-import 'package:movie_date/providers/members_service_provider.dart';
+import 'package:movie_date/providers/room_service_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-final filtersProvider = StreamProvider.autoDispose<Room>((ref) {
+final filtersChannelProvider = StreamProvider.autoDispose<Room>((ref) {
   final supabaseClient = Supabase.instance.client;
   final filtersChannel = supabaseClient.channel('public:rooms');
   final controller = StreamController<Room>();
@@ -31,8 +31,8 @@ final filtersProvider = StreamProvider.autoDispose<Room>((ref) {
   });
 
   return controller.stream.asyncExpand((room) async* {
-    final membersService = ref.read(membersServiceProvider);
-    final currentRoom = await membersService.getRoomByUserId(supabaseClient.auth.currentUser!.id);
+    final roomService = ref.read(roomServiceProvider);
+    final currentRoom = await roomService.getRoomByUserId(supabaseClient.auth.currentUser!.id);
     if (currentRoom.id == room.id) {
       yield room;
     }

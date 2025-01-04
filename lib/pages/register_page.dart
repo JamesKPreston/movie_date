@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_date/pages/login_page.dart';
-import 'package:movie_date/providers/members_service_provider.dart';
+import 'package:movie_date/providers/profile_repository_provider.dart';
+import 'package:movie_date/providers/room_service_provider.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -39,8 +40,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     try {
       var response = await supabase.auth.signUp(email: email, password: password);
       var userId = response.user!.id;
-      var memberService = ref.read(membersServiceProvider);
-      memberService.createNewUser(userId, email);
+
+      var roomService = ref.read(roomServiceProvider);
+      await roomService.createRoom(userId, email);
+
+      var profileRepo = ref.read(profileRepositoryProvider);
+      profileRepo.updateEmailById(userId, email);
       Navigator.of(context).pushAndRemoveUntil(LoginPage.route(), (route) => false);
     } on AuthException catch (error) {
       context.showErrorSnackBar(message: error.message);
