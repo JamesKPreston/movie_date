@@ -31,13 +31,29 @@ Build the iOS app
 
 Increment the build number
 
-### ios increment_version
+### ios major
 
 ```sh
-[bundle exec] fastlane ios increment_version
+[bundle exec] fastlane ios major
 ```
 
-Increment the version
+Increment the version major
+
+### ios patch
+
+```sh
+[bundle exec] fastlane ios patch
+```
+
+Increment the version patch
+
+### ios minor
+
+```sh
+[bundle exec] fastlane ios minor
+```
+
+Increment the version minor
 
 ### ios distribute_ios
 
