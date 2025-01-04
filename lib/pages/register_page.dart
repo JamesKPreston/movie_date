@@ -189,7 +189,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     const SizedBox(height: 16),
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pop(); // Navigate back to the previous screen
+                        Navigator.of(context).pop();
                       },
                       child: const Text(
                         'Back to Login',

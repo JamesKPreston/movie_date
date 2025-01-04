@@ -50,7 +50,6 @@ class _MembersPageState extends ConsumerState<MembersPage> {
         setState(() {
           _selectedIndex = index;
         });
-      //_pageController.jumpToPage(index);
     }
   }
 
@@ -77,11 +76,6 @@ class _MembersPageState extends ConsumerState<MembersPage> {
             label: 'Home',
             selectedIcon: Icon(Icons.home),
           ),
-          // NavigationDestination(
-          //   icon: Icon(Icons.door_front_door_outlined),
-          //   label: 'Join Room',
-          //   selectedIcon: Icon(Icons.door_front_door),
-          // ),
           NavigationDestination(
             icon: Icon(Icons.logout_outlined),
             label: 'Leave Room',

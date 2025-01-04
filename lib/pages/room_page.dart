@@ -4,15 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/filters/movie.dart';
 import 'package:jp_moviedb/types/genre.dart';
 import 'package:jp_moviedb/types/person.dart';
-import 'package:movie_date/models/member_model.dart';
 import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/pages/match_found_page.dart';
 import 'package:movie_date/providers/genre_repository_provider.dart';
-import 'package:movie_date/providers/members_repository_provider.dart';
 import 'package:movie_date/providers/movie_choices_channel_provider.dart';
-import 'package:movie_date/providers/profile_repository_provider.dart';
-import 'package:movie_date/providers/room_repository_provider.dart';
-import 'package:movie_date/models/room_model.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:movie_date/widgets/actor_widget.dart';
@@ -53,7 +48,15 @@ class _RoomPageState extends ConsumerState<RoomPage> {
     if (genres.isEmpty) {
       return;
     }
-    final filters = await getCurrentFilters(ref);
+    var roomService = await ref.read(roomServiceProvider);
+    var room = await roomService.getRoomByUserId(supabase.auth.currentUser!.id);
+    final filters = room.filters;
+    if (filters.isNotEmpty) {
+      await PopulateFiltersScreen(filters);
+    }
+  }
+
+  Future<void> PopulateFiltersScreen(List<MovieFilters> filters) async {
     setState(() {
       if (filters.first.withGenres != null && filters.first.withGenres!.isNotEmpty) {
         selectedGenres = filters.first.withGenres!.split('|').map((genreId) {
@@ -82,7 +85,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
     });
   }
 
-  Future<void> _showFilterDialog() async {
+  Future<void> _showGenreDialog() async {
     await FilterListDialog.display<Genre>(
       context,
       listData: genres,
@@ -146,9 +149,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
     );
   }
 
-  Future<void> createRoom() async {
-    final profileRepo = ref.read(profileRepositoryProvider);
-    final membersRepo = ref.read(membersRepositoryProvider);
+  Future<void> updateFilters() async {
     List<MovieFilters> filters = [];
     MovieFilters filter = MovieFilters(
       page: 1,
@@ -162,37 +163,9 @@ class _RoomPageState extends ConsumerState<RoomPage> {
     filter.primaryReleaseDateLte = releaseDateLte;
     filters.add(filter);
 
-    var roomRepo = await ref.read(roomRepositoryProvider);
-    var roomId = await membersRepo.getRoomIdByUserId(supabase.auth.currentUser!.id);
-    var room = await roomRepo.getRoomByRoomId(roomId);
-    var newRoomId = await roomRepo.addRoom(
-      Room(
-        id: room.id,
-        filters: filters,
-        room_code: room.room_code,
-      ),
-    );
-
-    final user = supabase.auth.currentUser;
-    //add current user to the members of that room
-    var member = Member(
-      id: user!.id,
-      room_id: newRoomId,
-      user_id: user.id,
-      email: await profileRepo.getEmailById(user.id),
-    );
-
-    var memberRepo = ref.read(membersRepositoryProvider);
-    await memberRepo.addMember(member);
+    await ref.read(roomServiceProvider).updateFiltersForRoom(filters);
 
     Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
-  }
-
-  Future<List<MovieFilters>> getCurrentFilters(WidgetRef ref) async {
-    var roomService = await ref.read(roomServiceProvider);
-    var room = await roomService.getRoomByUserId(supabase.auth.currentUser!.id);
-
-    return room.filters;
   }
 
   final InputDecoration commonInputDecoration = InputDecoration(
@@ -207,26 +180,26 @@ class _RoomPageState extends ConsumerState<RoomPage> {
 
   @override
   Widget build(BuildContext context) {
-    final movieChoices = ref.watch(movieChoicesChannelProvider);
+    ref.listen(movieChoicesChannelProvider, (previous, next) {
+      next.when(
+        data: (movieIds) {
+          if (movieIds.isNotEmpty) {
+            // Avoid multiple navigations by checking a flag
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Navigator.of(context).pushAndRemoveUntil(
+                MatchFoundPage.route(movieIds.first),
+                (route) => false,
+              );
+            });
+          }
+        },
+        loading: () {}, // Handle loading state if needed
+        error: (error, stackTrace) {
+          print('Error loading movie choices: $error');
+        },
+      );
+    });
 
-    // Check if there is a match and navigate to MatchFoundPage
-    movieChoices.when(
-      data: (movieIds) {
-        if (movieIds.isNotEmpty) {
-          // Navigate to MatchFoundPage with the first matching movie ID
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            Navigator.of(context).pushAndRemoveUntil(
-              MatchFoundPage.route(movieIds.first),
-              (route) => false,
-            );
-          });
-        }
-      },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) {
-        print('Error loading movie choices: $error');
-      },
-    );
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -255,12 +228,12 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                       decoration: commonInputDecoration.copyWith(
                         prefixIcon: const Icon(Icons.category, color: Colors.deepPurple),
                       ),
-                      onTap: _showFilterDialog,
+                      onTap: _showGenreDialog,
                     ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.add, color: Colors.deepPurple),
-                    onPressed: _showFilterDialog,
+                    onPressed: _showGenreDialog,
                   ),
                 ],
               ),
@@ -375,7 +348,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        createRoom();
+                        updateFilters();
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,

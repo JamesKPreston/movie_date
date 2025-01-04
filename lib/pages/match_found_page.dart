@@ -4,7 +4,6 @@ import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/providers/movie_repository_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
-import 'package:movie_date/services/movie_service.dart';
 
 class MatchFoundPage extends ConsumerStatefulWidget {
   final int movieId;
