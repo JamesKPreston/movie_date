@@ -4,6 +4,7 @@ import 'package:flutter_intro/flutter_intro.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_date/pages/login_page.dart';
 import 'package:movie_date/pages/members_page.dart';
+import 'package:movie_date/pages/profile_page.dart';
 import 'package:movie_date/pages/room_page.dart';
 import 'package:movie_date/pages/swipe_page.dart';
 import 'package:movie_date/pages/swipe_page_tutorial.dart';
@@ -136,6 +137,13 @@ class _MainPageState extends ConsumerState<MainPage> {
               onTap: () {
                 supabase.auth.signOut();
                 Navigator.of(context).pushAndRemoveUntil(LoginPage.route(), (route) => false);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.people, color: Colors.black),
+              title: const Text('Profile'),
+              onTap: () {
+                Navigator.of(context).pushAndRemoveUntil(ProfilePage.route(), (route) => false);
               },
             ),
             const Divider(),
