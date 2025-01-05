@@ -82,22 +82,6 @@ class _ActorPageState extends ConsumerState<ActorPage> {
 
   @override
   Widget build(BuildContext context) {
-    // if (!temp) {
-    //   return AlertDialog(
-    //     title: const Text('Confirm Exit'),
-    //     content: const Text('Do you wish to leave the page without saving?'),
-    //     actions: [
-    //       TextButton(
-    //         onPressed: () => Navigator.of(context).pop(),
-    //         child: const Text('Cancel'),
-    //       ),
-    //       TextButton(
-    //         onPressed: () => Navigator.of(context).pop(),
-    //         child: const Text('Leave'),
-    //       ),
-    //     ],
-    //   );
-    // }
     return PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, result) async {

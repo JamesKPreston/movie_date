@@ -106,6 +106,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
   }
 
   Future<void> _showActorPage() async {
+    final savedActors = List<Person>.from(selectedActors);
     final result = await Navigator.of(context).push<List<Person>>(
       MaterialPageRoute(
         builder: (context) => ActorPage(
@@ -114,12 +115,10 @@ class _RoomPageState extends ConsumerState<RoomPage> {
       ),
     );
 
-    if (result != null) {
-      setState(() {
-        selectedActors = result;
-        actorController.text = selectedActors.map((actor) => actor.name).join(', ');
-      });
-    }
+    setState(() {
+      result == null ? selectedActors = savedActors : selectedActors = result;
+      actorController.text = selectedActors.map((actor) => actor.name).join(', ');
+    });
   }
 
   Future<void> _showCalendar(bool isGte) async {
