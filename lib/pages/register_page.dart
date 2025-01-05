@@ -6,6 +6,9 @@ import 'package:movie_date/providers/room_service_provider.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+final passwordVisibilityProvider = StateProvider<bool>((ref) => true);
+final confirmPasswordVisibilityProvider = StateProvider<bool>((ref) => true);
+
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key, required this.isRegistering});
 
@@ -56,6 +59,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isPasswordVisible = ref.watch(passwordVisibilityProvider);
+    final isConfirmPasswordVisible = ref.watch(confirmPasswordVisibilityProvider);
+
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -116,7 +122,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _passwordController,
-                      obscureText: true,
+                      obscureText: isPasswordVisible,
                       decoration: InputDecoration(
                         labelText: 'PASSWORD',
                         labelStyle: const TextStyle(
@@ -130,6 +136,15 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: const BorderSide(color: Colors.red),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                            color: Colors.red,
+                          ),
+                          onPressed: () {
+                            ref.read(passwordVisibilityProvider.notifier).state = !isPasswordVisible;
+                          },
                         ),
                       ),
                       validator: (val) {
@@ -145,7 +160,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _confirmPasswordController,
-                      obscureText: true,
+                      obscureText: isConfirmPasswordVisible,
                       decoration: InputDecoration(
                         labelText: 'CONFIRM PASSWORD',
                         labelStyle: const TextStyle(
@@ -159,6 +174,15 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: const BorderSide(color: Colors.red),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                            color: Colors.red,
+                          ),
+                          onPressed: () {
+                            ref.read(confirmPasswordVisibilityProvider.notifier).state = !isConfirmPasswordVisible;
+                          },
                         ),
                       ),
                       validator: (val) {
