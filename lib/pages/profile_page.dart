@@ -1,10 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:movie_date/providers/profile_repository_provider.dart';
+import 'package:movie_date/widgets/menu_widget.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class ProfilePage extends StatefulWidget {
+class ProfilePage extends ConsumerStatefulWidget {
   @override
   _ProfilePageState createState() => _ProfilePageState();
   static Route<void> route() {
@@ -12,12 +15,23 @@ class ProfilePage extends StatefulWidget {
   }
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends ConsumerState<ProfilePage> {
   final _supabase = Supabase.instance.client;
   final _formKey = GlobalKey<FormState>();
   final _displayNameController = TextEditingController();
   String? _avatarUrl;
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = _supabase.auth.currentUser;
+    if (user != null) {
+      var profileRepo = ref.read(profileRepositoryProvider);
+      profileRepo.getDisplayNameById(user.id).then((value) => _displayNameController.text = value);
+      profileRepo.getAvatarUrlById(user.id).then((value) => setState(() => _avatarUrl = value));
+    }
+  }
 
   Future<void> _pickAndUploadImage() async {
     final picker = ImagePicker();
@@ -35,11 +49,7 @@ class _ProfilePageState extends State<ProfilePage> {
       final file = File(pickedFile.path);
       final fileName = 'avatars/${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
 
-      final response = await _supabase.storage.from('avatars').upload(fileName, file);
-
-      // if (response.error != null) {
-      //   throw Exception('Failed to upload image: ${response.error!.message}');
-      // }
+      await _supabase.storage.from('avatars').upload(fileName, file);
 
       final imageUrl = _supabase.storage.from('avatars').getPublicUrl(fileName);
 
@@ -70,15 +80,9 @@ class _ProfilePageState extends State<ProfilePage> {
         throw Exception('User not logged in');
       }
 
-      // final response = await _supabase.from('profiles').upsert({
-      //   'id': user.id, // Assuming `id` is the primary key in the `profiles` table.
-      //   'avatar_url': _avatarUrl,
-      //   'display_name': _displayNameController.text,
-      // }).execute();
-
-      // if (response.error != null) {
-      //   throw Exception('Failed to save profile: ${response.error!.message}');
-      // }
+      var profileRepo = ref.read(profileRepositoryProvider);
+      await profileRepo.updateDisplayNameById(user.id, _displayNameController.text);
+      await profileRepo.updateAvatarUrlById(user.id, _avatarUrl!);
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Profile saved!')));
     } catch (e) {
@@ -93,7 +97,23 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Profile')),
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 4.0,
+        iconTheme: const IconThemeData(
+          color: Colors.white, // Matches the AppBar text color
+        ),
+        title: const Text(
+          'Profile',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
+      ),
+      drawer: MenuWidget(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
