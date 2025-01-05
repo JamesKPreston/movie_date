@@ -1,30 +1,28 @@
 class Profile {
-  Profile(
-    this.roomId, {
+  Profile({
     required this.id,
-    required this.room_code,
     required this.createdAt,
     required this.email,
+    required this.avatarUrl,
+    required this.displayName,
   });
 
   /// User ID of the profile
   final String id;
 
-  /// Username of the profile
-  final String room_code;
-
   /// Date and time when the profile was created
   final DateTime createdAt;
 
-  /// Room Id of the room occupants record
-  String roomId;
+  final String avatarUrl;
+  final String displayName;
 
   final String email;
 
   Profile.fromMap(Map<String, dynamic> map)
       : id = map['id'],
-        room_code = map['username'],
         createdAt = DateTime.parse(map['created_at']),
-        roomId = map['room_id'],
-        email = map['email'];
+        email = map['email'],
+        avatarUrl = map['avatar_url'] ??
+            'https://fsecjnsnzjzydvymeqfo.supabase.co/storage/v1/object/public/avatars/avatars/profile-icon-design-free-vector.jpg?t=2025-01-05T18%3A26%3A26.168Z',
+        displayName = map['display_name'] ?? map['email'];
 }

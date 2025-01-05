@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/providers/members_repository_provider.dart';
+import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
 import 'package:movie_date/utils/constants.dart';
+import 'package:movie_date/widgets/menu_widget.dart';
 
 class MembersPage extends ConsumerStatefulWidget {
   static Route<void> route({String mRoomId = ''}) {
@@ -21,6 +23,7 @@ class MembersPage extends ConsumerStatefulWidget {
 class _MembersPageState extends ConsumerState<MembersPage> {
   int _selectedIndex = 0;
   List<String> _members = [];
+  Map<String, Map<String, String>> _profiles = {}; // Stores member profile data
   bool _isLoading = true;
 
   @override
@@ -31,9 +34,19 @@ class _MembersPageState extends ConsumerState<MembersPage> {
 
   Future<void> _fetchMembers() async {
     var membersRepo = ref.read(membersRepositoryProvider);
+    var profileRepo = ref.read(profileRepositoryProvider);
     final user = supabase.auth.currentUser;
     final roomId = await membersRepo.getRoomIdByUserId(user!.id);
     final response = await membersRepo.getRoomMembers(roomId);
+
+    // Fetch profile data for each member
+    for (var member in response) {
+      final profile = await profileRepo.getProfileByEmail(member);
+      _profiles[member] = {
+        'avatarUrl': profile.avatarUrl ?? '',
+        'displayName': profile.displayName ?? '',
+      };
+    }
 
     setState(() {
       _members = response;
@@ -64,8 +77,22 @@ class _MembersPageState extends ConsumerState<MembersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Members'),
+        backgroundColor: Colors.black,
+        elevation: 4.0,
+        iconTheme: const IconThemeData(
+          color: Colors.white, // Matches the AppBar text color
+        ),
+        title: const Text(
+          'Members',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
       ),
+      drawer: MenuWidget(),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: _onDestinationSelected,
@@ -89,8 +116,15 @@ class _MembersPageState extends ConsumerState<MembersPage> {
               itemCount: _members.length,
               itemBuilder: (context, index) {
                 final member = _members[index];
+                final profile = _profiles[member];
                 return ListTile(
-                  title: Text(member),
+                  leading: CircleAvatar(
+                    backgroundImage: profile?['avatarUrl'] != null && profile!['avatarUrl']!.isNotEmpty
+                        ? NetworkImage(profile['avatarUrl']!)
+                        : null,
+                    child: profile?['avatarUrl'] == null || profile!['avatarUrl']!.isEmpty ? Icon(Icons.person) : null,
+                  ),
+                  title: Text(profile?['displayName'] ?? member),
                 );
               },
             ),
