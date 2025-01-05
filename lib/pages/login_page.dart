@@ -7,6 +7,7 @@ import 'package:movie_date/pages/register_page.dart';
 final loginProvider = StateNotifierProvider<LoginNotifier, bool>((ref) => LoginNotifier());
 final emailControllerProvider = Provider((ref) => TextEditingController());
 final passwordControllerProvider = Provider((ref) => TextEditingController());
+final passwordVisibilityProvider = StateProvider<bool>((ref) => true);
 
 class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
@@ -20,6 +21,7 @@ class LoginPage extends ConsumerWidget {
     final isLoading = ref.watch(loginProvider);
     final emailController = ref.read(emailControllerProvider);
     final passwordController = ref.read(passwordControllerProvider);
+    final isPasswordVisible = ref.watch(passwordVisibilityProvider);
 
     return Scaffold(
       body: Center(
@@ -75,7 +77,7 @@ class LoginPage extends ConsumerWidget {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: passwordController,
-                      obscureText: true,
+                      obscureText: isPasswordVisible,
                       decoration: InputDecoration(
                         labelText: 'PASSWORD',
                         labelStyle: const TextStyle(
@@ -89,6 +91,15 @@ class LoginPage extends ConsumerWidget {
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                           borderSide: const BorderSide(color: Colors.red),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                            color: Colors.red,
+                          ),
+                          onPressed: () {
+                            ref.read(passwordVisibilityProvider.notifier).state = !isPasswordVisible;
+                          },
                         ),
                       ),
                     ),
