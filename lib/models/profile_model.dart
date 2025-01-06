@@ -22,7 +22,6 @@ class Profile {
       : id = map['id'],
         createdAt = DateTime.parse(map['created_at']),
         email = map['email'],
-        avatarUrl = map['avatar_url'] ??
-            'https://fsecjnsnzjzydvymeqfo.supabase.co/storage/v1/object/public/avatars/avatars/profile-icon-design-free-vector.jpg?t=2025-01-05T18%3A26%3A26.168Z',
+        avatarUrl = map['avatar_url'] ?? '',
         displayName = map['display_name'] ?? map['email'];
 }

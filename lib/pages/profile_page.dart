@@ -47,7 +47,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       });
 
       final file = File(pickedFile.path);
-      final fileName = 'avatars/${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
 
       await _supabase.storage.from('avatars').upload(fileName, file);
 
