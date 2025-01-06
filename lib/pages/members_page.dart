@@ -56,6 +56,9 @@ class _MembersPageState extends ConsumerState<MembersPage> {
 
   void _onDestinationSelected(int index) {
     switch (index) {
+      case 0:
+        Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
+        break;
       case 1:
         _leaveRoom();
         break;
