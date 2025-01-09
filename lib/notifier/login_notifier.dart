@@ -28,4 +28,18 @@ class LoginNotifier extends StateNotifier<bool> {
       rethrow;
     }
   }
+
+  Future<String> signUp(String email, String password) async {
+    try {
+      var userId = await _loginRepository.signUp(email, password);
+      state = false;
+      return userId;
+    } catch (e) {
+      state = false;
+      throw Exception('Sign up failed: $e');
+    } finally {
+      isLoading = false;
+      state = state;
+    }
+  }
 }
