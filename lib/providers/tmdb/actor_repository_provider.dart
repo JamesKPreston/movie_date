@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:movie_date/repositories/actor_repository.dart';
-import 'package:movie_date/supabase/repositories/actor_repository.dart';
+import 'package:movie_date/tmdb/repositories/actor_repository.dart';
 
 final actorRepositoryProvider = Provider<ActorRepository>((ref) {
   final apiKey = dotenv.env['API_KEY'] ?? '';

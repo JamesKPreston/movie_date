@@ -11,7 +11,6 @@ import 'package:movie_date/providers/tmdb/genre_repository_provider.dart';
 import 'package:movie_date/supabase/providers/movie_choices_channel_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
-import 'package:movie_date/utils/constants.dart';
 import 'package:movie_date/widgets/calendar_widget.dart';
 
 class RoomPage extends ConsumerStatefulWidget {

@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_intro/flutter_intro.dart';
 import 'package:movie_date/pages/login_page.dart';
 import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/pages/members_page.dart';
 import 'package:movie_date/pages/profile_page.dart';
 import 'package:movie_date/pages/swipe_page_tutorial.dart';
-import 'package:movie_date/utils/constants.dart';
+import 'package:movie_date/providers/login_notifier_provider.dart';
 
-class MenuWidget extends StatelessWidget {
+class MenuWidget extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loginNotifier = ref.read(loginNotifierProvider.notifier);
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -26,9 +29,18 @@ class MenuWidget extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.black),
             title: const Text('Log Out'),
-            onTap: () {
-              supabase.auth.signOut();
-              Navigator.of(context).pushAndRemoveUntil(LoginPage.route(), (route) => false);
+            onTap: () async {
+              try {
+                await loginNotifier.logout();
+                Navigator.of(context).pushAndRemoveUntil(
+                  LoginPage.route(),
+                  (route) => false,
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to log out: $e')),
+                );
+              }
             },
           ),
           const Divider(),
