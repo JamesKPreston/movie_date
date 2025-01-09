@@ -3,10 +3,11 @@ import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/pages/match_found_page.dart';
-import 'package:movie_date/providers/filters_channel_provider.dart';
-import 'package:movie_date/providers/genre_repository_provider.dart';
-import 'package:movie_date/providers/movie_choices_channel_provider.dart';
+import 'package:movie_date/supabase/providers/filters_channel_provider.dart';
+import 'package:movie_date/providers/tmdb/genre_repository_provider.dart';
+import 'package:movie_date/supabase/providers/movie_choices_channel_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
+import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -48,7 +49,9 @@ class _SwipePageState extends ConsumerState<SwipePage> {
 
   void loadRoomCode() async {
     final roomService = ref.read(roomServiceProvider);
-    roomCode = await roomService.getRoomCodeById(supabase.auth.currentUser!.id);
+    final profileRepo = ref.read(profileRepositoryProvider);
+    final userId = await profileRepo.getCurrentUserId();
+    roomCode = await roomService.getRoomCodeById(userId);
     setState(() {});
   }
 

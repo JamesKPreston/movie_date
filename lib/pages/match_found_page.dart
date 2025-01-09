@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/pages/main_page.dart';
-import 'package:movie_date/providers/movie_repository_provider.dart';
+import 'package:movie_date/providers/tmdb/movie_repository_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
 
 class MatchFoundPage extends ConsumerStatefulWidget {

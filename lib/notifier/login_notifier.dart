@@ -1,24 +1,31 @@
-// StateNotifier to handle login state and logic
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:movie_date/pages/splash_page.dart';
-import 'package:movie_date/utils/constants.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:movie_date/repositories/login_repository.dart';
 
 class LoginNotifier extends StateNotifier<bool> {
-  LoginNotifier() : super(false);
+  final LoginRepository _loginRepository;
+  bool isLoading = false;
 
-  Future<void> signIn(BuildContext context, String email, String password) async {
-    state = true; // Set loading state
+  LoginNotifier(this._loginRepository) : super(false);
+
+  Future<void> login(String email, String password) async {
     try {
-      await supabase.auth.signInWithPassword(email: email, password: password);
-      Navigator.of(context).pushAndRemoveUntil(SplashPage.route(), (route) => false);
-    } on AuthException catch (error) {
-      context.showErrorSnackBar(message: error.message);
-    } catch (_) {
-      context.showErrorSnackBar(message: "Unexpected error occurred.");
+      await _loginRepository.login(email, password);
+      state = await _loginRepository.isLoggedIn();
+    } catch (e) {
+      state = false;
+      throw Exception('Login failed: $e');
     } finally {
-      state = false; // Reset loading state
+      isLoading = false;
+      state = state;
+    }
+  }
+
+  Future<void> logout() async {
+    try {
+      await _loginRepository.logout();
+      state = false;
+    } catch (e) {
+      rethrow;
     }
   }
 }
