@@ -43,7 +43,8 @@ class RoomService {
   }
 
   Future<void> updateFiltersForRoom(List<MovieFilters> filters) async {
-    var roomId = await _membersRepository.getRoomIdByUserId(supabase.auth.currentUser!.id);
+    final userId = await _profileRepository.getCurrentUserId();
+    var roomId = await _membersRepository.getRoomIdByUserId(userId);
     var room = await _roomRepository.getRoomByRoomId(roomId);
     await _roomRepository.addRoom(
       Room(

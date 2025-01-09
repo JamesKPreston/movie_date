@@ -7,8 +7,9 @@ import 'package:jp_moviedb/types/person.dart';
 import 'package:movie_date/pages/actor_page.dart';
 import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/pages/match_found_page.dart';
-import 'package:movie_date/providers/genre_repository_provider.dart';
-import 'package:movie_date/providers/movie_choices_channel_provider.dart';
+import 'package:movie_date/providers/tmdb/genre_repository_provider.dart';
+import 'package:movie_date/supabase/providers/movie_choices_channel_provider.dart';
+import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:movie_date/widgets/calendar_widget.dart';
@@ -48,8 +49,11 @@ class _RoomPageState extends ConsumerState<RoomPage> {
     if (genres.isEmpty) {
       return;
     }
+    var profileRepo = ref.read(profileRepositoryProvider);
     var roomService = await ref.read(roomServiceProvider);
-    var room = await roomService.getRoomByUserId(supabase.auth.currentUser!.id);
+
+    var userId = await profileRepo.getCurrentUserId();
+    var room = await roomService.getRoomByUserId(userId);
     final filters = room.filters;
     if (filters.isNotEmpty) {
       await PopulateFiltersScreen(filters);

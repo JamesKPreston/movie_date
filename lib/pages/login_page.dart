@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:movie_date/notifier/login_notifier.dart';
 import 'package:movie_date/pages/register_page.dart';
+import 'package:movie_date/pages/splash_page.dart';
+import 'package:movie_date/providers/login_notifier_provider.dart';
 
 // Providers for state management
-final loginProvider = StateNotifierProvider<LoginNotifier, bool>((ref) => LoginNotifier());
 final emailControllerProvider = Provider((ref) => TextEditingController());
 final passwordControllerProvider = Provider((ref) => TextEditingController());
 final passwordVisibilityProvider = StateProvider<bool>((ref) => true);
 
-class LoginPage extends ConsumerWidget {
+class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
 
   static Route<void> route() {
@@ -17,12 +17,44 @@ class LoginPage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isLoading = ref.watch(loginProvider);
-    final emailController = ref.read(emailControllerProvider);
-    final passwordController = ref.read(passwordControllerProvider);
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends ConsumerState<LoginPage> {
+  late TextEditingController emailController;
+  late TextEditingController passwordController;
+
+  @override
+  void initState() {
+    super.initState();
+    emailController = TextEditingController();
+    passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isLoggedIn = ref.watch(loginNotifierProvider);
+    final loginNotifier = ref.read(loginNotifierProvider.notifier);
+    final isLoading = loginNotifier.isLoading;
     final isPasswordVisible = ref.watch(passwordVisibilityProvider);
 
+    // Listen for state changes in loginNotifierProvider
+    ref.listen<bool>(loginNotifierProvider, (previous, next) {
+      if (previous == false && next == true) {
+        // Navigate to SplashPage on successful login
+        Navigator.of(context).pushAndRemoveUntil(
+          SplashPage.route(),
+          (route) => false,
+        );
+      }
+    });
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -113,12 +145,22 @@ class LoginPage extends ConsumerWidget {
                         ),
                         onPressed: isLoading
                             ? null
-                            : () {
-                                ref.read(loginProvider.notifier).signIn(
-                                      context,
-                                      emailController.text,
-                                      passwordController.text,
-                                    );
+                            : () async {
+                                try {
+                                  await loginNotifier.login(
+                                    emailController.text,
+                                    passwordController.text,
+                                  );
+                                  // Navigate to SplashPage on successful login
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    SplashPage.route(),
+                                    (route) => false,
+                                  );
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(e.toString())),
+                                  );
+                                }
                               },
                         child: isLoading
                             ? const CircularProgressIndicator(

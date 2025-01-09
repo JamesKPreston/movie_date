@@ -14,8 +14,8 @@ class MovieService {
   MovieService(this.movieRepository, this.profileRepository, this.roomRepository, this.memberRepository);
 
   Future<List<Movie>> getMovies(int page) async {
-    final user = supabase.auth.currentUser;
-    final room = await memberRepository.getRoomIdByUserId(user!.id).then((roomId) {
+    final userId = await profileRepository.getCurrentUserId();
+    final room = await memberRepository.getRoomIdByUserId(userId).then((roomId) {
       return roomRepository.getRoomByRoomId(roomId);
     });
 
@@ -38,8 +38,8 @@ class MovieService {
   }
 
   Future<List<int>> getSavedMoviesByRoomId() async {
-    final user = supabase.auth.currentUser;
-    final room = await memberRepository.getRoomIdByUserId(user!.id).then((roomId) {
+    final userId = await profileRepository.getCurrentUserId();
+    final room = await memberRepository.getRoomIdByUserId(userId).then((roomId) {
       return roomRepository.getRoomByRoomId(roomId);
     });
     final movieIds = await movieRepository.getMovieChoices(room.id);
@@ -47,15 +47,15 @@ class MovieService {
   }
 
   Future<void> saveMovie(int movieId) async {
-    final user = supabase.auth.currentUser;
-    final roomId = await memberRepository.getRoomIdByUserId(user!.id);
+    final userId = await profileRepository.getCurrentUserId();
+    final roomId = await memberRepository.getRoomIdByUserId(userId);
 
-    await movieRepository.saveMovie(movieId, user.id, roomId);
+    await movieRepository.saveMovie(movieId, userId, roomId);
   }
 
   Future<bool> isMovieSaved(int movieId) async {
-    final user = supabase.auth.currentUser;
-    final roomId = await memberRepository.getRoomIdByUserId(user!.id);
+    final userId = await profileRepository.getCurrentUserId();
+    final roomId = await memberRepository.getRoomIdByUserId(userId);
 
     final otherUsersChoices = await movieRepository.getMovieChoices(roomId);
     final myChoices = await movieRepository.getUsersMovieChoices(roomId);
@@ -64,12 +64,12 @@ class MovieService {
   }
 
   Future<int> findMatchingMovieId() async {
-    final user = supabase.auth.currentUser;
-    if (user == null) {
+    final userId = await profileRepository.getCurrentUserId();
+    if (userId == '') {
       throw Exception("User is not logged in");
     }
 
-    final roomId = await memberRepository.getRoomIdByUserId(user.id);
+    final roomId = await memberRepository.getRoomIdByUserId(userId);
 
     final otherUsersChoices = await movieRepository.getMovieChoices(roomId);
     final myChoices = await movieRepository.getUsersMovieChoices(roomId);
@@ -84,8 +84,8 @@ class MovieService {
   }
 
   Future<void> deleteMovieChoicesByRoomId() async {
-    final user = supabase.auth.currentUser;
-    final roomId = await memberRepository.getRoomIdByUserId(user!.id);
+    final userId = await profileRepository.getCurrentUserId();
+    final roomId = await memberRepository.getRoomIdByUserId(userId);
 
     await movieRepository.deleteMovieChoicesByRoomId(roomId);
   }

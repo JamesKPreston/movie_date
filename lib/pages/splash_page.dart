@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_intro/flutter_intro.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_date/pages/login_page.dart';
 import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/pages/swipe_page_tutorial.dart';
+import 'package:movie_date/providers/login_repository_provider.dart';
+import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Page to redirect users to the appropriate page depending on the initial auth state
-class SplashPage extends StatefulWidget {
+class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
   static Route<void> route() {
     return MaterialPageRoute(builder: (context) => const SplashPage());
@@ -17,7 +20,7 @@ class SplashPage extends StatefulWidget {
   SplashPageState createState() => SplashPageState();
 }
 
-class SplashPageState extends State<SplashPage> {
+class SplashPageState extends ConsumerState<SplashPage> {
   @override
   void initState() {
     super.initState();
@@ -36,9 +39,9 @@ class SplashPageState extends State<SplashPage> {
 
   Future<void> _redirect() async {
     await Future.delayed(Duration.zero);
-
-    final session = supabase.auth.currentSession;
-    if (session == null) {
+    var loginRepo = ref.read(loginRepositoryProvider);
+    final isLoggedIn = await loginRepo.isLoggedIn();
+    if (!isLoggedIn) {
       Navigator.of(context).pushAndRemoveUntil(LoginPage.route(), (route) => false);
     } else {
       if (_hasSeenTutorial) {
