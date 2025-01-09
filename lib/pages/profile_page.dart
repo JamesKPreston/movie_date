@@ -21,16 +21,15 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   final _displayNameController = TextEditingController();
   String? _avatarUrl;
   bool _isLoading = false;
+  String userId = '';
 
   @override
-  void initState() {
+  Future<void> initState() async {
     super.initState();
-    final user = _supabase.auth.currentUser;
-    if (user != null) {
-      var profileRepo = ref.read(profileRepositoryProvider);
-      profileRepo.getDisplayNameById(user.id).then((value) => _displayNameController.text = value);
-      profileRepo.getAvatarUrlById(user.id).then((value) => setState(() => _avatarUrl = value));
-    }
+    var profileRepo = ref.read(profileRepositoryProvider);
+    userId = await profileRepo.getCurrentUserId();
+    profileRepo.getDisplayNameById(userId).then((value) => _displayNameController.text = value);
+    profileRepo.getAvatarUrlById(userId).then((value) => setState(() => _avatarUrl = value));
   }
 
   Future<void> _pickAndUploadImage() async {
@@ -75,14 +74,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         _isLoading = true;
       });
 
-      final user = _supabase.auth.currentUser;
-      if (user == null) {
+      if (userId == '') {
         throw Exception('User not logged in');
       }
 
       var profileRepo = ref.read(profileRepositoryProvider);
-      await profileRepo.updateDisplayNameById(user.id, _displayNameController.text);
-      await profileRepo.updateAvatarUrlById(user.id, _avatarUrl!);
+      await profileRepo.updateDisplayNameById(userId, _displayNameController.text);
+      await profileRepo.updateAvatarUrlById(userId, _avatarUrl!);
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Profile saved!')));
     } catch (e) {

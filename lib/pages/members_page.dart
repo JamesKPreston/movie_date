@@ -4,7 +4,6 @@ import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/providers/members_repository_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
-import 'package:movie_date/utils/constants.dart';
 import 'package:movie_date/widgets/menu_widget.dart';
 
 class MembersPage extends ConsumerStatefulWidget {
@@ -25,6 +24,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
   List<String> _members = [];
   Map<String, Map<String, String>> _profiles = {}; // Stores member profile data
   bool _isLoading = true;
+  String userId = '';
 
   @override
   void initState() {
@@ -35,8 +35,8 @@ class _MembersPageState extends ConsumerState<MembersPage> {
   Future<void> _fetchMembers() async {
     var membersRepo = ref.read(membersRepositoryProvider);
     var profileRepo = ref.read(profileRepositoryProvider);
-    final user = supabase.auth.currentUser;
-    final roomId = await membersRepo.getRoomIdByUserId(user!.id);
+    userId = await profileRepo.getCurrentUserId();
+    final roomId = await membersRepo.getRoomIdByUserId(userId);
     final response = await membersRepo.getRoomMembers(roomId);
 
     // Fetch profile data for each member
@@ -71,8 +71,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
 
   Future<void> _leaveRoom() async {
     var roomService = ref.read(roomServiceProvider);
-    final user = supabase.auth.currentUser;
-    roomService.createRoom(user!.id, "");
+    roomService.createRoom(userId, "");
     Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
   }
 

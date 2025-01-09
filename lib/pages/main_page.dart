@@ -5,6 +5,7 @@ import 'package:movie_date/pages/members_page.dart';
 import 'package:movie_date/pages/room_page.dart';
 import 'package:movie_date/pages/swipe_page.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
+import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:movie_date/widgets/menu_widget.dart';
 
@@ -49,6 +50,7 @@ class _MainPageState extends ConsumerState<MainPage> {
   void _showJoinRoomDialog() {
     TextEditingController roomCodeController = TextEditingController();
     final roomService = ref.read(roomServiceProvider);
+    final profileRepository = ref.read(profileRepositoryProvider);
 
     showDialog(
       context: context,
@@ -76,7 +78,7 @@ class _MainPageState extends ConsumerState<MainPage> {
               onPressed: () async {
                 final roomCode = roomCodeController.text;
                 try {
-                  await roomService.joinRoom(roomCode, supabase.auth.currentUser!.id);
+                  await roomService.joinRoom(roomCode, await profileRepository.getCurrentUserId());
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
