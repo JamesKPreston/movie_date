@@ -6,7 +6,6 @@ import 'package:movie_date/pages/room_page.dart';
 import 'package:movie_date/pages/swipe_page.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
-import 'package:movie_date/utils/constants.dart';
 import 'package:movie_date/widgets/menu_widget.dart';
 
 class MainPage extends ConsumerStatefulWidget {
