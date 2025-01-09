@@ -3,7 +3,6 @@ import 'package:movie_date/repositories/members_repository.dart';
 import 'package:movie_date/repositories/movie_repository.dart';
 import 'package:movie_date/repositories/profile_repository.dart';
 import 'package:movie_date/repositories/room_repository.dart';
-import 'package:movie_date/utils/constants.dart';
 
 class MovieService {
   final MovieRepository movieRepository;
