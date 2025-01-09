@@ -40,7 +40,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoggedIn = ref.watch(loginNotifierProvider);
     final loginNotifier = ref.read(loginNotifierProvider.notifier);
     final isLoading = loginNotifier.isLoading;
     final isPasswordVisible = ref.watch(passwordVisibilityProvider);
@@ -152,10 +151,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                     passwordController.text,
                                   );
                                   // Navigate to SplashPage on successful login
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                    SplashPage.route(),
-                                    (route) => false,
-                                  );
+                                  // Navigator.of(context).pushAndRemoveUntil(
+                                  //   SplashPage.route(),
+                                  //   (route) => false,
+                                  // );
                                 } catch (e) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(content: Text(e.toString())),

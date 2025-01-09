@@ -9,7 +9,6 @@ import 'package:movie_date/supabase/providers/movie_choices_channel_provider.dar
 import 'package:movie_date/providers/movie_service_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
-import 'package:movie_date/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:movie_date/widgets/movie_details_widget.dart';
 import 'package:movie_date/providers/youtube_repository_provider.dart';
