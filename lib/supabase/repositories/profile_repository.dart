@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:movie_date/models/profile_model.dart';
 import 'package:movie_date/repositories/profile_repository.dart';
 import 'package:movie_date/utils/constants.dart';
@@ -14,7 +16,7 @@ class SupabaseProfileRepository implements ProfileRepository {
 
   Future<String> getAvatarUrlById(String id) async {
     var result = await supabase.from('profiles').select('avatar_url').eq('id', id).single();
-    return result['avatar_url'] as String;
+    return result['avatar_url'] != null ? result['avatar_url'] as String : "";
   }
 
   Future<void> updateAvatarUrlById(String id, String avatarUrl) async {
@@ -23,7 +25,7 @@ class SupabaseProfileRepository implements ProfileRepository {
 
   Future<String> getDisplayNameById(String id) async {
     var result = await supabase.from('profiles').select('display_name').eq('id', id).single();
-    return result['display_name'] as String;
+    return result['display_name'] == null ? '' : result['display_name'] as String;
   }
 
   Future<void> updateDisplayNameById(String id, String displayName) async {
@@ -37,5 +39,11 @@ class SupabaseProfileRepository implements ProfileRepository {
 
   Future<String> getCurrentUserId() async {
     return supabase.auth.currentUser!.id;
+  }
+
+  Future<String> uploadAvatar(File file) async {
+    final fileName = '${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
+    await supabase.storage.from('avatars').upload(fileName, file);
+    return supabase.storage.from('avatars').getPublicUrl(fileName);
   }
 }
