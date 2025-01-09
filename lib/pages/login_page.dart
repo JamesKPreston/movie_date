@@ -9,7 +9,7 @@ final emailControllerProvider = Provider((ref) => TextEditingController());
 final passwordControllerProvider = Provider((ref) => TextEditingController());
 final passwordVisibilityProvider = StateProvider<bool>((ref) => true);
 
-class LoginPage extends ConsumerStatefulWidget {
+class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
 
   static Route<void> route() {
@@ -17,43 +17,23 @@ class LoginPage extends ConsumerStatefulWidget {
   }
 
   @override
-  _LoginPageState createState() => _LoginPageState();
-}
-
-class _LoginPageState extends ConsumerState<LoginPage> {
-  late TextEditingController emailController;
-  late TextEditingController passwordController;
-
-  @override
-  void initState() {
-    super.initState();
-    emailController = TextEditingController();
-    passwordController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final loginNotifier = ref.read(loginNotifierProvider.notifier);
-    final isLoading = loginNotifier.isLoading;
+    final isLoading = ref.watch(loginNotifierProvider.notifier).isLoading;
+
+    final emailController = ref.read(emailControllerProvider);
+    final passwordController = ref.read(passwordControllerProvider);
     final isPasswordVisible = ref.watch(passwordVisibilityProvider);
 
-    // Listen for state changes in loginNotifierProvider
     ref.listen<bool>(loginNotifierProvider, (previous, next) {
-      if (previous == false && next == true) {
-        // Navigate to SplashPage on successful login
+      if (next) {
         Navigator.of(context).pushAndRemoveUntil(
           SplashPage.route(),
           (route) => false,
         );
       }
     });
+
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -150,11 +130,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                     emailController.text,
                                     passwordController.text,
                                   );
-                                  // Navigate to SplashPage on successful login
-                                  // Navigator.of(context).pushAndRemoveUntil(
-                                  //   SplashPage.route(),
-                                  //   (route) => false,
-                                  // );
                                 } catch (e) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(content: Text(e.toString())),

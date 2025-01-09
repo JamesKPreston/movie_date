@@ -27,4 +27,15 @@ class SupabaseLoginRepository implements LoginRepository {
   Future<bool> isLoggedIn() async {
     return supabase.auth.currentUser != null;
   }
+
+  @override
+  Future<String> signUp(String email, String password) async {
+    try {
+      return (await supabase.auth.signUp(email: email, password: password)).user!.id;
+    } on AuthException catch (_) {
+      rethrow;
+    } catch (_) {
+      throw Exception("Unexpected error occurred.");
+    }
+  }
 }

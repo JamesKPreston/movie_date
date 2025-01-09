@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:movie_date/pages/login_page.dart';
+import 'package:movie_date/providers/login_notifier_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
 import 'package:movie_date/utils/constants.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 final passwordVisibilityProvider = StateProvider<bool>((ref) => true);
 final confirmPasswordVisibilityProvider = StateProvider<bool>((ref) => true);
@@ -41,17 +40,19 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final email = _emailController.text;
     final password = _passwordController.text;
     try {
-      var response = await supabase.auth.signUp(email: email, password: password);
-      var userId = response.user!.id;
+      var loginNotifier = ref.read(loginNotifierProvider.notifier);
+      var userId = "";
+      userId = await loginNotifier.signUp(email, password);
 
       var roomService = ref.read(roomServiceProvider);
       await roomService.createRoom(userId, email);
 
       var profileRepo = ref.read(profileRepositoryProvider);
-      profileRepo.updateEmailById(userId, email);
-      Navigator.of(context).pushAndRemoveUntil(LoginPage.route(), (route) => false);
-    } on AuthException catch (error) {
-      context.showErrorSnackBar(message: error.message);
+      await profileRepo.updateEmailById(userId, email);
+
+      await loginNotifier.login(email, password);
+    } on Exception catch (error) {
+      context.showErrorSnackBar(message: error.toString());
     } catch (error) {
       context.showErrorSnackBar(message: unexpectedErrorMessage);
     }
