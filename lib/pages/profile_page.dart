@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/widgets/menu_widget.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
   @override
@@ -16,7 +15,6 @@ class ProfilePage extends ConsumerStatefulWidget {
 }
 
 class _ProfilePageState extends ConsumerState<ProfilePage> {
-  final _supabase = Supabase.instance.client;
   final _formKey = GlobalKey<FormState>();
   final _displayNameController = TextEditingController();
   String? _avatarUrl;
@@ -24,12 +22,33 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   String userId = '';
 
   @override
-  Future<void> initState() async {
+  void initState() {
     super.initState();
-    var profileRepo = ref.read(profileRepositoryProvider);
-    userId = await profileRepo.getCurrentUserId();
-    profileRepo.getDisplayNameById(userId).then((value) => _displayNameController.text = value);
-    profileRepo.getAvatarUrlById(userId).then((value) => setState(() => _avatarUrl = value));
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      var profileRepo = ref.read(profileRepositoryProvider);
+      userId = await profileRepo.getCurrentUserId();
+      final displayName = await profileRepo.getDisplayNameById(userId);
+      final avatarUrl = await profileRepo.getAvatarUrlById(userId);
+
+      setState(() {
+        _displayNameController.text = displayName;
+        if (avatarUrl != "") _avatarUrl = avatarUrl;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _pickAndUploadImage() async {
@@ -45,12 +64,11 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         _isLoading = true;
       });
 
+      var profileRepo = ref.read(profileRepositoryProvider);
+
       final file = File(pickedFile.path);
-      final fileName = '${DateTime.now().millisecondsSinceEpoch}_${file.path.split('/').last}';
 
-      await _supabase.storage.from('avatars').upload(fileName, file);
-
-      final imageUrl = _supabase.storage.from('avatars').getPublicUrl(fileName);
+      final imageUrl = await profileRepo.uploadAvatar(file);
 
       setState(() {
         _avatarUrl = imageUrl;
@@ -79,8 +97,10 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       }
 
       var profileRepo = ref.read(profileRepositoryProvider);
-      await profileRepo.updateDisplayNameById(userId, _displayNameController.text);
-      await profileRepo.updateAvatarUrlById(userId, _avatarUrl!);
+      _displayNameController.text != ""
+          ? await profileRepo.updateDisplayNameById(userId, _displayNameController.text)
+          : null;
+      _avatarUrl != null ? await profileRepo.updateAvatarUrlById(userId, _avatarUrl!) : null;
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Profile saved!')));
     } catch (e) {

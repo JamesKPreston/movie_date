@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:movie_date/models/profile_model.dart';
 
 abstract class ProfileRepository {
@@ -9,4 +11,5 @@ abstract class ProfileRepository {
   Future<void> updateDisplayNameById(String id, String displayName);
   Future<Profile> getProfileByEmail(String email);
   Future<String> getCurrentUserId();
+  Future<String> uploadAvatar(File file);
 }
