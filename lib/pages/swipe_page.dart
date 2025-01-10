@@ -303,6 +303,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
                               final movieService = ref.read(movieServiceProvider);
                               movieService.saveMovie(movies[previousIndex].id);
                             }
+                            setState(() {});
                             return true;
                           },
                         ),
