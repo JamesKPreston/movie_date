@@ -3,16 +3,21 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:jp_moviedb/types/person.dart';
 import 'package:movie_date/repositories/actor_repository.dart';
 import 'package:movie_date/tmdb/repositories/actor_repository.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final actorRepositoryProvider = Provider<ActorRepository>((ref) {
+part 'actor_repository_provider.g.dart';
+
+@riverpod
+ActorRepository actorRepository(Ref ref) {
   final apiKey = dotenv.env['API_KEY'] ?? '';
   if (apiKey.isEmpty) {
     throw Exception("API_KEY is missing or empty in the .env file");
   }
   return TmdbActorRepository(apiKey);
-});
+}
 
-final actorFutureProvider = FutureProvider.family<List<Person>, String>((ref, actors) async {
+@riverpod
+Future<List<Person>> actorFuture(Ref ref, String actors) async {
   final repository = ref.watch(actorRepositoryProvider);
   return repository.getActors(actors);
-});
+}

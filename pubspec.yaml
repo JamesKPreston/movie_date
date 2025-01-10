@@ -43,6 +43,7 @@ dependencies:
   scroll_date_picker: ^3.8.0
   flutter_card_swiper: ^7.0.2
   flutter_riverpod: ^2.3.6
+  riverpod_annotation:
   youtube_player_flutter: ^9.0.4
   dio: ^5.5.0+1
   flutter_intro: ^3.4.0
@@ -56,6 +57,13 @@ dev_dependencies:
     sdk: flutter
 
   flutter_launcher_icons: ^0.13.1
+  build_runner:
+  # the code generator
+  riverpod_generator:
+  # riverpod_lint makes it easier to work with Riverpod
+  riverpod_lint:
+  # import custom_lint too as riverpod_lint depends on it
+  custom_lint:
 
 flutter_icons:
   android: true
