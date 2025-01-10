@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/pages/match_found_page.dart';
 import 'package:movie_date/supabase/providers/filters_channel_provider.dart';
-import 'package:movie_date/providers/tmdb/genre_repository_provider.dart';
+import 'package:movie_date/tmdb/providers/genre_repository_provider.dart';
 import 'package:movie_date/supabase/providers/movie_choices_channel_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';

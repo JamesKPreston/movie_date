@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/mock/movies_mock.dart';
 import 'package:movie_date/pages/main_page.dart';
-import 'package:movie_date/providers/tmdb/genre_repository_provider.dart';
+import 'package:movie_date/tmdb/providers/genre_repository_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
