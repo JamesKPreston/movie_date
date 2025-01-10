@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_date/providers/members_repository_provider.dart';
-import 'package:movie_date/providers/tmdb/movie_repository_provider.dart';
+import 'package:movie_date/tmdb/providers/movie_repository_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_repository_provider.dart';
 import 'package:movie_date/services/movie_service.dart';

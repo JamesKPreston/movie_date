@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/types/person.dart';
-import 'package:movie_date/providers/tmdb/actor_repository_provider.dart';
+import 'package:movie_date/tmdb/providers/actor_repository_provider.dart';
 
 class ActorPage extends ConsumerStatefulWidget {
   final List<Person>? currentlySelectedActors;
@@ -23,40 +23,6 @@ class _ActorPageState extends ConsumerState<ActorPage> {
   void initState() {
     super.initState();
     selectedActors = widget.currentlySelectedActors ?? [];
-  }
-
-  Future<void> _searchActors() async {
-    if (_searchController.text.trim().isEmpty) return;
-
-    setState(() {
-      isLoading = true;
-    });
-
-    try {
-      final actorRepo = ref.read(actorRepositoryProvider);
-      var actors = await actorRepo.getActors(_searchController.text.trim());
-      setState(() {
-        searchResults = actors;
-      });
-    } catch (error) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Error'),
-          content: const Text('Failed to load actors. Please try again later.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Close'),
-            ),
-          ],
-        ),
-      );
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
   }
 
   void _addActor(Person actor) {
@@ -82,6 +48,24 @@ class _ActorPageState extends ConsumerState<ActorPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_searchController.text.trim().isEmpty) {
+      searchResults = [];
+    } else {
+      var actorsProvider = ref.watch(actorFutureProvider(_searchController.text.trim()));
+      actorsProvider.when(
+        data: (actors) {
+          searchResults = actors;
+          isLoading = false;
+        },
+        loading: () {
+          isLoading = true;
+        },
+        error: (error, stackTrace) {
+          print(error);
+        },
+      );
+    }
+
     return PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, result) async {
@@ -138,7 +122,9 @@ class _ActorPageState extends ConsumerState<ActorPage> {
                     ),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.search, color: Colors.deepPurple),
-                      onPressed: _searchActors,
+                      onPressed: () {
+                        setState(() {});
+                      },
                     ),
                   ),
                 ),
