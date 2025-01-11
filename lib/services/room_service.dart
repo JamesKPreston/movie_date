@@ -30,10 +30,10 @@ class RoomService {
       room_code: roomCode,
     );
 
-    var roomId = await _roomRepository.addRoom(room);
+    await _roomRepository.addRoom(room);
     var member = Member(
       id: userId,
-      room_id: roomId,
+      room_id: room.id,
       user_id: userId,
       email: email,
     );

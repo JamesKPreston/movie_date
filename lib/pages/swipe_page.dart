@@ -51,7 +51,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
     final profileRepo = ref.read(profileRepositoryProvider);
     final userId = await profileRepo.getCurrentUserId();
     roomCode = await roomService.getRoomCodeById(userId);
-    setState(() {});
+    //setState(() {});
   }
 
   void loadMovies(int page) async {
