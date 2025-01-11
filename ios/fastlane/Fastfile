@@ -68,7 +68,7 @@ platform :ios do
     firebase_app_distribution(
       app: "1:969395528079:ios:120b02032f7882f7066bfa",
       groups: "self",
-      release_notes: "Minor tweaks to improve user login / registration experience",
+      release_notes: "Improved matching response",
     )
   end
 
