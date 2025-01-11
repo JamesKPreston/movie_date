@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_intro/flutter_intro.dart';
+import 'package:movie_date/controllers/auth_controller.dart';
 import 'package:movie_date/pages/login_page.dart';
 import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/pages/members_page.dart';
 import 'package:movie_date/pages/profile_page.dart';
 import 'package:movie_date/pages/swipe_page_tutorial.dart';
-import 'package:movie_date/providers/login_notifier_provider.dart';
 
 class MenuWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final loginNotifier = ref.read(loginNotifierProvider.notifier);
+    final authControllerNotifier = ref.read(authControllerProvider.notifier);
 
     return Drawer(
       child: ListView(
@@ -31,7 +31,7 @@ class MenuWidget extends ConsumerWidget {
             title: const Text('Log Out'),
             onTap: () async {
               try {
-                await loginNotifier.logout();
+                await authControllerNotifier.logout();
                 Navigator.of(context).pushAndRemoveUntil(
                   LoginPage.route(),
                   (route) => false,
