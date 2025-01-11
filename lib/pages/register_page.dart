@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:movie_date/providers/login_notifier_provider.dart';
+import 'package:movie_date/controllers/auth_controller.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
 import 'package:movie_date/utils/constants.dart';
@@ -24,8 +24,6 @@ class RegisterPage extends ConsumerStatefulWidget {
 }
 
 class _RegisterPageState extends ConsumerState<RegisterPage> {
-  final bool _isLoading = false;
-
   final _formKey = GlobalKey<FormState>();
 
   final _emailController = TextEditingController();
@@ -39,18 +37,22 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     }
     final email = _emailController.text;
     final password = _passwordController.text;
-    try {
-      var loginNotifier = ref.read(loginNotifierProvider.notifier);
-      var userId = "";
-      userId = await loginNotifier.signUp(email, password);
 
-      var roomService = ref.read(roomServiceProvider);
+    try {
+      var authController = ref.read(authControllerProvider.notifier);
+
+      // Sign up the user and get the user ID
+      final userId = await authController.signUp(email, password);
+
+      // Create room and update profile
+      final roomService = ref.read(roomServiceProvider);
       await roomService.createRoom(userId, email);
 
-      var profileRepo = ref.read(profileRepositoryProvider);
+      final profileRepo = ref.read(profileRepositoryProvider);
       await profileRepo.updateEmailById(userId, email);
 
-      await loginNotifier.login(email, password);
+      // Log the user in
+      await authController.login(email, password);
     } on Exception catch (error) {
       context.showErrorSnackBar(message: error.toString());
     } catch (error) {
@@ -62,6 +64,30 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   Widget build(BuildContext context) {
     final isPasswordVisible = ref.watch(passwordVisibilityProvider);
     final isConfirmPasswordVisible = ref.watch(confirmPasswordVisibilityProvider);
+    final authState = ref.watch(authControllerProvider);
+
+    ref.listen<AsyncValue<void>>(authControllerProvider, (previous, next) {
+      next.whenOrNull(
+        error: (error, stackTrace) {
+          context.showErrorSnackBar(message: error.toString());
+        },
+        loading: () {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+          );
+        },
+      );
+
+      if (previous is AsyncLoading && next is! AsyncLoading) {
+        Navigator.of(context, rootNavigator: true).pop(); // Close loading dialog
+      }
+    });
 
     return Scaffold(
       body: Center(
@@ -204,7 +230,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                           backgroundColor: Colors.red,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                        onPressed: _isLoading ? null : _signUp,
+                        onPressed: authState is AsyncLoading ? null : _signUp,
                         child: const Text(
                           'Register',
                           style: TextStyle(fontSize: 16),

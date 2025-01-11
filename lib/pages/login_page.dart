@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:movie_date/controllers/auth_controller.dart';
 import 'package:movie_date/pages/register_page.dart';
 import 'package:movie_date/pages/splash_page.dart';
-import 'package:movie_date/providers/login_notifier_provider.dart';
 
 // Providers for state management
 final emailControllerProvider = Provider((ref) => TextEditingController());
@@ -18,19 +18,40 @@ class LoginPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final loginNotifier = ref.read(loginNotifierProvider.notifier);
-    final isLoading = ref.watch(loginNotifierProvider.notifier).isLoading;
-
+    final authController = ref.read(authControllerProvider.notifier);
     final emailController = ref.read(emailControllerProvider);
     final passwordController = ref.read(passwordControllerProvider);
     final isPasswordVisible = ref.watch(passwordVisibilityProvider);
 
-    ref.listen<bool>(loginNotifierProvider, (previous, next) {
-      if (next) {
-        Navigator.of(context).pushAndRemoveUntil(
-          SplashPage.route(),
-          (route) => false,
-        );
+    ref.listen<AsyncValue<void>>(authControllerProvider, (previous, next) {
+      next.when(
+        data: (data) {
+          Navigator.of(context).pushAndRemoveUntil(
+            SplashPage.route(),
+            (route) => false,
+          );
+        },
+        error: (error, stackTrace) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(error.toString())),
+          );
+        },
+        loading: () {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            },
+          );
+        },
+      );
+
+      // Close the loading dialog when not loading
+      if (previous is AsyncLoading && next is! AsyncLoading) {
+        Navigator.of(context, rootNavigator: true).pop();
       }
     });
 
@@ -122,28 +143,22 @@ class LoginPage extends ConsumerWidget {
                           backgroundColor: Colors.red,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                        onPressed: isLoading
-                            ? null
-                            : () async {
-                                try {
-                                  await loginNotifier.login(
-                                    emailController.text,
-                                    passwordController.text,
-                                  );
-                                } catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(e.toString())),
-                                  );
-                                }
-                              },
-                        child: isLoading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white,
-                              )
-                            : const Text(
-                                'LOG IN',
-                                style: TextStyle(fontSize: 16),
-                              ),
+                        onPressed: () async {
+                          try {
+                            await authController.login(
+                              emailController.text,
+                              passwordController.text,
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(e.toString())),
+                            );
+                          }
+                        },
+                        child: const Text(
+                          'LOG IN',
+                          style: TextStyle(fontSize: 16),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),

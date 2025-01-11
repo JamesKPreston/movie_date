@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:movie_date/models/room_model.dart';
 import 'package:movie_date/repositories/room_repository.dart';
 import 'package:movie_date/utils/constants.dart';
@@ -9,9 +10,23 @@ class SupabaseRoomRepository implements RoomRepository {
     return Room.fromMap(result);
   }
 
-  Future<String> addRoom(Room room) async {
-    var result = await supabase.from('rooms').upsert(room.toJson()).select('id').single();
-    return result['id'] as String;
+  // Future<String> addRoom(Room room) async {
+  //   var result = await supabase.from('rooms').upsert(room.toJson()).select('id').single();
+  //   return result['id'] as String;
+  // }
+
+  Future<void> addRoom(Room room) async {
+    try {
+      // Perform upsert
+      await supabase.from('rooms').insert(room.toJson());
+    } catch (e, stackTrace) {
+      // Log the error for debugging purposes
+
+      debugPrint('Error during upsert: $e');
+      debugPrint('Stack trace: $stackTrace');
+      // Re-throw the error to handle it in the calling code
+      rethrow;
+    }
   }
 
   Future<String> getRoomCodeById(String id) async {
