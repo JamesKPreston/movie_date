@@ -1,4 +1,6 @@
 import 'package:movie_date/providers/login_repository_provider.dart';
+import 'package:movie_date/providers/profile_repository_provider.dart';
+import 'package:movie_date/providers/room_service_provider.dart';
 import 'package:movie_date/repositories/login_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'dart:async';
@@ -35,15 +37,29 @@ class AuthController extends _$AuthController {
     }
   }
 
-  Future<String> signUp(String email, String password) async {
+  Future<void> signUp(String email, String password) async {
     try {
       state = const AsyncLoading();
       final userId = await _loginRepository.signUp(email, password);
-      state = const AsyncValue.data(null);
-      return userId;
+      state = await AsyncValue.guard(() async {
+        await createNewUser(userId, email);
+      });
     } catch (e, stackTrace) {
       state = AsyncError(e, stackTrace);
       rethrow;
+    }
+  }
+
+  Future<void> createNewUser(String userId, String email) async {
+    try {
+      final roomService = ref.read(roomServiceProvider);
+      final profileRepo = ref.read(profileRepositoryProvider);
+      state = const AsyncLoading();
+      await roomService.createRoom(userId, email);
+      await profileRepo.updateEmailById(userId, email);
+      state = const AsyncValue.data(null);
+    } catch (e, stackTrace) {
+      state = AsyncError(e, stackTrace);
     }
   }
 }

@@ -41,18 +41,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     try {
       var authController = ref.read(authControllerProvider.notifier);
 
-      // Sign up the user and get the user ID
-      final userId = await authController.signUp(email, password);
-
-      // Create room and update profile
-      final roomService = ref.read(roomServiceProvider);
-      await roomService.createRoom(userId, email);
-
-      final profileRepo = ref.read(profileRepositoryProvider);
-      await profileRepo.updateEmailById(userId, email);
-
-      // Log the user in
-      await authController.login(email, password);
+      await authController.signUp(email, password);
     } on Exception catch (error) {
       context.showErrorSnackBar(message: error.toString());
     } catch (error) {
@@ -66,28 +55,28 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     final isConfirmPasswordVisible = ref.watch(confirmPasswordVisibilityProvider);
     final authState = ref.watch(authControllerProvider);
 
-    ref.listen<AsyncValue<void>>(authControllerProvider, (previous, next) {
-      next.whenOrNull(
-        error: (error, stackTrace) {
-          context.showErrorSnackBar(message: error.toString());
-        },
-        loading: () {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            },
-          );
-        },
-      );
+    // ref.listen<AsyncValue<void>>(authControllerProvider, (previous, next) {
+    //   next.whenOrNull(
+    //     error: (error, stackTrace) {
+    //       context.showErrorSnackBar(message: error.toString());
+    //     },
+    //     loading: () {
+    //       showDialog(
+    //         context: context,
+    //         barrierDismissible: false,
+    //         builder: (context) {
+    //           return const Center(
+    //             child: CircularProgressIndicator(),
+    //           );
+    //         },
+    //       );
+    //     },
+    //   );
 
-      if (previous is AsyncLoading && next is! AsyncLoading) {
-        Navigator.of(context, rootNavigator: true).pop(); // Close loading dialog
-      }
-    });
+    //   if (previous is AsyncLoading && next is! AsyncLoading) {
+    //     Navigator.of(context, rootNavigator: true).pop(); // Close loading dialog
+    //   }
+    // });
 
     return Scaffold(
       body: Center(
