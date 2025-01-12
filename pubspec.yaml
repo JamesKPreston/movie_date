@@ -64,6 +64,7 @@ dev_dependencies:
   riverpod_lint:
   # import custom_lint too as riverpod_lint depends on it
   custom_lint:
+  flutter_lints: ^2.0.0
 
 flutter_icons:
   android: true

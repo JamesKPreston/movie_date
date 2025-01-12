@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_date/pages/login_page.dart';
 import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/pages/swipe_page_tutorial.dart';
-import 'package:movie_date/providers/login_repository_provider.dart';
+import 'package:movie_date/providers/repositories/login_repository_provider.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

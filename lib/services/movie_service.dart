@@ -1,5 +1,6 @@
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/repositories/members_repository.dart';
+import 'package:movie_date/repositories/movie_api_repository.dart';
 import 'package:movie_date/repositories/movie_repository.dart';
 import 'package:movie_date/repositories/profile_repository.dart';
 import 'package:movie_date/repositories/room_repository.dart';
@@ -9,8 +10,10 @@ class MovieService {
   final ProfileRepository profileRepository;
   final RoomRepository roomRepository;
   final MembersRepository memberRepository;
+  final MovieApiRepository movieApiRepository;
 
-  MovieService(this.movieRepository, this.profileRepository, this.roomRepository, this.memberRepository);
+  MovieService(this.movieRepository, this.profileRepository, this.roomRepository, this.memberRepository,
+      this.movieApiRepository);
 
   Future<List<Movie>> getMovies(int page) async {
     final userId = await profileRepository.getCurrentUserId();
@@ -27,10 +30,10 @@ class MovieService {
       room.filters.first.withCast = null;
     }
 
-    var result = await movieRepository.getMoviesWithFilters(room.filters.first);
+    var result = await movieApiRepository.getMoviesWithFilters(room.filters.first);
 
     result = await Future.wait(result.map((movie) async {
-      return await movieRepository.getMovieDetails(movie);
+      return await movieApiRepository.getMovieDetails(movie);
     }));
 
     return result;

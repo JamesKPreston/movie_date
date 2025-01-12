@@ -8,9 +8,9 @@ import 'package:movie_date/pages/actor_page.dart';
 import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/pages/match_found_page.dart';
 import 'package:movie_date/tmdb/providers/genre_repository_provider.dart';
-import 'package:movie_date/providers/movie_choices_channel_provider.dart';
-import 'package:movie_date/providers/profile_repository_provider.dart';
-import 'package:movie_date/providers/room_service_provider.dart';
+import 'package:movie_date/providers/channels/movie_choices_channel_provider.dart';
+import 'package:movie_date/providers/repositories/profile_repository_provider.dart';
+import 'package:movie_date/providers/services/room_service_provider.dart';
 import 'package:movie_date/widgets/calendar_widget.dart';
 
 class RoomPage extends ConsumerStatefulWidget {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_date/pages/main_page.dart';
-import 'package:movie_date/providers/members_repository_provider.dart';
-import 'package:movie_date/providers/profile_repository_provider.dart';
-import 'package:movie_date/providers/room_service_provider.dart';
+import 'package:movie_date/providers/repositories/members_repository_provider.dart';
+import 'package:movie_date/providers/repositories/profile_repository_provider.dart';
+import 'package:movie_date/providers/services/room_service_provider.dart';
 import 'package:movie_date/widgets/menu_widget.dart';
 
 class MembersPage extends ConsumerStatefulWidget {

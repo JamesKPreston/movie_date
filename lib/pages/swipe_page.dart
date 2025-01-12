@@ -3,15 +3,15 @@ import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/pages/match_found_page.dart';
-import 'package:movie_date/providers/filters_channel_provider.dart';
+import 'package:movie_date/providers/channels/filters_channel_provider.dart';
 import 'package:movie_date/tmdb/providers/genre_repository_provider.dart';
-import 'package:movie_date/providers/movie_choices_channel_provider.dart';
-import 'package:movie_date/providers/movie_service_provider.dart';
-import 'package:movie_date/providers/profile_repository_provider.dart';
-import 'package:movie_date/providers/room_service_provider.dart';
+import 'package:movie_date/providers/channels/movie_choices_channel_provider.dart';
+import 'package:movie_date/providers/services/movie_service_provider.dart';
+import 'package:movie_date/providers/repositories/profile_repository_provider.dart';
+import 'package:movie_date/providers/services/room_service_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:movie_date/widgets/movie_details_widget.dart';
-import 'package:movie_date/providers/youtube_repository_provider.dart';
+import 'package:movie_date/providers/repositories/youtube_repository_provider.dart';
 
 class SwipePage extends ConsumerStatefulWidget {
   const SwipePage({super.key});

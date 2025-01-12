@@ -3,10 +3,10 @@ import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_intro/flutter_intro.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/types/movie.dart';
-import 'package:movie_date/mock/movies_mock.dart';
 import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/tmdb/providers/genre_repository_provider.dart';
-import 'package:movie_date/providers/movie_service_provider.dart';
+import 'package:movie_date/providers/services/movie_service_provider.dart';
+import 'package:movie_date/tmdb/providers/movie_repository_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -62,7 +62,8 @@ class _SwipePageState extends ConsumerState<SwipePageTutorial> {
     setState(() {
       isLoading = true;
     });
-    var result = MoviesMock.getMovies();
+    var mockMovieprovider = ref.read(mockMovieRepositoryProvider);
+    var result = await mockMovieprovider.getMoviesWithFilters([]);
     await setGenres(result.first.genreIds);
 
     setState(() {

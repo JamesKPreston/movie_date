@@ -1,6 +1,6 @@
-import 'package:movie_date/providers/login_repository_provider.dart';
-import 'package:movie_date/providers/profile_repository_provider.dart';
-import 'package:movie_date/providers/room_service_provider.dart';
+import 'package:movie_date/providers/repositories/login_repository_provider.dart';
+import 'package:movie_date/providers/repositories/profile_repository_provider.dart';
+import 'package:movie_date/providers/services/room_service_provider.dart';
 import 'package:movie_date/repositories/login_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'dart:async';

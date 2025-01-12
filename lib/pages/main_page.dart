@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_date/pages/members_page.dart';
 import 'package:movie_date/pages/room_page.dart';
 import 'package:movie_date/pages/swipe_page.dart';
-import 'package:movie_date/providers/room_service_provider.dart';
-import 'package:movie_date/providers/profile_repository_provider.dart';
+import 'package:movie_date/providers/services/room_service_provider.dart';
+import 'package:movie_date/providers/repositories/profile_repository_provider.dart';
 import 'package:movie_date/widgets/menu_widget.dart';
 
 class MainPage extends ConsumerStatefulWidget {

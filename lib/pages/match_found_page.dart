@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/tmdb/providers/movie_repository_provider.dart';
-import 'package:movie_date/providers/movie_service_provider.dart';
+import 'package:movie_date/providers/services/movie_service_provider.dart';
 
 class MatchFoundPage extends ConsumerStatefulWidget {
   final int movieId;
@@ -27,8 +27,8 @@ class _MatchFoundPageState extends ConsumerState<MatchFoundPage> {
     setState(() {
       isLoading = true;
     });
-    final movieRepo = ref.read(movieRepositoryProvider);
-    Movie match = await movieRepo.getMovie(movieId);
+    final movieApiRepo = ref.read(movieApiRepositoryProvider);
+    Movie match = await movieApiRepo.getMovie(movieId);
     setState(() {
       movies.add(match);
       isLoading = false;

@@ -1,7 +1,8 @@
 import 'package:jp_moviedb/types/movie.dart';
+import 'package:movie_date/repositories/movie_api_repository.dart';
 
-class MoviesMock {
-  static List<Movie> getMovies() {
+class MockTmdbMovieRepository implements MovieApiRepository {
+  Future<List<Movie>> getMoviesWithFilters(dynamic filter) async {
     return [
       Movie(
         posterPath: "https://image.tmdb.org/t/p/original/eOoCzH0MqeGr2taUZO4SwG416PF.jpg",
@@ -43,5 +44,13 @@ class MoviesMock {
         releaseDate: DateTime(2010, 06, 16),
       ),
     ];
+  }
+
+  Future<Movie> getMovieDetails(Movie movie) async {
+    return movie;
+  }
+
+  Future<Movie> getMovie(int movieId) async {
+    throw UnimplementedError();
   }
 }

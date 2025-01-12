@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:movie_date/providers/members_repository_provider.dart';
-import 'package:movie_date/providers/profile_repository_provider.dart';
-import 'package:movie_date/providers/room_repository_provider.dart';
+import 'package:movie_date/providers/repositories/members_repository_provider.dart';
+import 'package:movie_date/providers/repositories/profile_repository_provider.dart';
+import 'package:movie_date/providers/repositories/room_repository_provider.dart';
 import 'package:movie_date/services/room_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
