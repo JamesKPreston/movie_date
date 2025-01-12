@@ -96,7 +96,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
       choiceChipLabel: (genre) => genre!.name,
       validateSelectedItem: (list, val) => list!.contains(val),
       onItemSearch: (genre, query) {
-        return genre.name!.toLowerCase().contains(query.toLowerCase());
+        return genre.name.toLowerCase().contains(query.toLowerCase());
       },
       onApplyButtonClick: (list) {
         setState(() {

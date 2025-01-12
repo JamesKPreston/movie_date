@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_date/controllers/auth_controller.dart';
-import 'package:movie_date/providers/profile_repository_provider.dart';
-import 'package:movie_date/providers/room_service_provider.dart';
 import 'package:movie_date/utils/constants.dart';
 
 final passwordVisibilityProvider = StateProvider<bool>((ref) => true);

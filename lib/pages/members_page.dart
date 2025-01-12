@@ -43,8 +43,8 @@ class _MembersPageState extends ConsumerState<MembersPage> {
     for (var member in response) {
       final profile = await profileRepo.getProfileByEmail(member);
       _profiles[member] = {
-        'avatarUrl': profile.avatarUrl ?? '',
-        'displayName': profile.displayName ?? '',
+        'avatarUrl': profile.avatarUrl,
+        'displayName': profile.displayName,
       };
     }
 

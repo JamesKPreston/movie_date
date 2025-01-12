@@ -1,8 +1,10 @@
 {
   "cSpell.words": [
+    "APPL",
     "COCOAPODS",
     "cupertino",
     "dotenv",
+    "dxsolo",
     "getmoviechoices",
     "getusersmoviechoices",
     "gotrue",
@@ -12,6 +14,7 @@
     "postgrest",
     "rxdart",
     "Schyler",
+    "Spindance",
     "Supabase",
     "Tmdb",
     "upsert",
