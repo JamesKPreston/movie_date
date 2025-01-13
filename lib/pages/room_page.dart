@@ -1,12 +1,10 @@
 import 'package:filter_list/filter_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jp_moviedb/filters/movie.dart';
 import 'package:jp_moviedb/types/genre.dart';
 import 'package:jp_moviedb/types/person.dart';
-import 'package:movie_date/pages/actor_page.dart';
-import 'package:movie_date/pages/main_page.dart';
-import 'package:movie_date/pages/match_found_page.dart';
 import 'package:movie_date/tmdb/providers/genre_repository_provider.dart';
 import 'package:movie_date/providers/movie_choices_channel_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
@@ -96,7 +94,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
       choiceChipLabel: (genre) => genre!.name,
       validateSelectedItem: (list, val) => list!.contains(val),
       onItemSearch: (genre, query) {
-        return genre.name!.toLowerCase().contains(query.toLowerCase());
+        return genre.name.toLowerCase().contains(query.toLowerCase());
       },
       onApplyButtonClick: (list) {
         setState(() {
@@ -110,16 +108,16 @@ class _RoomPageState extends ConsumerState<RoomPage> {
 
   Future<void> _showActorPage() async {
     final savedActors = List<Person>.from(selectedActors);
-    final result = await Navigator.of(context).push<List<Person>>(
-      MaterialPageRoute(
-        builder: (context) => ActorPage(
-          currentlySelectedActors: selectedActors,
-        ),
-      ),
+
+    // Navigate to the ActorPage and wait for the result
+    final result = await context.pushNamed<List<Person>>(
+      'actors',
+      extra: selectedActors, // Pass the selected actors
     );
 
+    // Update the state based on the result
     setState(() {
-      result == null ? selectedActors = savedActors : selectedActors = result;
+      selectedActors = result ?? savedActors;
       actorController.text = selectedActors.map((actor) => actor.name).join(', ');
     });
   }
@@ -166,8 +164,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
     filters.add(filter);
 
     await ref.read(roomServiceProvider).updateFiltersForRoom(filters);
-
-    Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
+    context.goNamed('home');
   }
 
   final InputDecoration commonInputDecoration = InputDecoration(
@@ -186,11 +183,10 @@ class _RoomPageState extends ConsumerState<RoomPage> {
       next.when(
         data: (movieIds) {
           if (movieIds.isNotEmpty) {
-            // Avoid multiple navigations by checking a flag
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.of(context).pushAndRemoveUntil(
-                MatchFoundPage.route(movieIds.first),
-                (route) => false,
+              context.goNamed(
+                'match_found',
+                extra: movieIds.first,
               );
             });
           }

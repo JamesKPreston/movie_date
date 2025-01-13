@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:movie_date/controllers/auth_controller.dart';
 import 'package:movie_date/pages/register_page.dart';
-import 'package:movie_date/pages/splash_page.dart';
 
 // Providers for state management
 final emailControllerProvider = Provider((ref) => TextEditingController());
@@ -26,10 +26,7 @@ class LoginPage extends ConsumerWidget {
     ref.listen<AsyncValue<void>>(authControllerProvider, (previous, next) {
       next.when(
         data: (data) {
-          Navigator.of(context).pushAndRemoveUntil(
-            SplashPage.route(),
-            (route) => false,
-          );
+          context.goNamed('home');
         },
         error: (error, stackTrace) {
           ScaffoldMessenger.of(context).showSnackBar(

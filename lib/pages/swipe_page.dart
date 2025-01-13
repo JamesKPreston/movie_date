@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/pages/match_found_page.dart';
 import 'package:movie_date/providers/filters_channel_provider.dart';
@@ -108,7 +109,12 @@ class _SwipePageState extends ConsumerState<SwipePage> {
     final movieService = ref.read(movieServiceProvider);
     final isSaved = await movieService.isMovieSaved(movieId);
     if (isSaved) {
-      Navigator.of(context).pushAndRemoveUntil(MatchFoundPage.route(movieId), (route) => false);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.goNamed(
+          'match_found',
+          extra: movieId,
+        );
+      });
     }
   }
 
@@ -131,32 +137,27 @@ class _SwipePageState extends ConsumerState<SwipePage> {
       next.when(
         data: (movieIds) {
           if (movieIds.isNotEmpty) {
-            // Avoid multiple navigations by checking a flag
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.of(context).pushAndRemoveUntil(
-                MatchFoundPage.route(movieIds.first),
-                (route) => false,
+              context.goNamed(
+                'match_found',
+                extra: movieIds.first,
               );
             });
           }
         },
-        loading: () {}, // Handle loading state if needed
+        loading: () {},
         error: (error, stackTrace) {
           print('Error loading movie choices: $error');
         },
       );
     });
 
-    // Listen for filter updates and reload movies if needed
     ref.listen(filtersChannelProvider, (previous, next) {
       next.when(
         data: (filters) {
-          // if (filters.id != 'blank') {
-          // Refresh page with new filters
           loadMovies(1);
-          // }
         },
-        loading: () {}, // Handle loading state if needed
+        loading: () {},
         error: (error, stackTrace) {
           print('Error loading filters: $error');
         },
