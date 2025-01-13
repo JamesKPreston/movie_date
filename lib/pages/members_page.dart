@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/providers/members_repository_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
@@ -43,8 +44,8 @@ class _MembersPageState extends ConsumerState<MembersPage> {
     for (var member in response) {
       final profile = await profileRepo.getProfileByEmail(member);
       _profiles[member] = {
-        'avatarUrl': profile.avatarUrl ?? '',
-        'displayName': profile.displayName ?? '',
+        'avatarUrl': profile.avatarUrl,
+        'displayName': profile.displayName,
       };
     }
 
@@ -57,7 +58,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
   void _onDestinationSelected(int index) {
     switch (index) {
       case 0:
-        Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
+        context.goNamed('main');
         break;
       case 1:
         _leaveRoom();
@@ -72,7 +73,7 @@ class _MembersPageState extends ConsumerState<MembersPage> {
   Future<void> _leaveRoom() async {
     var roomService = ref.read(roomServiceProvider);
     roomService.createRoom(userId, "");
-    Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
+    context.goNamed('main');
   }
 
   @override

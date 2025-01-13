@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_intro/flutter_intro.dart';
+import 'package:go_router/go_router.dart';
 import 'package:movie_date/controllers/auth_controller.dart';
-import 'package:movie_date/pages/login_page.dart';
-import 'package:movie_date/pages/main_page.dart';
-import 'package:movie_date/pages/members_page.dart';
-import 'package:movie_date/pages/profile_page.dart';
 import 'package:movie_date/pages/swipe_page_tutorial.dart';
 
 class MenuWidget extends ConsumerWidget {
@@ -32,10 +29,7 @@ class MenuWidget extends ConsumerWidget {
             onTap: () async {
               try {
                 await authControllerNotifier.logout();
-                Navigator.of(context).pushAndRemoveUntil(
-                  LoginPage.route(),
-                  (route) => false,
-                );
+                context.goNamed('home');
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Failed to log out: $e')),
@@ -48,21 +42,21 @@ class MenuWidget extends ConsumerWidget {
             leading: const Icon(Icons.home, color: Colors.black),
             title: const Text('Home'),
             onTap: () {
-              Navigator.of(context).push(MainPage.route());
+              context.goNamed('main');
             },
           ),
           ListTile(
             leading: const Icon(Icons.people, color: Colors.black),
             title: const Text('Profile'),
             onTap: () {
-              Navigator.of(context).push(ProfilePage.route());
+              context.goNamed('profile');
             },
           ),
           ListTile(
             leading: const Icon(Icons.movie, color: Colors.black),
             title: const Text('Room Members'),
             onTap: () {
-              Navigator.of(context).push(MembersPage.route());
+              context.goNamed('members');
             },
           ),
           const Divider(),

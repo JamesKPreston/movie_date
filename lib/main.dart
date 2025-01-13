@@ -3,7 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:movie_date/pages/splash_page.dart';
+import 'package:movie_date/router/router.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,16 +18,17 @@ Future main() async {
   ));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MyApp extends ConsumerWidget {
+  MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = createRouter(ref);
+    return MaterialApp.router(
+      routerConfig: router,
       debugShowCheckedModeBanner: false,
       title: 'Movie Date',
       theme: appTheme,
-      home: const SplashPage(),
     );
   }
 }

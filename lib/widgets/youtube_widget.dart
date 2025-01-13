@@ -82,7 +82,7 @@ class _YoutubeWidgetState extends State<YoutubeWidget> {
   Widget build(BuildContext context) {
     return YoutubePlayerBuilder(
       onExitFullScreen: () {
-        // The player forces portraitUp after exiting fullscreen. This overrides the behaviour.
+        // The player forces portraitUp after exiting fullscreen. This overrides the behavior.
         SystemChrome.setPreferredOrientations(DeviceOrientation.values);
       },
       player: YoutubePlayer(
@@ -126,27 +126,4 @@ class _YoutubeWidgetState extends State<YoutubeWidget> {
       ),
     );
   }
-
-  Widget _text(String title, String value) {
-    return RichText(
-      text: TextSpan(
-        text: '$title : ',
-        style: const TextStyle(
-          color: Colors.blueAccent,
-          fontWeight: FontWeight.bold,
-        ),
-        children: [
-          TextSpan(
-            text: value,
-            style: const TextStyle(
-              color: Colors.blueAccent,
-              fontWeight: FontWeight.w300,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget get _space => const SizedBox(height: 10);
 }
