@@ -2,8 +2,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:jp_moviedb/api.dart';
 import 'package:jp_moviedb/types/movie.dart';
 import 'package:movie_date/repositories/movie_api_repository.dart';
-import 'package:movie_date/utils/constants.dart';
-import 'package:collection/collection.dart';
 
 class TmdbMovieRepository implements MovieApiRepository {
   late TmdbApi api;

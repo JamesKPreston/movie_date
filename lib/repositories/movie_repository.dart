@@ -1,5 +1,3 @@
-import 'package:jp_moviedb/types/movie.dart';
-
 abstract class MovieRepository {
   Future<void> saveMovie(int movieId, String profileId, String roomId);
   Map<int, int> getMovieCounts(List<int> movieIds);
