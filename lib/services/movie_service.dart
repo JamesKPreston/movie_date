@@ -1,16 +1,20 @@
 import 'package:jp_moviedb/types/movie.dart';
+import 'package:movie_date/repositories/match_repository.dart';
 import 'package:movie_date/repositories/members_repository.dart';
 import 'package:movie_date/repositories/movie_repository.dart';
 import 'package:movie_date/repositories/profile_repository.dart';
 import 'package:movie_date/repositories/room_repository.dart';
+import 'package:movie_date/models/match_model.dart';
 
 class MovieService {
   final MovieRepository movieRepository;
   final ProfileRepository profileRepository;
   final RoomRepository roomRepository;
   final MembersRepository memberRepository;
+  final MatchRepository matchRepository;
 
-  MovieService(this.movieRepository, this.profileRepository, this.roomRepository, this.memberRepository);
+  MovieService(
+      this.movieRepository, this.profileRepository, this.roomRepository, this.memberRepository, this.matchRepository);
 
   Future<List<Movie>> getMovies(int page) async {
     final userId = await profileRepository.getCurrentUserId();
@@ -50,6 +54,10 @@ class MovieService {
     final roomId = await memberRepository.getRoomIdByUserId(userId);
 
     await movieRepository.saveMovie(movieId, userId, roomId);
+
+    //update match table
+    final match = new Match(room_id: roomId, movie_id: movieId, match_count: 0);
+    await matchRepository.updateMatch(match);
   }
 
   Future<bool> isMovieSaved(int movieId) async {
