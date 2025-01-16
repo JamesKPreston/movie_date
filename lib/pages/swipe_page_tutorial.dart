@@ -128,7 +128,7 @@ class _SwipePageState extends ConsumerState<SwipePageTutorial> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    "If you create a room by using the filters, you can share this room code with another user to have them join your room",
+                                    "You can share this room code with another user to have them join your room",
                                     style: const TextStyle(color: Colors.white, fontSize: 16),
                                     textAlign: TextAlign.center,
                                   ),
@@ -375,13 +375,13 @@ class _SwipePageState extends ConsumerState<SwipePageTutorial> {
           ),
         ),
         BottomNavigationBarItem(
-          label: 'Filters',
+          label: 'Search',
           icon: IntroStepBuilder(
             order: 3,
-            text: "Press filters to search for movies based on genre, actors, and runtime",
+            text: "Press to search for movies based on genre, actors, and runtime",
             padding: EdgeInsets.fromLTRB(10, 5, 10, 20),
             builder: (context, key) => Icon(
-              Icons.filter_b_and_w_outlined,
+              Icons.search_outlined,
               key: key,
             ),
           ),

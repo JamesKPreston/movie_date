@@ -146,9 +146,9 @@ class _MainPageState extends ConsumerState<MainPage> {
             selectedIcon: Icon(Icons.door_front_door),
           ),
           NavigationDestination(
-            icon: Icon(Icons.filter_b_and_w_outlined),
-            label: 'Filters',
-            selectedIcon: Icon(Icons.filter_b_and_w),
+            icon: Icon(Icons.search_outlined),
+            label: 'Search',
+            selectedIcon: Icon(Icons.search),
           ),
         ],
       ),
