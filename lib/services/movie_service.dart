@@ -95,5 +95,6 @@ class MovieService {
     final roomId = await memberRepository.getRoomIdByUserId(userId);
 
     await movieRepository.deleteMovieChoicesByRoomId(roomId);
+    await matchRepository.deleteMatchesByRoom(roomId);
   }
 }

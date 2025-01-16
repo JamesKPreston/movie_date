@@ -5,10 +5,11 @@ import 'package:go_router/go_router.dart';
 import 'package:jp_moviedb/filters/movie.dart';
 import 'package:jp_moviedb/types/genre.dart';
 import 'package:jp_moviedb/types/person.dart';
+import 'package:movie_date/providers/match_channel_provider.dart';
 import 'package:movie_date/tmdb/providers/genre_repository_provider.dart';
-import 'package:movie_date/providers/movie_choices_channel_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
+import 'package:movie_date/utils/match_channel_handler.dart';
 import 'package:movie_date/widgets/calendar_widget.dart';
 
 class RoomPage extends ConsumerStatefulWidget {
@@ -179,23 +180,8 @@ class _RoomPageState extends ConsumerState<RoomPage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(movieChoicesChannelProvider, (previous, next) {
-      next.when(
-        data: (movieIds) {
-          if (movieIds.isNotEmpty) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              context.goNamed(
-                'match_found',
-                extra: movieIds.first,
-              );
-            });
-          }
-        },
-        loading: () {}, // Handle loading state if needed
-        error: (error, stackTrace) {
-          print('Error loading movie choices: $error');
-        },
-      );
+    ref.listen(matchChannelProvider, (previous, next) {
+      matchChannelHandler(context, next);
     });
 
     return Scaffold(

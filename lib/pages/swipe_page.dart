@@ -3,13 +3,13 @@ import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jp_moviedb/types/movie.dart';
-import 'package:movie_date/pages/match_found_page.dart';
 import 'package:movie_date/providers/filters_channel_provider.dart';
+import 'package:movie_date/providers/match_channel_provider.dart';
 import 'package:movie_date/tmdb/providers/genre_repository_provider.dart';
-import 'package:movie_date/providers/movie_choices_channel_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
+import 'package:movie_date/utils/match_channel_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:movie_date/widgets/movie_details_widget.dart';
 import 'package:movie_date/providers/youtube_repository_provider.dart';
@@ -133,23 +133,8 @@ class _SwipePageState extends ConsumerState<SwipePage> {
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(movieChoicesChannelProvider, (previous, next) {
-      next.when(
-        data: (movieIds) {
-          if (movieIds.isNotEmpty) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              context.goNamed(
-                'match_found',
-                extra: movieIds.first,
-              );
-            });
-          }
-        },
-        loading: () {},
-        error: (error, stackTrace) {
-          print('Error loading movie choices: $error');
-        },
-      );
+    ref.listen(matchChannelProvider, (previous, next) {
+      matchChannelHandler(context, next);
     });
 
     ref.listen(filtersChannelProvider, (previous, next) {

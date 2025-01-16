@@ -7,13 +7,13 @@ class SupabaseMatchRepository implements MatchRepository {
 
   @override
   Future<void> createMatch(Match match) async {
-    await supabase.from('matches').upsert(match.toJson());
+    await supabase.from('match').upsert(match.toJson());
   }
 
   @override
   Future<void> deleteMatch(Match match) async {
     try {
-      await supabase.from('matches').delete().eq('room_id', match.room_id).eq('movie_id', match.movie_id);
+      await supabase.from('match').delete().eq('room_id', match.room_id).eq('movie_id', match.movie_id);
     } catch (e) {
       throw Exception('Failed to delete match: $e');
     }
@@ -22,7 +22,7 @@ class SupabaseMatchRepository implements MatchRepository {
   @override
   Future<void> deleteMatchesByRoom(String room_id) async {
     try {
-      await supabase.from('matches').delete().eq('room_id', room_id);
+      await supabase.from('match').delete().eq('room_id', room_id);
     } catch (e) {
       throw Exception('Failed to delete matches by room: $e');
     }
@@ -31,7 +31,7 @@ class SupabaseMatchRepository implements MatchRepository {
   @override
   Future<Match> getMatchByRoomAndMovie(String room_id, int movie_id) async {
     try {
-      final response = await supabase.from('matches').select().eq('room_id', room_id).eq('movie_id', movie_id).single();
+      final response = await supabase.from('match').select().eq('room_id', room_id).eq('movie_id', movie_id).single();
 
       if (response == null) {
         throw Exception('Match not found');
@@ -46,7 +46,7 @@ class SupabaseMatchRepository implements MatchRepository {
   @override
   Future<List<Match>> getMatchesByRoom(String room_id) async {
     try {
-      final response = await supabase.from('matches').select().eq('room_id', room_id);
+      final response = await supabase.from('match').select().eq('room_id', room_id);
 
       if (response == null || response.isEmpty) {
         return [];

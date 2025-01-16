@@ -16,8 +16,8 @@ class Match {
   factory Match.fromMap(Map<String, dynamic> map) {
     return Match(
       room_id: map['room_id'] as String,
-      movie_id: map['movie_id'] as int,
-      match_count: map['match_count'] as int,
+      movie_id: (map['movie_id'] as num).toInt(),
+      match_count: (map['match_count'] as num).toInt(),
     );
   }
 
