@@ -172,9 +172,9 @@ class _RoomPageState extends ConsumerState<RoomPage> {
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10.0),
     ),
-    prefixIcon: const Icon(Icons.category, color: Colors.deepPurple),
+    prefixIcon: const Icon(Icons.category, color: Colors.black),
     focusedBorder: const OutlineInputBorder(
-      borderSide: BorderSide(color: Colors.deepPurple),
+      borderSide: BorderSide(color: Colors.black),
     ),
   );
 
@@ -190,7 +190,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
           'Filters',
           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.black,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -200,7 +200,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
             children: [
               const Text(
                 'Genres:',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
               ),
               const SizedBox(height: 8),
               Row(
@@ -210,13 +210,13 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                       controller: genreController,
                       readOnly: true,
                       decoration: commonInputDecoration.copyWith(
-                        prefixIcon: const Icon(Icons.category, color: Colors.deepPurple),
+                        prefixIcon: const Icon(Icons.category, color: Colors.black),
                       ),
                       onTap: _showGenreDialog,
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.add, color: Colors.deepPurple),
+                    icon: const Icon(Icons.add, color: Colors.black),
                     onPressed: _showGenreDialog,
                   ),
                 ],
@@ -224,7 +224,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
               const SizedBox(height: 16),
               const Text(
                 'Actors:',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
               ),
               const SizedBox(height: 8),
               Row(
@@ -235,12 +235,12 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                       readOnly: true,
                       onTap: _showActorPage,
                       decoration: commonInputDecoration.copyWith(
-                        prefixIcon: const Icon(Icons.person, color: Colors.deepPurple),
+                        prefixIcon: const Icon(Icons.person, color: Colors.black),
                       ),
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.search, color: Colors.deepPurple),
+                    icon: const Icon(Icons.search, color: Colors.black),
                     onPressed: _showActorPage,
                   ),
                 ],
@@ -248,7 +248,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
               const SizedBox(height: 16),
               const Text(
                 'Release Date:',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.deepPurple),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
               ),
               const SizedBox(height: 8),
               Row(
@@ -259,7 +259,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                       children: [
                         const Text(
                           'Start:',
-                          style: TextStyle(fontSize: 14, color: Colors.deepPurple),
+                          style: TextStyle(fontSize: 14, color: Colors.black),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -267,11 +267,11 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                             releaseDateGte != null
                                 ? releaseDateGte!.toString().split(' ')[0]
                                 : DateTime.parse('${DateTime.now().year}-01-01').toString().split(' ')[0],
-                            style: const TextStyle(fontSize: 14, color: Colors.deepPurple),
+                            style: const TextStyle(fontSize: 14, color: Colors.black),
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
+                          icon: Icon(Icons.calendar_month, color: Colors.black),
                           onPressed: () {
                             _showCalendar(true);
                           },
@@ -285,17 +285,17 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                       children: [
                         const Text(
                           'End:',
-                          style: TextStyle(fontSize: 14, color: Colors.deepPurple),
+                          style: TextStyle(fontSize: 14, color: Colors.black),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             releaseDateLte != null ? releaseDateLte!.toString().split(' ')[0] : '',
-                            style: const TextStyle(fontSize: 14, color: Colors.deepPurple),
+                            style: const TextStyle(fontSize: 14, color: Colors.black),
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
+                          icon: Icon(Icons.calendar_month, color: Colors.black),
                           onPressed: () {
                             _showCalendar(false);
                           },
@@ -323,7 +323,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: Colors.black,
                       ),
                       child: const Text('Clear Filters'),
                     ),
@@ -336,9 +336,9 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: Colors.black,
                       ),
-                      child: const Text('Save Filters'),
+                      child: const Text('Search'),
                     ),
                   ),
                 ],
