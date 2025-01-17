@@ -9,7 +9,6 @@ import 'package:movie_date/tmdb/providers/genre_repository_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
-import 'package:movie_date/utils/match_channel_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:movie_date/widgets/movie_details_widget.dart';
 import 'package:movie_date/providers/youtube_repository_provider.dart';
@@ -108,14 +107,14 @@ class _SwipePageState extends ConsumerState<SwipePage> {
   void isMovieSaved(movieId) async {
     final movieService = ref.read(movieServiceProvider);
     final isSaved = await movieService.isMovieSaved(movieId);
-    if (isSaved) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.goNamed(
-          'match_found',
-          extra: movieId,
-        );
-      });
-    }
+    // if (isSaved) {
+    //   WidgetsBinding.instance.addPostFrameCallback((_) {
+    //     context.goNamed(
+    //       'match_found',
+    //       extra: movieId,
+    //     );
+    //   });
+    // }
   }
 
   Future<void> showMovieDetails(BuildContext context, Movie movie) async {
@@ -134,7 +133,23 @@ class _SwipePageState extends ConsumerState<SwipePage> {
   @override
   Widget build(BuildContext context) {
     ref.listen(matchChannelProvider, (previous, next) {
-      matchChannelHandler(context, next);
+      next.when(
+        data: (movieIds) {
+          if (movieIds.isNotEmpty) {
+            setState(() {});
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.goNamed(
+                'match_found',
+                extra: movieIds.first,
+              );
+            });
+          }
+        },
+        loading: () {},
+        error: (error, stackTrace) {
+          print('Error loading movie choices: $error');
+        },
+      );
     });
 
     ref.listen(filtersChannelProvider, (previous, next) {

@@ -97,4 +97,11 @@ class MovieService {
     await movieRepository.deleteMovieChoicesByRoomId(roomId);
     await matchRepository.deleteMatchesByRoom(roomId);
   }
+
+  Future<bool> validateMatchInCurrentRoom(Match match) async {
+    final userId = await profileRepository.getCurrentUserId();
+    final roomId = await memberRepository.getRoomIdByUserId(userId);
+
+    return roomId != match.room_id ? false : true;
+  }
 }
