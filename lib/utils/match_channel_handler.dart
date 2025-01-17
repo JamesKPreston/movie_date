@@ -1,5 +1,3 @@
-// match_channel_handler.dart
-
 import 'package:flutter/widgets.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,10 +10,12 @@ void matchChannelHandler(
   next.when(
     data: (movieIds) {
       if (movieIds.isNotEmpty) {
+        var movieId = movieIds.first;
+        movieIds.clear();
         WidgetsBinding.instance.addPostFrameCallback((_) {
           context.goNamed(
             'match_found',
-            extra: movieIds.first,
+            extra: movieId,
           );
         });
       }

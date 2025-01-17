@@ -181,6 +181,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
   @override
   Widget build(BuildContext context) {
     ref.listen(matchChannelProvider, (previous, next) {
+      setState(() {});
       matchChannelHandler(context, next);
     });
 
