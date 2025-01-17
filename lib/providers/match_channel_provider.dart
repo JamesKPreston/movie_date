@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:movie_date/providers/movie_service_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:movie_date/models/match_model.dart';
@@ -36,8 +37,12 @@ Stream<List<int>> matchChannel(Ref ref) {
 
   return controller.stream.asyncExpand((match) async* {
     if (match.match_count >= 2) {
-      movieIds.add(match.movie_id);
-      yield movieIds.toList();
+      final movieService = ref.read(movieServiceProvider);
+      final isValidMatch = await movieService.validateMatchInCurrentRoom(match);
+      if (isValidMatch) {
+        movieIds.add(match.movie_id);
+        yield movieIds.toList();
+      }
     }
     // final movieService = ref.read(movieServiceProvider);
     // final isSaved = await movieService.isMovieSaved(movieId);
