@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:jp_moviedb/types/movie.dart';
+import 'package:movie_date/pages/login_page.dart';
 import 'package:movie_date/providers/filters_channel_provider.dart';
 import 'package:movie_date/providers/match_channel_provider.dart';
+import 'package:movie_date/providers/match_repository_provider.dart';
 import 'package:movie_date/tmdb/providers/genre_repository_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
@@ -91,6 +94,24 @@ class _SwipePageState extends ConsumerState<SwipePage> {
     });
   }
 
+  void checkMatches() async {
+    var profileRepo = ref.read(profileRepositoryProvider);
+      var matchRepo = ref.read(matchRepositoryProvider);
+      var roomService = ref.read(roomServiceProvider);
+      var userId = await profileRepo.getCurrentUserId();
+      var room = await roomService.getRoomByUserId(userId);
+      var matches = await matchRepo.getMatchesByRoom(room.id);
+
+      for(var match in matches) {
+        if(match.match_count >= 2) {
+          context.goNamed(
+            'match_found',
+            extra: match.movie_id,
+          );
+        }
+      }
+  }
+
   void handleDismissed() async {
     if (swipeCount >= movies.length - 1 && !isLoading) {
       page++;
@@ -132,9 +153,28 @@ class _SwipePageState extends ConsumerState<SwipePage> {
 
   @override
   Widget build(BuildContext context) {
+   // checkMatches();
     ref.listen(matchChannelProvider, (previous, next) {
+      next.when(
+    data: (movieIds) {
+      if (movieIds.isNotEmpty) {
+        var movieId = movieIds.first;
+        movieIds.clear();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          context.goNamed(
+            'match_found',
+            extra: movieId,
+          );
+        });
+      }
+    },
+    loading: () {},
+    error: (error, stackTrace) {
+      print('Error loading movie choices: $error');
+    },
+  );
       setState(() {});
-      matchChannelHandler(context, next);
+     // matchChannelHandler(context, next);
     });
     ref.listen(filtersChannelProvider, (previous, next) {
       next.when(
