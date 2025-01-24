@@ -14,6 +14,7 @@ class ActorPage extends ConsumerStatefulWidget {
 
 class _ActorPageState extends ConsumerState<ActorPage> {
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
   List<Person> searchResults = [];
   late List<Person> selectedActors;
   bool isLoading = false;
@@ -23,6 +24,20 @@ class _ActorPageState extends ConsumerState<ActorPage> {
   void initState() {
     super.initState();
     selectedActors = widget.currentlySelectedActors ?? [];
+
+    // Add listener to trigger search when TextField loses focus
+    _searchFocusNode.addListener(() {
+      if (!_searchFocusNode.hasFocus && _searchController.text.trim().isNotEmpty) {
+        setState(() {}); // Trigger search when TextField loses focus
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _searchFocusNode.dispose(); // Dispose of the FocusNode
+    super.dispose();
   }
 
   void _addActor(Person actor) {
@@ -113,7 +128,6 @@ class _ActorPageState extends ConsumerState<ActorPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.zero, // Ensures text fits neatly within the button
                       ),
                       onPressed: () => navigator.pop(false),
                       child: const FittedBox(
@@ -135,7 +149,6 @@ class _ActorPageState extends ConsumerState<ActorPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.zero, // Ensures text fits neatly within the button
                       ),
                       onPressed: () => navigator.pop(true),
                       child: const FittedBox(
@@ -163,10 +176,10 @@ class _ActorPageState extends ConsumerState<ActorPage> {
           title: const Text('Select Actors'),
           backgroundColor: Colors.grey[900],
           titleTextStyle: const TextStyle(color: Colors.white, fontSize: 20),
-          iconTheme: const IconThemeData(color: Colors.white), // Makes the back arrow white
+          iconTheme: const IconThemeData(color: Colors.white),
           actions: [
             IconButton(
-              icon: const Icon(Icons.save, color: Colors.white, size: 30), // Changed to floppy disk and increased size
+               icon: const Icon(Icons.save, color: Colors.white, size: 30),
               onPressed: _saveActors,
             ),
           ],
@@ -177,20 +190,22 @@ class _ActorPageState extends ConsumerState<ActorPage> {
             children: [
               TextField(
                 controller: _searchController,
+                focusNode: _searchFocusNode, // Attach FocusNode
                 decoration: InputDecoration(
                   labelText: 'Search Actor',
-                  labelStyle: const TextStyle(color: Colors.black), // Label text color
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   suffixIcon: IconButton(
-                    icon: const Icon(Icons.search, color: Colors.black), // Icon color changed to black
+                    icon: const Icon(Icons.search),
                     onPressed: () {
-                      setState(() {});
+                      setState(() {}); // Trigger search when button is pressed
                     },
                   ),
                 ),
-                style: const TextStyle(color: Colors.black), // Text input color
+                onSubmitted: (value) {
+                  setState(() {}); // Trigger search when "Enter" is pressed
+                },
               ),
               const SizedBox(height: 16),
               if (isLoading)
@@ -206,7 +221,7 @@ class _ActorPageState extends ConsumerState<ActorPage> {
                         ),
                         Expanded(
                           child: ListView.builder(
-                            itemCount: searchResults
+                               itemCount: searchResults
                                 .where((actor) =>
                                     actor.profilePath != null &&
                                     actor.profilePath != 'https://image.tmdb.org/t/p/originalnull')
@@ -216,8 +231,7 @@ class _ActorPageState extends ConsumerState<ActorPage> {
                                   .where((actor) =>
                                       actor.profilePath != null &&
                                       actor.profilePath != 'https://image.tmdb.org/t/p/originalnull')
-                                  .toList()[index];
-                              return ListTile(
+                                  .toList()[index];                              return ListTile(
                                 leading: actor.profilePath != null
                                     ? Image.network(
                                         actor.profilePath!,
@@ -228,7 +242,7 @@ class _ActorPageState extends ConsumerState<ActorPage> {
                                     : const Icon(Icons.person, size: 50, color: Colors.grey),
                                 title: Text(actor.name ?? 'Unknown'),
                                 trailing: IconButton(
-                                  icon: const Icon(Icons.add, color: Colors.grey),
+                                  icon: const Icon(Icons.add),
                                   onPressed: () => _addActor(actor),
                                 ),
                               );
