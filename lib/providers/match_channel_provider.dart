@@ -37,7 +37,7 @@ Stream<List<int>> matchChannel(Ref ref) {
 
   return controller.stream.asyncExpand((match) async* {
     if (match.match_count >= 2) {
-      final movieService = ref.read(movieServiceProvider);
+      final movieService = ref.watch(movieServiceProvider);
       final isValidMatch = await movieService.validateMatchInCurrentRoom(match);
       if (isValidMatch) {
         movieIds.add(match.movie_id);
