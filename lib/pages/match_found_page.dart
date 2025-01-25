@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jp_moviedb/types/movie.dart';
+import 'package:movie_date/models/watch_options.dart';
 import 'package:movie_date/tmdb/providers/movie_repository_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
 
@@ -20,6 +21,7 @@ class MatchFoundPage extends ConsumerStatefulWidget {
 
 class _MatchFoundPageState extends ConsumerState<MatchFoundPage> {
   List<Movie> movies = [];
+  List<WatchOption> watchOptions = [];
   bool isLoading = false;
 
   void loadMovie(int movieId) async {
@@ -29,6 +31,7 @@ class _MatchFoundPageState extends ConsumerState<MatchFoundPage> {
     });
     final movieRepo = ref.read(movieRepositoryProvider);
     Movie match = await movieRepo.getMovie(movieId);
+    watchOptions = await movieRepo.getMovieWatchOptions(movieId);
     setState(() {
       movies.add(match);
       isLoading = false;
@@ -154,6 +157,22 @@ class _MatchFoundPageState extends ConsumerState<MatchFoundPage> {
                           ),
                         ),
                 ),
+                Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: watchOptions.length,
+                      itemBuilder: (context, index) {
+                        final option = watchOptions[index];
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          child: ListTile(
+                            leading: Image.asset('${option.iconPath}', width: 40, height: 40),
+                            title: Text(option.serviceName),
+                          ),
+                        );
+                      },
+                    )),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(

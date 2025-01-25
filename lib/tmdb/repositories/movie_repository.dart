@@ -1,9 +1,11 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:jp_moviedb/api.dart';
 import 'package:jp_moviedb/types/movie.dart';
+import 'package:movie_date/models/watch_options.dart';
 import 'package:movie_date/repositories/movie_repository.dart';
 import 'package:movie_date/utils/constants.dart';
 import 'package:collection/collection.dart';
+import 'package:dio/dio.dart';
 
 class TmdbMovieRepository implements MovieRepository {
   late TmdbApi api;
@@ -63,5 +65,42 @@ class TmdbMovieRepository implements MovieRepository {
 
   Future<void> deleteMovieChoicesByRoomId(String roomId) async {
     await supabase.from('moviechoices').delete().eq('room_id', roomId).eq('profile_id', supabase.auth.currentUser!.id);
+  }
+
+  @override
+  Future<List<WatchOption>> getMovieWatchOptions(int movieId) async {
+    final dio = Dio();
+    final response = await dio.get(
+      'https://streaming-availability.p.rapidapi.com/shows/movie/$movieId',
+      queryParameters: {
+        'output_language': 'en',
+        'country': 'us',
+      },
+      options: Options(
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': null,
+          'x-rapidapi-ua': 'RapidAPI-Playground',
+          'x-rapidapi-key': '359c590b43msha086f9a25e466a7p1b0e9fjsn191ab5b5c9d9',
+          'x-rapidapi-host': 'streaming-availability.p.rapidapi.com',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      List<WatchOption> watchOptions = [];
+      if (response.data['streamingOptions'] != null) {
+        for (var option in response.data['streamingOptions']['us']) {
+          var watchOption = WatchOption.fromJson(option);
+          if (!watchOptions.any((o) => o.serviceName == watchOption.serviceName)) {
+            watchOptions.add(watchOption);
+          }
+        }
+      }
+
+      return watchOptions;
+    } else {
+      throw Exception('Failed to load movie watch options');
+    }
   }
 }
