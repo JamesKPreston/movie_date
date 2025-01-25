@@ -33,6 +33,7 @@ jobs:
             echo "API_KEY=${{ secrets.API_KEY }}" >> .env
             echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
             echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+            echo "WHERE_TO_WATCH_API"=${{ secrets.WHERE_TO_WATCH_API }}" >> .env
           
     #   - name: Debug file location
     #     run: ls -la
