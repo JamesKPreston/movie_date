@@ -9,6 +9,7 @@ import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/pages/match_found_page.dart';
 import 'package:movie_date/pages/members_page.dart';
 import 'package:movie_date/pages/profile_page.dart';
+import 'package:movie_date/pages/settings_page.dart';
 import 'package:movie_date/pages/splash_page.dart';
 import 'package:movie_date/pages/room_page.dart';
 import 'package:movie_date/pages/swipe_page_tutorial.dart';
@@ -91,6 +92,11 @@ GoRouter createRouter(WidgetRef ref) {
           final movieId = state.extra as int; // Retrieve the extra data (movie ID)
           return MatchFoundPage(movieId: movieId); // Pass the movie ID to the MatchFoundPage
         },
+      ),
+      GoRoute(
+        name: 'settings',
+        path: '/settings',
+        builder: (context, state) => SettingsPage(),
       ),
     ],
   );
