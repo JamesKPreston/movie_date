@@ -70,6 +70,8 @@ class TmdbMovieRepository implements MovieRepository {
   @override
   Future<List<WatchOption>> getMovieWatchOptions(int movieId) async {
     final dio = Dio();
+    await dotenv.load();
+    var apiKey = dotenv.env['WHERE_TO_WATCH_API'];
     final response = await dio.get(
       'https://streaming-availability.p.rapidapi.com/shows/movie/$movieId',
       queryParameters: {
@@ -81,7 +83,7 @@ class TmdbMovieRepository implements MovieRepository {
           'Accept': 'application/json',
           'Content-Type': null,
           'x-rapidapi-ua': 'RapidAPI-Playground',
-          'x-rapidapi-key': '359c590b43msha086f9a25e466a7p1b0e9fjsn191ab5b5c9d9',
+          'x-rapidapi-key': apiKey,
           'x-rapidapi-host': 'streaming-availability.p.rapidapi.com',
         },
       ),

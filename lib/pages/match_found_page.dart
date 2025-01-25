@@ -158,21 +158,36 @@ class _MatchFoundPageState extends ConsumerState<MatchFoundPage> {
                         ),
                 ),
                 Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: watchOptions.length,
-                      itemBuilder: (context, index) {
-                        final option = watchOptions[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 8),
-                          child: ListTile(
-                            leading: Image.asset('${option.iconPath}', width: 40, height: 40),
-                            title: Text(option.serviceName),
-                          ),
-                        );
-                      },
-                    )),
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Where to Watch:',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 16,
+                        runSpacing: 16,
+                        alignment: WrapAlignment.center,
+                        children: watchOptions.map((option) {
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Image.asset('${option.iconPath}', width: 60, height: 60),
+                              const SizedBox(height: 4),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ElevatedButton(

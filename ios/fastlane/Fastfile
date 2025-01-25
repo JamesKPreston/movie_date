@@ -68,7 +68,7 @@ platform :ios do
     firebase_app_distribution(
       app: "1:969395528079:ios:120b02032f7882f7066bfa",
       groups: "self",
-      release_notes: "Add settings to the menu to allow for the user to change the number of matches needed",
+      release_notes: "Added where to watch feature , so at the end when you match you can see where you can find the movie",
     )
   end
 

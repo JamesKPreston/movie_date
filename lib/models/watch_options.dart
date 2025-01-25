@@ -27,6 +27,8 @@ class WatchOption {
         iconPath = 'assets/icons/max.png';
       case 'paramount':
         iconPath = 'assets/icons/paramount.png';
+      case 'peacock':
+        iconPath = 'assets/icons/peacock.png';
       default:
         iconPath = 'assets/movieDate.png';
     }

@@ -146,28 +146,28 @@ class _SwipePageState extends ConsumerState<SwipePage> {
   @override
   Widget build(BuildContext context) {
     checkMatches();
-    // ref.listen(matchChannelProvider, (previous, next) {
-    //   next.when(
-    //     data: (movieIds) {
-    //       if (movieIds.isNotEmpty) {
-    //         var movieId = movieIds.first;
-    //         movieIds.clear();
-    //         WidgetsBinding.instance.addPostFrameCallback((_) {
-    //           context.goNamed(
-    //             'match_found',
-    //             extra: movieId,
-    //           );
-    //         });
-    //       }
-    //     },
-    //     loading: () {},
-    //     error: (error, stackTrace) {
-    //       print('Error loading movie choices: $error');
-    //     },
-    //   );
-    //   setState(() {});
-    //   // matchChannelHandler(context, next);
-    // });
+    ref.listen(matchChannelProvider, (previous, next) {
+      next.when(
+        data: (movieIds) {
+          if (movieIds.isNotEmpty) {
+            var movieId = movieIds.first;
+            movieIds.clear();
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.goNamed(
+                'match_found',
+                extra: movieId,
+              );
+            });
+          }
+        },
+        loading: () {},
+        error: (error, stackTrace) {
+          print('Error loading movie choices: $error');
+        },
+      );
+      setState(() {});
+      // matchChannelHandler(context, next);
+    });
 
     ref.listen(filtersChannelProvider, (previous, next) {
       next.when(
