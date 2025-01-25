@@ -96,20 +96,20 @@ class _SwipePageState extends ConsumerState<SwipePage> {
 
   void checkMatches() async {
     var profileRepo = ref.read(profileRepositoryProvider);
-      var matchRepo = ref.read(matchRepositoryProvider);
-      var roomService = ref.read(roomServiceProvider);
-      var userId = await profileRepo.getCurrentUserId();
-      var room = await roomService.getRoomByUserId(userId);
-      var matches = await matchRepo.getMatchesByRoom(room.id);
+    var matchRepo = ref.read(matchRepositoryProvider);
+    var roomService = ref.read(roomServiceProvider);
+    var userId = await profileRepo.getCurrentUserId();
+    var room = await roomService.getRoomByUserId(userId);
+    var matches = await matchRepo.getMatchesByRoom(room.id);
 
-      for(var match in matches) {
-        if(match.match_count >= 2) {
-          context.goNamed(
-            'match_found',
-            extra: match.movie_id,
-          );
-        }
+    for (var match in matches) {
+      if (match.match_count >= room.match_threshold) {
+        context.goNamed(
+          'match_found',
+          extra: match.movie_id,
+        );
       }
+    }
   }
 
   void handleDismissed() async {
@@ -127,15 +127,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
 
   void isMovieSaved(movieId) async {
     final movieService = ref.read(movieServiceProvider);
-    final isSaved = await movieService.isMovieSaved(movieId);
-    // if (isSaved) {
-    //   WidgetsBinding.instance.addPostFrameCallback((_) {
-    //     context.goNamed(
-    //       'match_found',
-    //       extra: movieId,
-    //     );
-    //   });
-    // }
+    await movieService.isMovieSaved(movieId);
   }
 
   Future<void> showMovieDetails(BuildContext context, Movie movie) async {
@@ -153,29 +145,30 @@ class _SwipePageState extends ConsumerState<SwipePage> {
 
   @override
   Widget build(BuildContext context) {
-   // checkMatches();
-    ref.listen(matchChannelProvider, (previous, next) {
-      next.when(
-    data: (movieIds) {
-      if (movieIds.isNotEmpty) {
-        var movieId = movieIds.first;
-        movieIds.clear();
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          context.goNamed(
-            'match_found',
-            extra: movieId,
-          );
-        });
-      }
-    },
-    loading: () {},
-    error: (error, stackTrace) {
-      print('Error loading movie choices: $error');
-    },
-  );
-      setState(() {});
-     // matchChannelHandler(context, next);
-    });
+    checkMatches();
+    // ref.listen(matchChannelProvider, (previous, next) {
+    //   next.when(
+    //     data: (movieIds) {
+    //       if (movieIds.isNotEmpty) {
+    //         var movieId = movieIds.first;
+    //         movieIds.clear();
+    //         WidgetsBinding.instance.addPostFrameCallback((_) {
+    //           context.goNamed(
+    //             'match_found',
+    //             extra: movieId,
+    //           );
+    //         });
+    //       }
+    //     },
+    //     loading: () {},
+    //     error: (error, stackTrace) {
+    //       print('Error loading movie choices: $error');
+    //     },
+    //   );
+    //   setState(() {});
+    //   // matchChannelHandler(context, next);
+    // });
+
     ref.listen(filtersChannelProvider, (previous, next) {
       next.when(
         data: (filters) {

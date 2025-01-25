@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:movie_date/pages/members_page.dart';
 import 'package:movie_date/pages/room_page.dart';
 import 'package:movie_date/pages/swipe_page.dart';
@@ -86,8 +87,7 @@ class _MainPageState extends ConsumerState<MainPage> {
                   );
                   return;
                 }
-
-                Navigator.of(context).pushAndRemoveUntil(MainPage.route(), (route) => false);
+                context.goNamed('home');
               },
               child: const Text('Submit'),
             ),

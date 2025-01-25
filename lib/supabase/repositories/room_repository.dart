@@ -26,5 +26,7 @@ class SupabaseRoomRepository implements RoomRepository {
 
   Future<void> deleteRoom(Room room) async {}
 
-  Future<void> updateRoom(Room room) async {}
+  Future<void> updateRoom(Room room) async {
+    await supabase.from('rooms').update(room.toJson()).eq('id', room.id);
+  }
 }

@@ -15,9 +15,8 @@ class MenuWidget extends ConsumerWidget {
       child: FutureBuilder<PackageInfo>(
         future: PackageInfo.fromPlatform(),
         builder: (context, snapshot) {
-          final version = snapshot.hasData
-              ? 'v${snapshot.data!.version} (${snapshot.data!.buildNumber})'
-              : 'Loading version...';
+          final version =
+              snapshot.hasData ? 'v${snapshot.data!.version} (${snapshot.data!.buildNumber})' : 'Loading version...';
 
           return Column(
             children: [
@@ -75,14 +74,14 @@ class MenuWidget extends ConsumerWidget {
                       leading: const Icon(Icons.info_outline, color: Colors.black),
                       title: const Text('Tutorial'),
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (BuildContext context) => Intro(
-                              child: const SwipePageTutorial(),
-                            ),
-                          ),
-                        );
+                        context.goNamed('tutorial');
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.settings, color: Colors.black),
+                      title: const Text('Settings'),
+                      onTap: () {
+                        context.goNamed('settings');
                       },
                     ),
                   ],

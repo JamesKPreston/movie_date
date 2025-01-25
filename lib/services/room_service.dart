@@ -28,6 +28,7 @@ class RoomService {
       id: Uuid().v4(),
       filters: filters,
       room_code: roomCode,
+      match_threshold: 2,
     );
 
     await _roomRepository.addRoom(room);
@@ -50,6 +51,7 @@ class RoomService {
         id: room.id,
         filters: filters,
         room_code: room.room_code,
+        match_threshold: room.match_threshold,
       ),
     );
   }
