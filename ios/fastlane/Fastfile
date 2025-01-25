@@ -68,7 +68,7 @@ platform :ios do
     firebase_app_distribution(
       app: "1:969395528079:ios:120b02032f7882f7066bfa",
       groups: "self",
-      release_notes: "Match System fixed and ground work for threshold setting laid",
+      release_notes: "Add settings to the menu to allow for the user to change the number of matches needed",
     )
   end
 
