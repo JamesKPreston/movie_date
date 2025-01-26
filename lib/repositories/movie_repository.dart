@@ -1,4 +1,5 @@
 import 'package:jp_moviedb/types/movie.dart';
+import 'package:movie_date/models/watch_options.dart';
 
 abstract class MovieRepository {
   Future<List<Movie>> getMoviesWithFilters(dynamic filter);
@@ -9,4 +10,5 @@ abstract class MovieRepository {
   Future<Map<int, int>> getMovieChoices(String roomId);
   Future<Map<int, int>> getUsersMovieChoices(String roomId);
   Future<void> deleteMovieChoicesByRoomId(String roomId);
+  Future<List<WatchOption>> getMovieWatchOptions(int movieId);
 }

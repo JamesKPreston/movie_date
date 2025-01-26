@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jp_moviedb/types/movie.dart';
+import 'package:movie_date/models/watch_options.dart';
 import 'package:movie_date/tmdb/providers/movie_repository_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
 
@@ -20,6 +21,7 @@ class MatchFoundPage extends ConsumerStatefulWidget {
 
 class _MatchFoundPageState extends ConsumerState<MatchFoundPage> {
   List<Movie> movies = [];
+  List<WatchOption> watchOptions = [];
   bool isLoading = false;
 
   void loadMovie(int movieId) async {
@@ -29,6 +31,7 @@ class _MatchFoundPageState extends ConsumerState<MatchFoundPage> {
     });
     final movieRepo = ref.read(movieRepositoryProvider);
     Movie match = await movieRepo.getMovie(movieId);
+    watchOptions = await movieRepo.getMovieWatchOptions(movieId);
     setState(() {
       movies.add(match);
       isLoading = false;
@@ -153,6 +156,37 @@ class _MatchFoundPageState extends ConsumerState<MatchFoundPage> {
                             }).toList(),
                           ),
                         ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Where to Watch:',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 16,
+                        runSpacing: 16,
+                        alignment: WrapAlignment.center,
+                        children: watchOptions.map((option) {
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Image.asset('${option.iconPath}', width: 60, height: 60),
+                              const SizedBox(height: 4),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
