@@ -35,7 +35,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final membersRepo = ref.read(membersRepositoryProvider);
     final membersCount = (await membersRepo.getRoomMembers(room.id)).length;
     setState(() {
-      _maxThreshold = membersCount.toDouble();
+      _maxThreshold =  membersCount < 2 ? 2 : membersCount.toDouble();
+
     });
   }
 
