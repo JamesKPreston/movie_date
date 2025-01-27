@@ -1,4 +1,4 @@
-import 'package:jp_moviedb/types/genre.dart';
+import 'package:movie_date/api/types/genre.dart';
 
 abstract class GenreRepository {
   Future<List<Genre>> getGenres();

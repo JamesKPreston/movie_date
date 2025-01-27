@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_intro/flutter_intro.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jp_moviedb/types/person.dart';
+import 'package:movie_date/api/types/person.dart';
 import 'package:movie_date/pages/actor_page.dart';
 import 'package:movie_date/pages/login_page.dart';
 import 'package:movie_date/pages/main_page.dart';
@@ -98,6 +98,11 @@ GoRouter createRouter(WidgetRef ref) {
         path: '/settings',
         builder: (context, state) => SettingsPage(),
       ),
+      // GoRoute(
+      //   name: 'temp',
+      //   path: '/temp',
+      //   builder: (context, state) => MyHomePage(),
+      // ),
     ],
   );
 }

@@ -1,4 +1,4 @@
-import 'package:jp_moviedb/filters/movie.dart';
+import 'package:movie_date/api/filters/movie.dart';
 import 'package:movie_date/models/member_model.dart';
 import 'package:movie_date/models/room_model.dart';
 import 'package:movie_date/repositories/members_repository.dart';

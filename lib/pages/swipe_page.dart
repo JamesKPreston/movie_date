@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jp_moviedb/types/movie.dart';
-import 'package:movie_date/pages/login_page.dart';
+import 'package:movie_date/api/types/movie.dart';
 import 'package:movie_date/providers/filters_channel_provider.dart';
 import 'package:movie_date/providers/match_channel_provider.dart';
 import 'package:movie_date/providers/match_repository_provider.dart';
@@ -11,7 +10,6 @@ import 'package:movie_date/tmdb/providers/genre_repository_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
-import 'package:movie_date/utils/match_channel_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:movie_date/widgets/movie_details_widget.dart';
 import 'package:movie_date/providers/youtube_repository_provider.dart';
@@ -63,9 +61,11 @@ class _SwipePageState extends ConsumerState<SwipePage> {
       isLoading = true;
     });
     final movieService = await ref.read(movieServiceProvider);
+    //var result = await movieService.getMoviesByStreamingService('netflix');
+
     var result = await movieService.getMovies(page);
     if (result.length > 0) {
-      await setGenres(result.first.genreIds);
+      // await setGenres(result.first.genreIds);
       //if this is the first page then
       //it is the first time this screen is loaded
       //perhaps from when the user closed and reopened the app

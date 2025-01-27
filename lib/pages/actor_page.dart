@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jp_moviedb/types/person.dart';
+import 'package:movie_date/api/types/person.dart';
 import 'package:movie_date/tmdb/providers/actor_repository_provider.dart';
 
 class ActorPage extends ConsumerStatefulWidget {
@@ -179,7 +179,7 @@ class _ActorPageState extends ConsumerState<ActorPage> {
           iconTheme: const IconThemeData(color: Colors.white),
           actions: [
             IconButton(
-               icon: const Icon(Icons.save, color: Colors.white, size: 30),
+              icon: const Icon(Icons.save, color: Colors.white, size: 30),
               onPressed: _saveActors,
             ),
           ],
@@ -221,7 +221,7 @@ class _ActorPageState extends ConsumerState<ActorPage> {
                         ),
                         Expanded(
                           child: ListView.builder(
-                               itemCount: searchResults
+                            itemCount: searchResults
                                 .where((actor) =>
                                     actor.profilePath != null &&
                                     actor.profilePath != 'https://image.tmdb.org/t/p/originalnull')
@@ -231,7 +231,8 @@ class _ActorPageState extends ConsumerState<ActorPage> {
                                   .where((actor) =>
                                       actor.profilePath != null &&
                                       actor.profilePath != 'https://image.tmdb.org/t/p/originalnull')
-                                  .toList()[index];                              return ListTile(
+                                  .toList()[index];
+                              return ListTile(
                                 leading: actor.profilePath != null
                                     ? Image.network(
                                         actor.profilePath!,
