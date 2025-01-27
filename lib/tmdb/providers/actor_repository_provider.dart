@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:jp_moviedb/types/person.dart';
+import 'package:movie_date/api/types/person.dart';
 import 'package:movie_date/repositories/actor_repository.dart';
 import 'package:movie_date/tmdb/repositories/actor_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

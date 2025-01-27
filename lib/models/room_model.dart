@@ -1,4 +1,4 @@
-import 'package:jp_moviedb/filters/movie.dart';
+import 'package:movie_date/api/filters/movie.dart';
 
 class Room {
   Room({

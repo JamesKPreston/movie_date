@@ -2,15 +2,17 @@ import 'package:filter_list/filter_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jp_moviedb/filters/movie.dart';
-import 'package:jp_moviedb/types/genre.dart';
-import 'package:jp_moviedb/types/person.dart';
+import 'package:movie_date/api/filters/movie.dart';
+import 'package:movie_date/api/types/genre.dart';
+import 'package:movie_date/api/types/person.dart';
 import 'package:movie_date/providers/match_channel_provider.dart';
 import 'package:movie_date/tmdb/providers/genre_repository_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
+import 'package:movie_date/utils/constants.dart';
 import 'package:movie_date/utils/match_channel_handler.dart';
 import 'package:movie_date/widgets/calendar_widget.dart';
+import 'package:movie_date/widgets/streaming_dropdown_widget.dart';
 
 class RoomPage extends ConsumerStatefulWidget {
   const RoomPage({super.key});
@@ -26,6 +28,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
   List<Genre> genres = [];
   List<Genre> selectedGenres = [];
   List<Person> selectedActors = [];
+  List<String> selectedServices = [];
   DateTime? releaseDateGte;
   DateTime? releaseDateLte;
   String roomCode = '';
@@ -70,12 +73,20 @@ class _RoomPageState extends ConsumerState<RoomPage> {
         genreController.clear();
       }
 
+      // Set selected services using the IDs from the filters
+      selectedServices = filters.first.withWatchProviders?.split('|') ?? [];
+
+      // Convert the selected services' IDs into actual matching items
+      // selectedServices = selectedServices.map((id) {
+      //   return services.firstWhere((service) => service['id'] == id, orElse: () => {}).toString();
+      // }).toList();
       selectedActors = filters.first.persons ?? [];
       actorController.text = selectedActors.map((actor) => actor.name).join(', ');
 
       releaseDateGte = filters.first.primaryReleaseDateGte;
       releaseDateLte = filters.first.primaryReleaseDateLte;
     });
+    setState(() {});
   }
 
   Future<void> fetchGenres() async {
@@ -150,11 +161,33 @@ class _RoomPageState extends ConsumerState<RoomPage> {
     );
   }
 
+  String getServiceProviders(List<String> services) {
+    // Iterate through each item in the original list
+    List<String> resultList = [];
+    if (services.contains("0")) {
+      return "";
+    }
+    for (var service in services) {
+      // Otherwise, just add the item as is
+      resultList.add(service.toString());
+    }
+
+    // Join the resultList with a pipe ("|")
+    return resultList.join('|');
+  }
+
   Future<void> updateFilters() async {
     List<MovieFilters> filters = [];
     MovieFilters filter = MovieFilters(
       page: 1,
     );
+    var services = getServiceProviders(selectedServices);
+    if (services.isNotEmpty) {
+      filter.withWatchProviders = services;
+      filter.watchRegion = 'US';
+    }
+    // filter.watchRegion = 'US';
+    // filter.withWatchProviders = '8|119|337|384|387|8|119|337|384|387';
     filter.withGenres = selectedGenres.map((genre) => genre.id).join('|');
     filter.withCast = selectedActors.map((actor) => actor.id).join('|');
     filter.persons = selectedActors;
@@ -166,6 +199,12 @@ class _RoomPageState extends ConsumerState<RoomPage> {
 
     await ref.read(roomServiceProvider).updateFiltersForRoom(filters);
     context.goNamed('home');
+  }
+
+  void handleSelectionChanged(List<String> selectedItems) {
+    setState(() {
+      selectedServices = selectedItems;
+    });
   }
 
   final InputDecoration commonInputDecoration = InputDecoration(
@@ -247,6 +286,26 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                 ],
               ),
               const SizedBox(height: 16),
+              const Text(
+                'Streaming Services:',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: StreamingDropDownWidget(
+                      onSelectionChanged: handleSelectionChanged, // Pass the callback
+                      initialSelectedItems: selectedServices,
+                    ),
+                  ),
+                  const SizedBox(width: 50),
+                  // IconButton(
+                  //   icon: const Icon(Icons.add, color: Colors.black),
+                  //   onPressed: _showGenreDialog,
+                  // ),
+                ],
+              ),
+              const SizedBox(height: 8),
               const Text(
                 'Release Date:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
@@ -330,6 +389,11 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                     ),
                   ),
                   const SizedBox(width: 10),
+                  // Expanded(
+                  //   child: StreamingDropDownWidget(
+                  //     onSelectionChanged: handleSelectionChanged, // Pass the callback to the widget
+                  //   ),
+                  // ),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {

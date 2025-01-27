@@ -11,6 +11,19 @@ const formPadding = EdgeInsets.symmetric(vertical: 20, horizontal: 16);
 
 const unexpectedErrorMessage = 'Unexpected error occurred.';
 
+final List<Map<String, dynamic>> services = [
+  {"label": "Any", "value": "any", "id": "0", "image": "assets/movieDate.png"},
+  {"label": "Tubi", "value": "tubi", "id": "73", "image": "assets/icons/tubi.png"},
+  {"label": "Amazon Prime", "value": "prime", "id": "9", "image": "assets/icons/prime.png"},
+  {"label": "Netflix", "value": "netflix", "id": "8", "image": "assets/icons/netflix.png"},
+  {"label": "Hulu", "value": "hulu", "id": "15", "image": "assets/icons/hulu.png"},
+  {"label": "HBO Max", "value": "hbo", "id": "1899", "image": "assets/icons/max.png"},
+  {"label": "Apple TV", "value": "apple", "id": "350", "image": "assets/icons/apple.png"},
+  {"label": "Disney+", "value": "disney", "id": "337", "image": "assets/icons/disney.png"},
+  {"label": "Paramount+", "value": "paramount", "id": "531,1770,1853", "image": "assets/icons/paramount.png"},
+  {"label": "Peacock", "value": "peacock", "id": "386", "image": "assets/icons/peacock.png"},
+];
+
 final appTheme = ThemeData.light().copyWith(
   primaryColorDark: Colors.orange,
   appBarTheme: const AppBarTheme(

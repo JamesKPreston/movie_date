@@ -3,7 +3,7 @@ import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_intro/flutter_intro.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jp_moviedb/types/movie.dart';
+import 'package:movie_date/api/types/movie.dart';
 import 'package:movie_date/mock/movies_mock.dart';
 import 'package:movie_date/tmdb/providers/genre_repository_provider.dart';
 import 'package:movie_date/providers/movie_service_provider.dart';

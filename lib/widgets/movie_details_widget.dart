@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jp_moviedb/types/movie.dart';
+import 'package:movie_date/api/types/movie.dart';
 import 'package:movie_date/widgets/youtube_widget.dart';
 
 class MovieDetailsWidget extends StatelessWidget {

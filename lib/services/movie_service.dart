@@ -1,4 +1,4 @@
-import 'package:jp_moviedb/types/movie.dart';
+import 'package:movie_date/api/types/movie.dart';
 import 'package:movie_date/repositories/match_repository.dart';
 import 'package:movie_date/repositories/members_repository.dart';
 import 'package:movie_date/repositories/movie_repository.dart';
@@ -103,5 +103,9 @@ class MovieService {
     final roomId = await memberRepository.getRoomIdByUserId(userId);
 
     return roomId != match.room_id ? false : true;
+  }
+
+  Future<List<Movie>> getTopMoviesByStreamingService(String service) async {
+    return await movieRepository.getTopMoviesByStreamingService(service);
   }
 }

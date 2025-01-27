@@ -1,4 +1,4 @@
-import 'package:jp_moviedb/types/movie.dart';
+import 'package:movie_date/api/types/movie.dart';
 
 class MoviesMock {
   static List<Movie> getMovies() {

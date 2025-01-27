@@ -1,5 +1,5 @@
-import 'package:jp_moviedb/api.dart';
-import 'package:jp_moviedb/types/genre.dart';
+import 'package:movie_date/api/api.dart';
+import 'package:movie_date/api/types/genre.dart';
 import 'package:movie_date/repositories/genre_repository.dart';
 
 class TmdbGenreRepository implements GenreRepository {

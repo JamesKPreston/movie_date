@@ -1,4 +1,4 @@
-import 'package:jp_moviedb/types/movie.dart';
+import 'package:movie_date/api/types/movie.dart';
 import 'package:movie_date/models/watch_options.dart';
 
 abstract class MovieRepository {
@@ -11,4 +11,5 @@ abstract class MovieRepository {
   Future<Map<int, int>> getUsersMovieChoices(String roomId);
   Future<void> deleteMovieChoicesByRoomId(String roomId);
   Future<List<WatchOption>> getMovieWatchOptions(int movieId);
+  Future<List<Movie>> getTopMoviesByStreamingService(String service);
 }
