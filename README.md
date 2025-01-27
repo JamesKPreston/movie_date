@@ -11,9 +11,11 @@ Movie Date is a Flutter application that works similar to tinder in that you set
 - User Can Join Room
 - Add Room Code to Create Room screen to facilitate joining
 - Trailers Play in app
+- Display Streaming services which have the movie available
+- Allow user to choose number of matches required
   
 ## In Progress
-- Fixing Android version issues
+
 - Adding skip to swipe functions
 - Adding undo to swipe functions
 - Adding view of currently swiped on movies
