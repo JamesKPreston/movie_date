@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_intro/flutter_intro.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_date/controllers/auth_controller.dart';
-import 'package:movie_date/pages/swipe_page_tutorial.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:movie_date/screens/dinner_date_screen.dart';
 
 class MenuWidget extends ConsumerWidget {
   @override
@@ -53,6 +52,19 @@ class MenuWidget extends ConsumerWidget {
                       title: const Text('Home'),
                       onTap: () {
                         context.goNamed('main');
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.restaurant),
+                      title: const Text('Dinner Date'),
+                      onTap: () {
+                        Navigator.pop(context); // Close drawer
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const DinnerDateScreen(),
+                          ),
+                        );
                       },
                     ),
                     ListTile(

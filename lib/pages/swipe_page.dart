@@ -33,6 +33,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
   String? roomCode;
   RealtimeChannel? movieChoicesChannel;
   int swipeCount = 0;
+  bool isMatchChannelSubscribed = false;
 
   @override
   void initState() {
@@ -145,7 +146,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
 
   @override
   Widget build(BuildContext context) {
-    checkMatches();
+   // checkMatches();
     ref.listen(matchChannelProvider, (previous, next) {
       next.when(
         data: (movieIds) {
@@ -180,6 +181,11 @@ class _SwipePageState extends ConsumerState<SwipePage> {
         },
       );
     });
+
+    if (!isMatchChannelSubscribed) {
+      final _ = ref.refresh(matchChannelProvider);
+      isMatchChannelSubscribed = true;
+    }
 
     return Scaffold(
       extendBodyBehindAppBar: true,

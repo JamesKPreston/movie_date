@@ -9,7 +9,6 @@ import 'package:movie_date/providers/match_channel_provider.dart';
 import 'package:movie_date/tmdb/providers/genre_repository_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';
-import 'package:movie_date/utils/constants.dart';
 import 'package:movie_date/utils/match_channel_handler.dart';
 import 'package:movie_date/widgets/calendar_widget.dart';
 import 'package:movie_date/widgets/streaming_dropdown_widget.dart';
@@ -34,10 +33,13 @@ class _RoomPageState extends ConsumerState<RoomPage> {
   String roomCode = '';
   TextEditingController actorController = TextEditingController();
   TextEditingController genreController = TextEditingController();
+  final DateTime defaultStartDate = DateTime(1980, 1, 1);
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    releaseDateGte = defaultStartDate;
   }
 
   @override
@@ -95,6 +97,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
 
     setState(() {
       genres = result;
+      isLoading = false;
     });
   }
 
@@ -217,6 +220,20 @@ class _RoomPageState extends ConsumerState<RoomPage> {
     ),
   );
 
+  void _selectDecade(int startYear) {
+    setState(() {
+      releaseDateGte = DateTime(startYear, 1, 1);
+      releaseDateLte = DateTime(startYear + 9, 12, 31);
+    });
+  }
+
+  void _selectProviderTop10(String providerId) {
+    setState(() {
+      selectedServices = [providerId];
+      // You might want to add additional filters here for top-rated content
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen(matchChannelProvider, (previous, next) {
@@ -237,10 +254,10 @@ class _RoomPageState extends ConsumerState<RoomPage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            children: [      
               const Text(
                 'Genres:',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
               ),
               const SizedBox(height: 8),
               Row(
@@ -264,7 +281,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
               const SizedBox(height: 16),
               const Text(
                 'Actors:',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
               ),
               const SizedBox(height: 8),
               Row(
@@ -288,7 +305,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
               const SizedBox(height: 16),
               const Text(
                 'Streaming Services:',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
               ),
               Row(
                 children: [
@@ -306,9 +323,53 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                 ],
               ),
               const SizedBox(height: 8),
+               const Text(
+                'Quick Filters:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                children: [
+                  FilterChip(
+                    label: const Text('80s'),
+                    selected: releaseDateGte?.year == 1980,
+                    selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                    onSelected: (bool selected) => _selectDecade(1980),
+                  ),
+                  FilterChip(
+                    label: const Text('90s'),
+                          selected: releaseDateGte?.year == 1990,
+                    selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                    onSelected: (bool selected) => _selectDecade(1990),
+                  ),
+                  FilterChip(
+                    label: const Text('2000s'),
+                    selected: releaseDateGte?.year == 2000,
+                    selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                    onSelected: (bool selected) => _selectDecade(2000),
+                  ),
+
+                  FilterChip(
+                    label: const Text('2010s'),
+                    selected: releaseDateGte?.year == 2010,
+                    selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                    onSelected: (bool selected) => _selectDecade(2010),
+
+                  ),
+                  FilterChip(
+                    label: const Text('2020s'),
+                    selected: releaseDateGte?.year == 2020,
+                    selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                    onSelected: (bool selected) => _selectDecade(2020),
+
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
               const Text(
                 'Release Date:',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
               ),
               const SizedBox(height: 8),
               Row(
@@ -319,15 +380,15 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                       children: [
                         const Text(
                           'Start:',
-                          style: TextStyle(fontSize: 14, color: Colors.black),
+                          style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             releaseDateGte != null
                                 ? releaseDateGte!.toString().split(' ')[0]
-                                : DateTime.parse('${DateTime.now().year}-01-01').toString().split(' ')[0],
-                            style: const TextStyle(fontSize: 14, color: Colors.black),
+                                : defaultStartDate.toString().split(' ')[0],
+                            style: const TextStyle(fontSize: 16, color: Colors.black),
                           ),
                         ),
                         IconButton(
@@ -345,13 +406,13 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                       children: [
                         const Text(
                           'End:',
-                          style: TextStyle(fontSize: 14, color: Colors.black),
+                          style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             releaseDateLte != null ? releaseDateLte!.toString().split(' ')[0] : '',
-                            style: const TextStyle(fontSize: 14, color: Colors.black),
+                            style: const TextStyle(fontSize: 16, color: Colors.black),
                           ),
                         ),
                         IconButton(
