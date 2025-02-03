@@ -33,7 +33,6 @@ class _SwipePageState extends ConsumerState<SwipePage> {
   String? roomCode;
   RealtimeChannel? movieChoicesChannel;
   int swipeCount = 0;
-  bool isMatchChannelSubscribed = false;
 
   @override
   void initState() {
@@ -146,13 +145,11 @@ class _SwipePageState extends ConsumerState<SwipePage> {
 
   @override
   Widget build(BuildContext context) {
-   // checkMatches();
     ref.listen(matchChannelProvider, (previous, next) {
       next.when(
         data: (movieIds) {
           if (movieIds.isNotEmpty) {
-            var movieId = movieIds.first;
-            movieIds.clear();
+            var movieId = movieIds.last;
             WidgetsBinding.instance.addPostFrameCallback((_) {
               context.goNamed(
                 'match_found',
@@ -163,11 +160,9 @@ class _SwipePageState extends ConsumerState<SwipePage> {
         },
         loading: () {},
         error: (error, stackTrace) {
-          print('Error loading movie choices: $error');
+          print('Error in match channel: $error');
         },
       );
-      setState(() {});
-      // matchChannelHandler(context, next);
     });
 
     ref.listen(filtersChannelProvider, (previous, next) {
@@ -181,11 +176,6 @@ class _SwipePageState extends ConsumerState<SwipePage> {
         },
       );
     });
-
-    if (!isMatchChannelSubscribed) {
-      final _ = ref.refresh(matchChannelProvider);
-      isMatchChannelSubscribed = true;
-    }
 
     return Scaffold(
       extendBodyBehindAppBar: true,

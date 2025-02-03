@@ -12,44 +12,48 @@ Stream<List<int>> matchChannel(Ref ref) {
   final supabaseClient = Supabase.instance.client;
   final matchChannel = supabaseClient.channel('public:match');
   final controller = StreamController<Match>();
+  final movieIds = <int>[];
+  
+  void subscribeToChannel() {
+    matchChannel.on(
+      RealtimeListenTypes.postgresChanges,
+      ChannelFilter(
+        event: '*',
+        schema: 'public',
+        table: 'match',
+      ),
+      (payload, [ref]) {
+        final match = Match.fromMap(payload['new']);
+        controller.add(match);
+      },
+    );
 
-  matchChannel.on(
-    RealtimeListenTypes.postgresChanges,
-    ChannelFilter(
-      event: '*',
-      schema: 'public',
-      table: 'match',
-    ),
-    (payload, [ref]) {
-      final match = Match.fromMap(payload['new']);
-      controller.add(match);
-    },
-  );
+    matchChannel.subscribe((status, [error]) {
+      if (status != 'SUBSCRIBED') {
+        // Retry subscription after delay if failed
+        Future.delayed(const Duration(seconds: 5), subscribeToChannel);
+      }
+    });
+  }
 
-  matchChannel.subscribe();
+  // Initial subscription
+  subscribeToChannel();
 
   ref.onDispose(() {
     matchChannel.unsubscribe();
     controller.close();
   });
 
-  final movieIds = <int>[];
-
   return controller.stream.asyncExpand((match) async* {
     if (match.match_count >= 2) {
-      final movieService = ref.watch(movieServiceProvider);
+      // Use read instead of watch since this is inside a stream
+      final movieService = ref.read(movieServiceProvider);
       final isValidMatch = await movieService.validateMatchInCurrentRoom(match);
-      if (isValidMatch) {
+      
+      if (isValidMatch && !movieIds.contains(match.movie_id)) {
         movieIds.add(match.movie_id);
-        yield movieIds.toList();
+        yield List<int>.from(movieIds); // Create new list to ensure state update
       }
     }
-    // final movieService = ref.read(movieServiceProvider);
-    // final isSaved = await movieService.isMovieSaved(movieId);
-
-    // if (isSaved && !movieIds.contains(movieId)) {
-    //   movieIds.add(movieId);
-    //   yield movieIds.toList();
-    // }
   });
 }

@@ -10,8 +10,7 @@ void matchChannelHandler(
   next.when(
     data: (movieIds) {
       if (movieIds.isNotEmpty) {
-        var movieId = movieIds.first;
-        movieIds.clear();
+        var movieId = movieIds.last;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           context.goNamed(
             'match_found',
@@ -22,7 +21,7 @@ void matchChannelHandler(
     },
     loading: () {},
     error: (error, stackTrace) {
-      print('Error loading movie choices: $error');
+      print('Error in match channel: $error');
     },
   );
 }
