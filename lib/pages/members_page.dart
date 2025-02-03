@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:movie_date/pages/main_page.dart';
 import 'package:movie_date/providers/members_repository_provider.dart';
 import 'package:movie_date/providers/profile_repository_provider.dart';
 import 'package:movie_date/providers/room_service_provider.dart';

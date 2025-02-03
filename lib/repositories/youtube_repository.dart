@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 
 class YouTubeRepository {
-  final String apiKey = 'AIzaSyAc5GTEk2XoaEcDEcpqnk707XH1F1NHngI';
+  final String apiKey;
   final Dio _dio;
 
-  YouTubeRepository() : _dio = Dio();
+  YouTubeRepository(this.apiKey) : _dio = Dio();
 
   Future<String> searchMovieTrailers(String query) async {
     const String baseUrl = 'https://www.googleapis.com/youtube/v3/search';
