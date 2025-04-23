@@ -313,15 +313,20 @@ class _SwipePageState extends ConsumerState<SwipePage> {
                           },
                           onSwipe: (previousIndex, currentIndex, direction) {
                             handleDismissed();
-                            if (currentIndex != null && movies.length > 0) {
-                              setGenres(movies[currentIndex].genreIds);
+                            if (currentIndex != null && movies.isNotEmpty) {
+                              // Check if we need to pass a named parameter
+                              var genreRepo = ref.read(genreRepositoryProvider);
+                              genreRepo.getGenreNames(movies[currentIndex].genreIds).then((genres) {
+                                setState(() {
+                                  movieGenres = genres;
+                                });
+                              });
                             }
 
                             if (direction == CardSwiperDirection.right) {
                               final movieService = ref.read(movieServiceProvider);
                               movieService.saveMovie(movies[previousIndex].id);
                             }
-                            setState(() {});
                             return true;
                           },
                         ),
@@ -332,52 +337,5 @@ class _SwipePageState extends ConsumerState<SwipePage> {
         ],
       ),
     );
-  }
-}
-
-Widget _buildActionButton({
-  required VoidCallback onTap,
-  required IconData icon,
-  required Color color,
-  required Color backgroundColor,
-}) {
-  return GestureDetector(
-    onTap: onTap,
-    child: Container(
-      width: 56,
-      height: 56,
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: backgroundColor.withOpacity(0.5),
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Icon(
-        icon,
-        color: color,
-        size: 32,
-      ),
-    ),
-  );
-}
-
-class CardSwiperController extends ChangeNotifier {
-  final CardSwiperState _state;
-
-  CardSwiperController(this._state);
-
-  void swipeLeft() {
-    _state.swipeLeft();
-    notifyListeners();
-  }
-
-  void swipeRight() {
-    _state.swipeRight();
-    notifyListeners();
   }
 }
