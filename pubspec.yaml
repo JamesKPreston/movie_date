@@ -69,6 +69,7 @@ dev_dependencies:
   riverpod_lint:
   # import custom_lint too as riverpod_lint depends on it
   custom_lint:
+  mockito: ^5.4.2
 
 flutter_icons:
   android: true
