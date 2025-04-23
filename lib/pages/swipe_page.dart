@@ -183,46 +183,58 @@ class _SwipePageState extends ConsumerState<SwipePage> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: roomCode != null
+          ? Text('Room Code: $roomCode',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18))
+          : null,
+        centerTitle: true,
+      ),
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFFFF5F6D), Color(0xFFFFC371)],
+                begin: Alignment.topRight,
+                end: Alignment.bottomLeft,
+                colors: [Color(0xFFFF3868), Color(0xFFFFB49A)],
               ),
             ),
           ),
           SafeArea(
             child: Column(
               children: [
-                if (roomCode != null)
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      'Room Code: $roomCode',
-                      style: const TextStyle(fontSize: 18, color: Colors.white),
-                    ),
-                  ),
                 Expanded(
                   child: movies.isEmpty
-                      ? Center(
-                          child: isLoading
-                              ? const CircularProgressIndicator()
-                              : const Text(
+                    ? Center(
+                        child: isLoading
+                          ? CircularProgressIndicator(color: Colors.white)
+                          : Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.movie_outlined, size: 70, color: Colors.white70),
+                                SizedBox(height: 16),
+                                Text(
                                   'No movies found',
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 22,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
                                 ),
-                        )
-                      : CardSwiper(
+                              ],
+                            ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: CardSwiper(
                           cardsCount: movies.length,
                           isLoop: true,
                           numberOfCardsDisplayed: movies.length < 3 ? movies.length : 3,
+                          backCardOffset: Offset(0, 40),
+                          padding: EdgeInsets.symmetric(horizontal: 10),
                           allowedSwipeDirection: AllowedSwipeDirection.only(right: true, left: true),
                           cardBuilder: (context, index, percentThresholdX, __) {
                             final movie = movies[index];
@@ -230,84 +242,153 @@ class _SwipePageState extends ConsumerState<SwipePage> {
                             Color? overlayColor;
 
                             if (percentThresholdX < -0.2) {
-                              overlayText = "Don't Watch";
+                              overlayText = "NOPE";
                               overlayColor = Colors.red;
                             } else if (percentThresholdX > 0.2) {
-                              overlayText = "Watch Movie";
+                              overlayText = "LIKE";
                               overlayColor = Colors.green;
                             }
+
                             return GestureDetector(
-                              onTap: () => showMovieDetails(context, movie),
-                              child: Stack(
-                                fit: StackFit.expand,
-                                children: [
-                                  Image.network(
-                                    movie.posterPath,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        colors: [Colors.black.withOpacity(0.7), Colors.transparent],
-                                        begin: Alignment.bottomCenter,
-                                        end: Alignment.topCenter,
-                                      ),
+                              onTap: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.transparent,
+                                  builder: (context) => MovieDetailsWidget(movie: movie),
+                                );
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black26,
+                                      blurRadius: 10,
+                                      offset: Offset(0, 5),
                                     ),
-                                  ),
-                                  Positioned(
-                                    bottom: 20,
-                                    left: 20,
-                                    right: 20,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '${movie.title}, ${movie.releaseDate.year}',
-                                          style: const TextStyle(
-                                            fontSize: 24,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      Image.network(
+                                        movie.posterPath,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) =>
+                                          Container(
+                                            color: Colors.grey[800],
+                                            child: Center(
+                                              child: Icon(Icons.image_not_supported, size: 50, color: Colors.white70),
+                                            ),
+                                          ),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [Colors.black.withOpacity(0.8), Colors.transparent, Colors.transparent, Colors.black.withOpacity(0.8)],
+                                            begin: Alignment.bottomCenter,
+                                            end: Alignment.topCenter,
+                                            stops: [0.0, 0.3, 0.7, 1.0],
                                           ),
                                         ),
-                                        const SizedBox(height: 10),
-                                        Text(
-                                          '${movieGenres}',
-                                          style: const TextStyle(fontSize: 16, color: Colors.white70),
+                                      ),
+                                      if (overlayText != null)
+                                        Positioned(
+                                          top: 50,
+                                          left: overlayText == "NOPE" ? 20 : null,
+                                          right: overlayText == "LIKE" ? 20 : null,
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: overlayColor!,
+                                                width: 4,
+                                              ),
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Text(
+                                              overlayText,
+                                              style: TextStyle(
+                                                fontSize: 32,
+                                                color: overlayColor,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
                                         ),
-                                        const SizedBox(height: 10),
-                                        Text(
-                                          '${movie.runtime} min  |  ${movie.voteAverage}/10',
-                                          style: const TextStyle(fontSize: 16, color: Colors.white70),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Text(
-                                          movie.overview,
-                                          maxLines: 3,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(fontSize: 14, color: Colors.white),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  if (overlayText != null)
-                                    Center(
-                                      child: Text(
-                                        overlayText,
-                                        style: TextStyle(
-                                          fontSize: 48,
-                                          color: overlayColor,
-                                          fontWeight: FontWeight.bold,
-                                          shadows: [
-                                            Shadow(
-                                              blurRadius: 10.0,
-                                              color: Colors.black,
-                                              offset: Offset(2.0, 2.0),
+                                      Positioned(
+                                        bottom: 20,
+                                        left: 20,
+                                        right: 20,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    '${movie.title}',
+                                                    style: TextStyle(
+                                                      fontSize: 24,
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Colors.white,
+                                                    ),
+                                                    maxLines: 2,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                                SizedBox(width: 8),
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.black54,
+                                                    borderRadius: BorderRadius.circular(4),
+                                                  ),
+                                                  child: Text(
+                                                    '${movie.releaseDate.year}',
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(height: 8),
+                                            Row(
+                                              children: [
+                                                Icon(Icons.star, color: Colors.amber, size: 18),
+                                                SizedBox(width: 4),
+                                                Text(
+                                                  '${movie.voteAverage}/10',
+                                                  style: TextStyle(fontSize: 16, color: Colors.white),
+                                                ),
+                                                SizedBox(width: 12),
+                                                Icon(Icons.access_time, color: Colors.white70, size: 18),
+                                                SizedBox(width: 4),
+                                                Text(
+                                                  '${movie.runtime} min',
+                                                  style: TextStyle(fontSize: 16, color: Colors.white),
+                                                ),
+                                              ],
+                                            ),
+                                            SizedBox(height: 8),
+                                            Text(
+                                              movie.overview,
+                                              maxLines: 3,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(fontSize: 14, color: Colors.white),
                                             ),
                                           ],
                                         ),
                                       ),
-                                    ),
-                                ],
+                                    ],
+                                  ),
+                                ),
                               ),
                             );
                           },
@@ -321,15 +402,79 @@ class _SwipePageState extends ConsumerState<SwipePage> {
                               final movieService = ref.read(movieServiceProvider);
                               movieService.saveMovie(movies[previousIndex].id);
                             }
-                            setState(() {});
                             return true;
                           },
                         ),
+                      ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildActionButton(
+                  onTap: () {
+                    if (movies.isNotEmpty) {
+                      final controller = CardSwiperController();
+                      controller.swipeLeft();
+                    }
+                  },
+                  icon: Icons.close,
+                  color: Colors.white,
+                  backgroundColor: Colors.red,
+                ),
+                SizedBox(width: 24),
+                _buildActionButton(
+                  onTap: () {
+                    if (movies.isNotEmpty) {
+                      final controller = CardSwiperController();
+                      controller.swipeRight();
+                    }
+                  },
+                  icon: Icons.favorite,
+                  color: Colors.white,
+                  backgroundColor: Colors.green,
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required VoidCallback onTap,
+    required IconData icon,
+    required Color color,
+    required Color backgroundColor,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 60,
+        height: 60,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 8,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Icon(
+          icon,
+          color: color,
+          size: 30,
+        ),
       ),
     );
   }
