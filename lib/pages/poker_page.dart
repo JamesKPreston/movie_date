@@ -6,7 +6,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:playing_cards/playing_cards.dart';
 import 'package:poker_solver/poker_solver.dart';
-import '../utility/convert_card.dart';
+import 'package:movie_date/utils/convert_card.dart';
 
 class PokerPage extends ConsumerStatefulWidget {
   
