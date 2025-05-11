@@ -149,7 +149,7 @@ class _PokerPageState extends ConsumerState<PokerPage> {
       appBar: AppBar(
         title: const Text('Texas Hold\'em POC'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -162,8 +162,8 @@ class _PokerPageState extends ConsumerState<PokerPage> {
             Row(
               children: player1
                   .map((c) => SizedBox(
-                        width: 160,
-                        height: 160 * (89.0 / 64.0),
+                        width: 80,
+                        height: 80 * (89.0 / 64.0),
                         child: PlayingCardView(card: c, showBack: false),
                       ))
                   .toList(),
@@ -176,8 +176,8 @@ class _PokerPageState extends ConsumerState<PokerPage> {
             Row(
               children: player2
                   .map((c) => SizedBox(
-                        width: 160,
-                        height: 160 * (89.0 / 64.0),
+                        width: 80,
+                        height: 80 * (89.0 / 64.0),
                         child: PlayingCardView(card: c, showBack: showBacks),
                       ))
                   .toList(),
@@ -192,8 +192,8 @@ class _PokerPageState extends ConsumerState<PokerPage> {
                 final card = entry.value;
                 if (gameEnded) {
                   return SizedBox(
-                    width: 160,
-                    height: 160 * (89.0 / 64.0),
+                    width: 80,
+                    height: 80 * (89.0 / 64.0),
                     child: PlayingCardView(
                       card: card,
                       showBack: false,
@@ -201,8 +201,8 @@ class _PokerPageState extends ConsumerState<PokerPage> {
                   );
                 } else {
                   return SizedBox(
-                    width: 160,
-                    height: 160 * (89.0 / 64.0),
+                    width: 80,
+                    height: 80 * (89.0 / 64.0),
                     child: PlayingCardView(
                       card: card,
                       showBack: index < 3 ? checkRound < 1 : checkRound < 2,
