@@ -70,7 +70,7 @@ class MenuWidget extends ConsumerWidget {
                       },
                     ),
                     ListTile(
-                      leading: const Icon(Icons.poker, color: Colors.black),
+                      leading: const Icon(Icons.casino, color: Colors.black),
                       title: const Text('Poker'),
                       onTap: () {
                         context.goNamed('poker');
