@@ -69,6 +69,13 @@ class MenuWidget extends ConsumerWidget {
                         context.goNamed('members');
                       },
                     ),
+                    ListTile(
+                      leading: const Icon(Icons.poker, color: Colors.black),
+                      title: const Text('Poker'),
+                      onTap: () {
+                        context.goNamed('poker');
+                      },
+                    ),
                     const Divider(),
                     ListTile(
                       leading: const Icon(Icons.info_outline, color: Colors.black),
