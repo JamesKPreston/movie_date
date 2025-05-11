@@ -12,6 +12,7 @@ import 'package:movie_date/pages/profile_page.dart';
 import 'package:movie_date/pages/settings_page.dart';
 import 'package:movie_date/pages/splash_page.dart';
 import 'package:movie_date/pages/room_page.dart';
+import 'package:movie_date/pages/poker_page.dart';
 import 'package:movie_date/pages/swipe_page_tutorial.dart';
 import 'package:movie_date/providers/login_repository_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
