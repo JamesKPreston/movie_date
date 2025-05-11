@@ -67,6 +67,11 @@ GoRouter createRouter(WidgetRef ref) {
         builder: (context, state) => MembersPage(),
       ),
       GoRoute(
+        name: 'poker',
+        path: '/poker',
+        builder: (context, state) => PokerPage(),
+      ),
+      GoRoute(
         name: 'tutorial',
         path: '/tutorial',
         builder: (context, state) {
