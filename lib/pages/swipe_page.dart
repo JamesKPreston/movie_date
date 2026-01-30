@@ -33,6 +33,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
   String? roomCode;
   RealtimeChannel? movieChoicesChannel;
   int swipeCount = 0;
+  final CardSwiperController _cardSwiperController = CardSwiperController();
 
   @override
   void initState() {
@@ -44,6 +45,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
   @override
   void dispose() {
     movieChoicesChannel?.unsubscribe();
+    _cardSwiperController.dispose();
     super.dispose();
   }
 
@@ -220,6 +222,7 @@ class _SwipePageState extends ConsumerState<SwipePage> {
                                 ),
                         )
                       : CardSwiper(
+                          controller: _cardSwiperController,
                           cardsCount: movies.length,
                           isLoop: true,
                           numberOfCardsDisplayed: movies.length < 3 ? movies.length : 3,
@@ -326,10 +329,66 @@ class _SwipePageState extends ConsumerState<SwipePage> {
                           },
                         ),
                 ),
+                // Tinder-style action buttons
+                if (movies.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        // Dislike button (X)
+                        _buildActionButton(
+                          icon: Icons.close,
+                          color: Colors.red,
+                          onTap: () {
+                            _cardSwiperController.swipe(CardSwiperDirection.left);
+                          },
+                        ),
+                        // Like button (Heart)
+                        _buildActionButton(
+                          icon: Icons.favorite,
+                          color: Colors.green,
+                          onTap: () {
+                            _cardSwiperController.swipe(CardSwiperDirection.right);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 64,
+        height: 64,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.3),
+              blurRadius: 8,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: Icon(
+          icon,
+          color: color,
+          size: 32,
+        ),
       ),
     );
   }
