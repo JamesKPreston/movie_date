@@ -234,7 +234,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -242,7 +242,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                 'Genres:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               Row(
                 children: [
                   Expanded(
@@ -261,12 +261,12 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               const Text(
                 'Actors:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               Row(
                 children: [
                   Expanded(
@@ -285,7 +285,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               const Text(
                 'Streaming Services:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
@@ -305,12 +305,12 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                   // ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               const Text(
                 'Release Date:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 4),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -365,7 +365,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
