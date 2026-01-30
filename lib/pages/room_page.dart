@@ -375,6 +375,7 @@ class _RoomPageState extends ConsumerState<RoomPage> {
                         setState(() {
                           selectedGenres = [];
                           selectedActors = [];
+                          selectedServices = [];
                           releaseDateGte = null;
                           releaseDateLte = null;
                           genreController.clear();
