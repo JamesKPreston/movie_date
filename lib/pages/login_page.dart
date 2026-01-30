@@ -8,6 +8,15 @@ import 'package:movie_date/pages/register_page.dart';
 final emailControllerProvider = Provider((ref) => TextEditingController());
 final passwordControllerProvider = Provider((ref) => TextEditingController());
 final passwordVisibilityProvider = StateProvider<bool>((ref) => true);
+final loginFormKeyProvider = Provider((ref) => GlobalKey<FormState>());
+
+/// Validates that a password is at least 6 characters long
+String? validatePassword(String? value) {
+  if (value == null || value.length < 6) {
+    return 'Password must be at least 6 characters';
+  }
+  return null;
+}
 
 class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
@@ -22,6 +31,7 @@ class LoginPage extends ConsumerWidget {
     final emailController = ref.read(emailControllerProvider);
     final passwordController = ref.read(passwordControllerProvider);
     final isPasswordVisible = ref.watch(passwordVisibilityProvider);
+    final formKey = ref.read(loginFormKeyProvider);
 
     ref.listen<AsyncValue<void>>(authControllerProvider, (previous, next) {
       next.when(
@@ -82,6 +92,7 @@ class LoginPage extends ConsumerWidget {
               ),
               const SizedBox(height: 32),
               Form(
+                key: formKey,
                 child: Column(
                   children: [
                     TextFormField(
@@ -107,6 +118,8 @@ class LoginPage extends ConsumerWidget {
                     TextFormField(
                       controller: passwordController,
                       obscureText: isPasswordVisible,
+                      validator: validatePassword,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: InputDecoration(
                         labelText: 'PASSWORD',
                         labelStyle: const TextStyle(
@@ -141,15 +154,17 @@ class LoginPage extends ConsumerWidget {
                           padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
                         onPressed: () async {
-                          try {
-                            await authController.login(
-                              emailController.text,
-                              passwordController.text,
-                            );
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(e.toString())),
-                            );
+                          if (formKey.currentState?.validate() ?? false) {
+                            try {
+                              await authController.login(
+                                emailController.text,
+                                passwordController.text,
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(e.toString())),
+                              );
+                            }
                           }
                         },
                         child: const Text(
