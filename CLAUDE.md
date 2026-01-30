@@ -190,9 +190,128 @@ Tests are in `/test/`. Run with:
 flutter test
 ```
 
-Current coverage is minimal. When adding tests:
-- Unit tests for repositories (mock Supabase)
-- Widget tests for pages (mock providers with `ProviderScope.overrides`)
+### Test Structure
+
+```
+test/
+├── api/
+│   ├── filters/
+│   │   └── movie_filters_test.dart    # MovieFilters serialization tests
+│   └── types/
+│       └── movie_test.dart            # Movie, Movie2, Person model tests
+├── models/
+│   └── models_test.dart               # Profile, Room, Match, Member tests
+├── pages/
+│   └── main_page_test.dart            # MainPage widget tests
+├── services/
+│   ├── movie_service_test.dart        # MovieService unit tests
+│   └── room_service_test.dart         # RoomService unit tests
+├── utils/
+│   └── conversion_test.dart           # ConversionUtils tests
+├── login_page_test.dart               # Password validation tests
+└── widget_test.dart                   # LoginPage widget tests
+```
+
+### Test Coverage
+
+| Component | Tests | Description |
+|-----------|-------|-------------|
+| **Models** | 17 | Profile, Room, Match, Member serialization |
+| **API Types** | 14 | Movie, Movie2, Person fromJson/toJson |
+| **MovieFilters** | 18 | Filter serialization with dates, persons |
+| **MovieService** | 22 | All 8 service methods tested |
+| **RoomService** | 17 | All 7 service methods tested |
+| **ConversionUtils** | 12 | Movie2 to Movie conversion |
+| **LoginPage** | 6 | Password validation |
+| **MainPage** | 31 | Widget, navigation, dialog tests |
+| **Total** | **137** | All tests passing |
+
+### Writing Tests
+
+**Unit Tests for Services:**
+```dart
+// Create mock implementations of repository interfaces
+class MockMovieRepository implements MovieRepository {
+  List<Movie> moviesWithFilters = [];
+
+  @override
+  Future<List<Movie>> getMoviesWithFilters(dynamic filter) async {
+    return moviesWithFilters;
+  }
+  // ... implement other methods
+}
+
+// Test the service
+test('getMovies returns list of movies', () async {
+  final mockRepo = MockMovieRepository();
+  mockRepo.moviesWithFilters = [testMovie];
+
+  final service = MovieService(mockRepo, ...);
+  final result = await service.getMovies(1);
+
+  expect(result.length, 1);
+});
+```
+
+**Model Serialization Tests:**
+```dart
+test('fromMap creates model with all fields', () {
+  final map = {'id': '123', 'name': 'Test'};
+  final model = MyModel.fromMap(map);
+
+  expect(model.id, '123');
+  expect(model.name, 'Test');
+});
+
+test('toJson serializes correctly', () {
+  final model = MyModel(id: '123', name: 'Test');
+  final json = model.toJson();
+
+  expect(json['id'], '123');
+  expect(json['name'], 'Test');
+});
+
+test('roundtrip serialization works', () {
+  final original = MyModel(id: '123', name: 'Test');
+  final json = original.toJson();
+  final restored = MyModel.fromMap(json);
+
+  expect(restored.id, original.id);
+  expect(restored.name, original.name);
+});
+```
+
+**Widget Tests with Riverpod:**
+```dart
+Widget createTestWidget() {
+  return ProviderScope(
+    overrides: [
+      profileRepositoryProvider.overrideWithValue(mockProfileRepo),
+      roomServiceProvider.overrideWithValue(mockRoomService),
+      // ... other overrides
+    ],
+    child: MaterialApp(
+      home: const MyPage(),
+    ),
+  );
+}
+
+testWidgets('renders correctly', (tester) async {
+  await tester.pumpWidget(createTestWidget());
+  await tester.pumpAndSettle();
+
+  expect(find.text('Expected Text'), findsOneWidget);
+});
+```
+
+### Testing Best Practices
+
+1. **Mock at the repository level** - Services depend on repository interfaces, making them easy to test
+2. **Test serialization roundtrips** - Ensure fromMap/toJson work together
+3. **Test edge cases** - null values, empty strings, boundary conditions
+4. **Use descriptive test names** - `'returns empty list when no movies saved'`
+5. **Group related tests** - Use `group()` to organize test suites
+6. **Override providers in widget tests** - Use `ProviderScope.overrides`
 
 ## Dependencies to Know
 
